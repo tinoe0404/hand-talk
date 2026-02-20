@@ -56,6 +56,15 @@
             "interrupted": "Inqanyuliwe"
         }
     },
+    "Patient": {
+        "waiting": "Uhlelo Lulungile. Sicela Ulinde Umthidiyeli.",
+        "follow": "Sicela Ulandele Imiyalelo Engezansi",
+        "systemActive": "Uhlelo Luyasebenza",
+        "emergency": "Uhlelo Lumisiwe Ngenxa Yesimo Esishubile",
+        "breath": "Bamba Umoya Manje",
+        "relax": "Ungaphefumula Ngokujwayelekile",
+        "stayStill": "Sicela Unganyakazi Nakancane"
+    },
     "Common": {
         "loading": "Iyalayisha...",
         "save": "Gcina",

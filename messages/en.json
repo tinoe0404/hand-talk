@@ -56,6 +56,15 @@
             "interrupted": "Interrupted"
         }
     },
+    "Patient": {
+        "waiting": "System Ready. Please Wait for Radiographer.",
+        "follow": "Please Follow Instructions Below",
+        "systemActive": "Live System Active",
+        "emergency": "Emergency Stoppage Triggered",
+        "breath": "Hold Your Breath Now",
+        "relax": "You Can Breathe Normallly",
+        "stayStill": "Please Stay Perfectly Still"
+    },
     "Common": {
         "loading": "Loading...",
         "save": "Save",
