@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { useSessionStore } from "@/store/useSessionStore";
-import { cn } from "@/lib/utils";
 import {
     Activity,
     ShieldAlert,

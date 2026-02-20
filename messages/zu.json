@@ -56,6 +56,88 @@
             "interrupted": "Inqanyuliwe"
         }
     },
+    "Instructions": {
+        "B-001": {
+            "title": "Donsa Umoya",
+            "desc": "Donsa umoya ojulile."
+        },
+        "B-002": {
+            "title": "Khipha Umoya",
+            "desc": "Khipha umoya kancane."
+        },
+        "B-003": {
+            "title": "Bamba Umoya",
+            "desc": "Bamba umoya unganyakazi."
+        },
+        "B-004": {
+            "title": "Phefumula",
+            "desc": "Ungaphefumula ngokujwayelekile manje."
+        },
+        "P-001": {
+            "title": "Nyukela Phezulu",
+            "desc": "Sondeza umzimba kancane phezulu."
+        },
+        "P-002": {
+            "title": "Yehla",
+            "desc": "Sondeza umzimba kancane phansi."
+        },
+        "P-003": {
+            "title": "Sondela Kwesobunxele",
+            "desc": "Hlehlisa umzimba uye kwesobunxele."
+        },
+        "P-004": {
+            "title": "Sondela Kwesokudla",
+            "desc": "Hlehlisa umzimba uye kwesokudla."
+        },
+        "P-005": {
+            "title": "Unganyakazi",
+            "desc": "Sicela unganyakazi nakancane."
+        },
+        "P-006": {
+            "title": "Izingalo Phezulu",
+            "desc": "Phakamisela izingalo ngenhla kwekhanda."
+        },
+        "P-007": {
+            "title": "Izingalo Phansi",
+            "desc": "Beka izingalo ezinhlangothini zomzimba."
+        },
+        "S-001": {
+            "title": "Misa Uhlelo",
+            "desc": "Uhlelo lumisiwe. Thula umoya."
+        },
+        "S-002": {
+            "title": "Iyalungiselela",
+            "desc": "Umshini uyazilungisa. Sicela ulinde."
+        },
+        "S-003": {
+            "title": "Iyaqinisekisa",
+            "desc": "Kulindwe isiqinisekiso sabasebenzi."
+        },
+        "S-004": {
+            "title": "I-Laser",
+            "desc": "Uhlelo luzilungisa ngokwe-laser."
+        },
+        "R-001": {
+            "title": "Lungele",
+            "desc": "Ukulungele ukuqala ukwelashwa."
+        },
+        "R-002": {
+            "title": "Iqediwe",
+            "desc": "Iseshini iqediwe. Linda abasebenzi."
+        },
+        "R-003": {
+            "title": "Linda",
+            "desc": "Kuhlolwa isimo seseshini."
+        },
+        "R-004": {
+            "title": "Khululeka",
+            "desc": "Ungakhulula imisipha yakho manje."
+        },
+        "R-005": {
+            "title": "Ukuhlola",
+            "desc": "Ukuhlolwa kokugcina kokuphepha."
+        }
+    },
     "Patient": {
         "waiting": "Uhlelo Lulungile. Sicela Ulinde Umthidiyeli.",
         "follow": "Sicela Ulandele Imiyalelo Engezansi",

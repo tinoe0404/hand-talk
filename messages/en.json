@@ -56,6 +56,88 @@
             "interrupted": "Interrupted"
         }
     },
+    "Instructions": {
+        "B-001": {
+            "title": "Inhale",
+            "desc": "Take a deep breath in."
+        },
+        "B-002": {
+            "title": "Exhale",
+            "desc": "Breathe out slowly."
+        },
+        "B-003": {
+            "title": "Hold Breath",
+            "desc": "Hold your breath and stay still."
+        },
+        "B-004": {
+            "title": "Breathe Normally",
+            "desc": "You can breathe normally now."
+        },
+        "P-001": {
+            "title": "Move Up",
+            "desc": "Shift your position slightly upwards."
+        },
+        "P-002": {
+            "title": "Move Down",
+            "desc": "Shift your position slightly downwards."
+        },
+        "P-003": {
+            "title": "Move Left",
+            "desc": "Shift your position to the left."
+        },
+        "P-004": {
+            "title": "Move Right",
+            "desc": "Shift your position to the right."
+        },
+        "P-005": {
+            "title": "Stay Still",
+            "desc": "Please remain perfectly still."
+        },
+        "P-006": {
+            "title": "Arms Up",
+            "desc": "Raise your arms above your head."
+        },
+        "P-007": {
+            "title": "Arms Down",
+            "desc": "Place your arms by your sides."
+        },
+        "S-001": {
+            "title": "Emergency Stop",
+            "desc": "Treatment halted. Stay calm."
+        },
+        "S-002": {
+            "title": "Preparing",
+            "desc": "Machine is positioning. Please wait."
+        },
+        "S-003": {
+            "title": "Authorizing",
+            "desc": "Waiting for clinical authorization."
+        },
+        "S-004": {
+            "title": "Laser Alignment",
+            "desc": "Aligning with treatment lasers."
+        },
+        "R-001": {
+            "title": "Ready",
+            "desc": "Ready to begin treatment."
+        },
+        "R-002": {
+            "title": "Complete",
+            "desc": "Session finished. Wait for staff."
+        },
+        "R-003": {
+            "title": "Wait",
+            "desc": "Clinical check in progress."
+        },
+        "R-004": {
+            "title": "Relax",
+            "desc": "You can relax your muscles now."
+        },
+        "R-005": {
+            "title": "Check",
+            "desc": "Final safety verification."
+        }
+    },
     "Patient": {
         "waiting": "System Ready. Please Wait for Radiographer.",
         "follow": "Please Follow Instructions Below",
