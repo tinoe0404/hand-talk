@@ -17,10 +17,27 @@ import {
 import { useSessionStore } from "@/store/useSessionStore";
 import { InstructionSelector } from "@/components/dashboard/instruction-selector";
 import { EmergencyTriage } from "@/components/dashboard/emergency-triage";
+import { useEffect, useState } from 'react';
 
 export default function DashboardPage() {
     const t = useTranslations('Dashboard');
     const { sessionId, visionStatus, isHandDetected, lastGesture, isEmergency } = useSessionStore();
+    const [isOnline, setIsOnline] = useState(true);
+
+    useEffect(() => {
+        setIsOnline(navigator.onLine);
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
+
     const isActive = !!sessionId;
 
     const stats = [
@@ -102,6 +119,16 @@ export default function DashboardPage() {
                                         {isHandDetected ? 'HANDS DETECTED' : 'AWAITING INPUT'}
                                     </span>
                                 </div>
+
+                                {!isOnline && (
+                                    <>
+                                        <div className="h-4 w-[2px] bg-red-200" />
+                                        <div className="flex items-center gap-2 animate-pulse">
+                                            <AlertTriangle className="w-4 h-4 text-red-600" />
+                                            <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">OFFLINE MODE (Local Cache)</span>
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
                             <div className="flex items-center gap-4">

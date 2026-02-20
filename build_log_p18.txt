@@ -1,0 +1,24 @@
+
+> hand-talk@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô (serwist) Bundling the service worker script with the URL '/sw.js' and the scope '/'...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./src/sw.ts:12:21
+Type error: Cannot find name 'ServiceWorkerGlobalScope'. Did you mean 'WorkerGlobalScope'?
+
+  10 | }
+  11 |
+> 12 | declare const self: ServiceWorkerGlobalScope;
+     |                     ^
+  13 |
+  14 | const serwist = new Serwist({
+  15 |     precacheEntries: self.__SW_MANIFEST,
+Next.js build worker exited with code: 1 and signal: null
