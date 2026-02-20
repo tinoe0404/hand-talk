@@ -28,6 +28,7 @@ interface SessionState {
     setVisionStatus: (status: 'idle' | 'loading' | 'ready' | 'error') => void;
     setLastGesture: (gesture: string | null) => void;
     triggerEmergency: () => void;
+    resolveEmergency: () => void;
     setEmergencyStage: (stage: number) => void;
     reset: () => void;
 }
@@ -69,6 +70,12 @@ export const useSessionStore = create<SessionState>((set) => ({
     setLastGesture: (gesture: string | null) => set({ lastGesture: gesture }),
 
     triggerEmergency: () => set({ isEmergency: true, emergencyStage: 1, currentInstructionId: null }),
+
+    resolveEmergency: () => set({
+        isEmergency: false,
+        emergencyStage: 0,
+        lastGesture: null
+    }),
 
     setEmergencyStage: (stage) => set({ emergencyStage: stage }),
 

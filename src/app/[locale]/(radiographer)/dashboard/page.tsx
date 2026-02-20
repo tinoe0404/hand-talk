@@ -17,7 +17,7 @@ import { InstructionSelector } from "@/components/dashboard/instruction-selector
 
 export default function DashboardPage() {
     const t = useTranslations('Dashboard');
-    const { sessionId, visionStatus, isHandDetected, lastGesture } = useSessionStore();
+    const { sessionId, visionStatus, isHandDetected, lastGesture, isEmergency, resolveEmergency } = useSessionStore();
     const isActive = !!sessionId;
 
     const stats = [
@@ -45,23 +45,45 @@ export default function DashboardPage() {
     ];
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
+            {/* Global Emergency Alert Overlay (Dashboard Side) */}
+            {isEmergency && (
+                <div className="fixed inset-0 pointer-events-none z-[60] border-[24px] border-red-600 animate-[pulse_0.75s_ease-in-out_infinite]" />
+            )}
+
             <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-extrabold text-medical-green-900 tracking-tight">
-                    {t('welcome')}
-                </h1>
-                <p className="text-xl text-medical-green-600 font-medium">
-                    {isActive ? "Live Clinical Session Active" : "Ready to authorize patient treatment sessions."}
-                </p>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-4xl font-extrabold text-medical-green-900 tracking-tight">
+                            {t('welcome')}
+                        </h1>
+                        <p className="text-xl text-medical-green-600 font-medium">
+                            {isActive ? "Live Clinical Session Active" : "Ready to authorize patient treatment sessions."}
+                        </p>
+                    </div>
+
+                    {isEmergency && (
+                        <Button
+                            variant="emergency"
+                            size="lg"
+                            onClick={resolveEmergency}
+                            className="h-16 px-8 text-xl font-black rounded-clinical shadow-clinical-lg border-4 border-white"
+                        >
+                            RESOLVE EMERGENCY
+                        </Button>
+                    )}
+                </div>
             </div>
 
             {isActive ? (
                 <div className="space-y-8 animate-in zoom-in duration-500">
-                    <Card className="border-4 border-medical-green-600 shadow-clinical-lg overflow-hidden">
-                        <div className="bg-medical-green-600 p-4 flex items-center justify-between text-white">
+                    <Card className={`border-4 ${isEmergency ? 'border-red-600 bg-red-50' : 'border-medical-green-600'} shadow-clinical-lg overflow-hidden transition-colors duration-500`}>
+                        <div className={`${isEmergency ? 'bg-red-600' : 'bg-medical-green-600'} p-4 flex items-center justify-between text-white transition-colors duration-500`}>
                             <div className="flex items-center gap-3">
-                                <PlayCircle className="w-8 h-8 animate-pulse" />
-                                <h2 className="text-2xl font-black uppercase tracking-widest">Active Shift Control</h2>
+                                {isEmergency ? <AlertTriangle className="w-8 h-8 animate-bounce" /> : <PlayCircle className="w-8 h-8 animate-pulse" />}
+                                <h2 className="text-2xl font-black uppercase tracking-widest">
+                                    {isEmergency ? "TREATMENT HALTED - EMERGENCY" : "Active Shift Control"}
+                                </h2>
                             </div>
                             <div className="text-lg font-mono bg-medical-green-900/50 px-4 py-2 rounded-lg border border-medical-green-400/30">
                                 SID: {sessionId}

@@ -11,10 +11,14 @@ import {
 import { InstructionPlayer } from "@/components/patient/instruction-player";
 import { CameraFeed } from "@/components/patient/camera-feed";
 import { PatientEcho } from "@/components/patient/patient-echo";
+import { useEmergencyBridge } from "@/hooks/useEmergencyBridge";
 
 export default function PatientPage() {
     const t = useTranslations("Patient");
-    const { sessionId, isEmergency, currentInstructionId } = useSessionStore();
+    const { sessionId, isEmergency, currentInstructionId, emergencyStage } = useSessionStore();
+
+    // Auto-trigger emergency if distress gestures are held
+    useEmergencyBridge();
 
     const isActive = !!sessionId;
 
@@ -33,14 +37,21 @@ export default function PatientPage() {
 
             {/* Emergency Overlay (Top Priority) */}
             {isEmergency && (
-                <div className="absolute inset-0 z-50 bg-red-600 flex flex-col items-center justify-center p-20 animate-in fade-in zoom-in duration-300">
-                    <ShieldAlert className="w-48 h-48 text-white animate-bounce mb-8" />
-                    <h1 className="text-6xl font-black text-white uppercase tracking-tighter mb-4">
-                        {t("emergency")}
-                    </h1>
-                    <p className="text-3xl font-bold text-red-100">
-                        Please remain still. Support is arriving.
-                    </p>
+                <div className="absolute inset-0 z-50 bg-red-600 flex flex-col items-center justify-center p-20 animate-in fade-in duration-300">
+                    {/* Pulsing Alert Ring */}
+                    <div className="absolute inset-0 border-[40px] border-red-500 animate-[pulse_0.5s_ease-in-out_infinite]" />
+
+                    <div className="relative z-10 flex flex-col items-center">
+                        <ShieldAlert className="w-64 h-64 text-white animate-bounce mb-8" />
+                        <h1 className="text-8xl font-black text-white uppercase tracking-tighter mb-4 shadow-clinical-sm">
+                            {emergencyStage > 0 ? "TREATMENT HALTED" : t("emergency")}
+                        </h1>
+                        <p className="text-4xl font-bold text-red-100 bg-red-900/40 px-8 py-4 rounded-xl border-2 border-red-400/50">
+                            {emergencyStage > 0
+                                ? "Clinical staff have been alerted. Please remain still."
+                                : "Emergency signal detected. Alerting staff..."}
+                        </p>
+                    </div>
                 </div>
             )}
 
