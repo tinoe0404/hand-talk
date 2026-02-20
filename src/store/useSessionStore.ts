@@ -18,6 +18,7 @@ interface SessionState {
     visionStatus: 'idle' | 'loading' | 'ready' | 'error';
     lastGesture: string | null;
     emergencyStage: number; // 0 (none), 1, 2, 3
+    lastDistressReason: string | null;
 
     // Actions
     startSession: (data: { sessionId: string; patientRef: string; radiographerId: string; isFirstDay: boolean; isLastDay: boolean }) => void;
@@ -28,7 +29,7 @@ interface SessionState {
     setVisionStatus: (status: 'idle' | 'loading' | 'ready' | 'error') => void;
     setLastGesture: (gesture: string | null) => void;
     triggerEmergency: () => void;
-    resolveEmergency: () => void;
+    resolveEmergency: (reason: string) => void;
     setEmergencyStage: (stage: number) => void;
     reset: () => void;
 }
@@ -45,12 +46,14 @@ export const useSessionStore = create<SessionState>((set) => ({
     visionStatus: 'idle',
     lastGesture: null,
     emergencyStage: 0,
+    lastDistressReason: null,
 
     startSession: (data) => set({
         ...data,
         currentInstructionId: null,
         isEmergency: false,
-        emergencyStage: 0
+        emergencyStage: 0,
+        lastDistressReason: null
     }),
 
     endSession: () => set({
@@ -59,7 +62,8 @@ export const useSessionStore = create<SessionState>((set) => ({
         radiographerId: null,
         currentInstructionId: null,
         isEmergency: false,
-        emergencyStage: 0
+        emergencyStage: 0,
+        lastDistressReason: null
     }),
 
     setInstruction: (id) => set({ currentInstructionId: id }),
@@ -71,10 +75,11 @@ export const useSessionStore = create<SessionState>((set) => ({
 
     triggerEmergency: () => set({ isEmergency: true, emergencyStage: 1, currentInstructionId: null }),
 
-    resolveEmergency: () => set({
+    resolveEmergency: (reason) => set({
         isEmergency: false,
         emergencyStage: 0,
-        lastGesture: null
+        lastGesture: null,
+        lastDistressReason: reason
     }),
 
     setEmergencyStage: (stage) => set({ emergencyStage: stage }),
@@ -86,6 +91,7 @@ export const useSessionStore = create<SessionState>((set) => ({
         currentInstructionId: null,
         isEmergency: false,
         emergencyStage: 0,
+        lastDistressReason: null,
         isHandDetected: false,
         visionStatus: 'idle',
         lastGesture: null

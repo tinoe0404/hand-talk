@@ -14,10 +14,11 @@ import {
 } from 'lucide-react';
 import { useSessionStore } from "@/store/useSessionStore";
 import { InstructionSelector } from "@/components/dashboard/instruction-selector";
+import { EmergencyTriage } from "@/components/dashboard/emergency-triage";
 
 export default function DashboardPage() {
     const t = useTranslations('Dashboard');
-    const { sessionId, visionStatus, isHandDetected, lastGesture, isEmergency, resolveEmergency } = useSessionStore();
+    const { sessionId, visionStatus, isHandDetected, lastGesture, isEmergency } = useSessionStore();
     const isActive = !!sessionId;
 
     const stats = [
@@ -61,17 +62,6 @@ export default function DashboardPage() {
                             {isActive ? "Live Clinical Session Active" : "Ready to authorize patient treatment sessions."}
                         </p>
                     </div>
-
-                    {isEmergency && (
-                        <Button
-                            variant="emergency"
-                            size="lg"
-                            onClick={resolveEmergency}
-                            className="h-16 px-8 text-xl font-black rounded-clinical shadow-clinical-lg border-4 border-white"
-                        >
-                            RESOLVE EMERGENCY
-                        </Button>
-                    )}
                 </div>
             </div>
 
@@ -130,13 +120,26 @@ export default function DashboardPage() {
                         </div>
 
                         <CardContent className="p-8">
-                            <div className="space-y-6">
-                                <div className="flex flex-col gap-1">
-                                    <h3 className="text-3xl font-black text-medical-green-900 tracking-tight">Instruction Playback</h3>
-                                    <p className="text-xl text-medical-green-600 font-medium italic">Select a protocol below to broadcast instantly to the patient display.</p>
+                            {isEmergency ? (
+                                <div className="space-y-8 animate-in fade-in duration-500">
+                                    <div className="flex flex-col gap-1 border-b-2 border-red-100 pb-4">
+                                        <h3 className="text-3xl font-black text-red-900 tracking-tight flex items-center gap-3">
+                                            <AlertTriangle className="w-8 h-8 animate-pulse" />
+                                            Incident Triage Required
+                                        </h3>
+                                        <p className="text-xl text-red-600 font-medium italic">Select the primary reason for patient distress to resolve the halt.</p>
+                                    </div>
+                                    <EmergencyTriage />
                                 </div>
-                                <InstructionSelector />
-                            </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    <div className="flex flex-col gap-1">
+                                        <h3 className="text-3xl font-black text-medical-green-900 tracking-tight">Instruction Playback</h3>
+                                        <p className="text-xl text-medical-green-600 font-medium italic">Select a protocol below to broadcast instantly to the patient display.</p>
+                                    </div>
+                                    <InstructionSelector />
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
