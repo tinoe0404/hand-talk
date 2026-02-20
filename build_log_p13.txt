@@ -1,0 +1,20 @@
+
+> hand-talk@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+
+Failed to compile.
+
+./src/components/patient/patient-echo.tsx
+5:26  Error: 'Frown' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+28:35  Error: Expected { after 'if' condition.  curly
+30:42  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+58:18  Error: Expected { after 'if' condition.  curly
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules

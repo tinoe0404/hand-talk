@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { InstructionPlayer } from "@/components/patient/instruction-player";
 import { CameraFeed } from "@/components/patient/camera-feed";
+import { PatientEcho } from "@/components/patient/patient-echo";
 
 export default function PatientPage() {
     const t = useTranslations("Patient");
@@ -23,6 +24,12 @@ export default function PatientPage() {
             <div className="absolute inset-0 opacity-10 pointer-events-none">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--medical-green-500)_0%,transparent_70%)]" />
             </div>
+
+            {/* Clinical Vision Engine (Background) */}
+            <CameraFeed />
+
+            {/* Visual Signal Feedback (Echo) */}
+            <PatientEcho />
 
             {/* Emergency Overlay (Top Priority) */}
             {isEmergency && (
@@ -73,8 +80,6 @@ export default function PatientPage() {
                             </div>
                         </div>
                     )}
-                    {/* Gesture Detection Engine (Phase 11) */}
-                    <CameraFeed />
                 </div>
             ) : (
                 <div className="space-y-12 animate-in fade-in duration-1000">
