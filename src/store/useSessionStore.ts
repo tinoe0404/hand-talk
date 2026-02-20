@@ -16,6 +16,7 @@ interface SessionState {
     isEmergency: boolean;
     isHandDetected: boolean;
     visionStatus: 'idle' | 'loading' | 'ready' | 'error';
+    lastGesture: string | null;
     emergencyStage: number; // 0 (none), 1, 2, 3
 
     // Actions
@@ -25,6 +26,7 @@ interface SessionState {
     stopInstruction: () => void;
     setHandDetected: (detected: boolean) => void;
     setVisionStatus: (status: 'idle' | 'loading' | 'ready' | 'error') => void;
+    setLastGesture: (gesture: string | null) => void;
     triggerEmergency: () => void;
     setEmergencyStage: (stage: number) => void;
     reset: () => void;
@@ -40,6 +42,7 @@ export const useSessionStore = create<SessionState>((set) => ({
     isEmergency: false,
     isHandDetected: false,
     visionStatus: 'idle',
+    lastGesture: null,
     emergencyStage: 0,
 
     startSession: (data) => set({
@@ -63,6 +66,7 @@ export const useSessionStore = create<SessionState>((set) => ({
 
     setHandDetected: (detected: boolean) => set({ isHandDetected: detected }),
     setVisionStatus: (status: 'idle' | 'loading' | 'ready' | 'error') => set({ visionStatus: status }),
+    setLastGesture: (gesture: string | null) => set({ lastGesture: gesture }),
 
     triggerEmergency: () => set({ isEmergency: true, emergencyStage: 1, currentInstructionId: null }),
 
@@ -76,6 +80,7 @@ export const useSessionStore = create<SessionState>((set) => ({
         isEmergency: false,
         emergencyStage: 0,
         isHandDetected: false,
-        visionStatus: 'idle'
+        visionStatus: 'idle',
+        lastGesture: null
     }),
 }));

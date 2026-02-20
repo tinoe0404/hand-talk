@@ -1,0 +1,23 @@
+
+> hand-talk@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+Failed to compile.
+
+./src/lib/mediapipe/gesture-classifier.ts:19:20
+Type error: 'getDistance' is declared but its value is never read.
+
+  17 |      * Calculates the distance between two points in 3D space.
+  18 |      */
+> 19 |     private static getDistance(p1: Landmark, p2: Landmark): number {
+     |                    ^
+  20 |         return Math.sqrt(
+  21 |             Math.pow(p1.x - p2.x, 2) +
+  22 |             Math.pow(p1.y - p2.y, 2) +
+Next.js build worker exited with code: 1 and signal: null

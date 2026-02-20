@@ -1,0 +1,40 @@
+
+> hand-talk@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/5) ...
+   Generating static pages (1/5) 
+   Generating static pages (2/5) 
+   Generating static pages (3/5) 
+ Γ£ô Generating static pages (5/5)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+Γöî Γùï /_not-found                          876 B          88.4 kB
+Γö£ ╞Æ /[locale]                            175 B          96.5 kB
+Γö£ ╞Æ /[locale]/dashboard                  3.98 kB         307 kB
+Γö£ ╞Æ /[locale]/dashboard/history          146 B          87.7 kB
+Γö£ ╞Æ /[locale]/dashboard/lab              146 B          87.7 kB
+Γö£ ╞Æ /[locale]/dashboard/setup            3.98 kB         126 kB
+Γö£ ╞Æ /[locale]/login                      2.98 kB         125 kB
+Γö£ ╞Æ /[locale]/patient                    6.76 kB         289 kB
+Γöö ╞Æ /api/auth/seed                       0 B                0 B
++ First Load JS shared by all            87.6 kB
+  Γö£ chunks/117-8b8742f4041786f5.js       31.9 kB
+  Γö£ chunks/fd9d1056-84584f756061b5b8.js  53.6 kB
+  Γöö other shared chunks (total)          2.01 kB
+
+
+╞Æ Middleware                             51.5 kB
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

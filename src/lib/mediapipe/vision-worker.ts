@@ -1,10 +1,10 @@
 import { HandLandmarkerService } from "./hand-landmarker";
+import { GestureClassifier, ClinicalGesture } from "./gesture-classifier";
 
 /**
  * CLINICAL VISION WORKER
  * - Operates in a separate thread to ensure 60FPS patient instruction playback.
- * - Receives VideoFrames or ImageBitmaps from the main thread.
- * - Posts back landmark results and detection status.
+ * - Processes raw landmarks into Clinical Gestures.
  */
 
 self.onmessage = async (event: MessageEvent) => {
@@ -14,16 +14,31 @@ self.onmessage = async (event: MessageEvent) => {
         const handLandmarker = await HandLandmarkerService.getInstance();
         const results = handLandmarker.detectForVideo(image, timestamp);
 
-        // Post results back to main thread
-        self.postMessage({
-            landmarks: results.landmarks,
-            worldLandmarks: results.worldLandmarks,
-            handedness: results.handedness,
-            hasHands: results.landmarks.length > 0
+        const detectedGestures: (ClinicalGesture | null)[] = results.landmarks.map(landmarks => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return GestureClassifier.classify(landmarks as any);
         });
 
-        // If it was a VideoFrame, we should close it to prevent memory leaks in clinical sessions
-        if (image instanceof VideoFrame) {
+        // We prioritize the most "urgent" gesture (OPEN_PALM) if multiple hands are present
+        let primaryGesture: ClinicalGesture | null = null;
+        if (detectedGestures.includes('OPEN_PALM')) {
+            primaryGesture = 'OPEN_PALM';
+        } else if (detectedGestures.includes('CLOSED_FIST')) {
+            primaryGesture = 'CLOSED_FIST';
+        } else {
+            primaryGesture = detectedGestures[0] || null;
+        }
+
+        // Post detailed results back to main thread
+        self.postMessage({
+            landmarks: results.landmarks,
+            hasHands: results.landmarks.length > 0,
+            gesture: primaryGesture,
+            timestamp
+        });
+
+        // Close image to prevent memory leaks
+        if (image instanceof ImageBitmap) {
             image.close();
         }
     } catch (error) {

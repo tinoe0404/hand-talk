@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+
 import { useSessionStore } from "@/store/useSessionStore";
 import { Activity } from "lucide-react";
+import { useGestureRecognition } from "@/hooks/useGestureRecognition";
 
 /**
  * CLINICAL CAMERA FEED
@@ -15,6 +17,7 @@ export function CameraFeed() {
     const workerRef = useRef<Worker | null>(null);
     const [stream, setStream] = useState<MediaStream | null>(null);
     const { setHandDetected, setVisionStatus, visionStatus } = useSessionStore();
+    const { processRawGesture } = useGestureRecognition();
 
     useEffect(() => {
         // Initialize Vision Worker
@@ -27,6 +30,7 @@ export function CameraFeed() {
             } else {
                 setVisionStatus('ready');
                 setHandDetected(e.data.hasHands);
+                processRawGesture(e.data.gesture);
             }
         };
 
@@ -57,7 +61,7 @@ export function CameraFeed() {
             stream?.getTracks().forEach(track => track.stop());
             workerRef.current?.terminate();
         };
-    }, [setHandDetected, setVisionStatus, stream]);
+    }, [setHandDetected, setVisionStatus, stream, processRawGesture]);
 
     // Frame processing loop
     useEffect(() => {

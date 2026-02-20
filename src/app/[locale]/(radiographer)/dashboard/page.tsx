@@ -17,7 +17,7 @@ import { InstructionSelector } from "@/components/dashboard/instruction-selector
 
 export default function DashboardPage() {
     const t = useTranslations('Dashboard');
-    const { sessionId, visionStatus, isHandDetected } = useSessionStore();
+    const { sessionId, visionStatus, isHandDetected, lastGesture } = useSessionStore();
     const isActive = !!sessionId;
 
     const stats = [
@@ -90,12 +90,21 @@ export default function DashboardPage() {
                                 </div>
                             </div>
 
-                            {isHandDetected && (
-                                <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 border border-blue-200 rounded-md animate-in fade-in zoom-in duration-300">
-                                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-ping" />
-                                    <span className="text-[10px] font-black text-blue-700 uppercase">Input Bridge Active</span>
-                                </div>
-                            )}
+                            <div className="flex items-center gap-4">
+                                {lastGesture && (
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-medical-green-600 text-white rounded-md animate-in slide-in-from-right-4 duration-300 shadow-clinical-sm">
+                                        <Activity className="w-4 h-4" />
+                                        <span className="text-xs font-black uppercase tracking-tighter">Active Signal: {lastGesture}</span>
+                                    </div>
+                                )}
+
+                                {isHandDetected && (
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 border border-blue-200 rounded-md animate-in fade-in zoom-in duration-300">
+                                        <div className="w-2 h-2 bg-blue-600 rounded-full animate-ping" />
+                                        <span className="text-[10px] font-black text-blue-700 uppercase">Input Bridge Active</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         <CardContent className="p-8">
