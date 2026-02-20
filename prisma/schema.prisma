@@ -59,6 +59,9 @@ model EmergencyLog {
   id              String   @id @default(cuid())
   stage           Int      // 1, 2, or 3
   triageSelection String?  // Selection from the triage cards
+  reason          String?  // Final combined reason string
+  location        String?  // Body localization (Phase 16)
+  subReason       String?  // Breathing sub-type (Phase 16)
   timestamp       DateTime @default(now())
   
   session         Session  @relation(fields: [sessionId], references: [id])

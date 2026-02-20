@@ -1,4 +1,9 @@
 import { create } from 'zustand';
+import {
+    logInstructionChange,
+    logEmergencyEvent,
+    endClinicalSession
+} from "@/lib/actions/log-actions";
 
 /**
  * Session State Store
@@ -36,7 +41,7 @@ interface SessionState {
     reset: () => void;
 }
 
-export const useSessionStore = create<SessionState>((set) => ({
+export const useSessionStore = create<SessionState>((set, get) => ({
     sessionId: null,
     patientRef: null,
     radiographerId: null,
@@ -62,33 +67,62 @@ export const useSessionStore = create<SessionState>((set) => ({
         incidentSubReason: null
     }),
 
-    endSession: () => set({
-        sessionId: null,
-        patientRef: null,
-        radiographerId: null,
-        currentInstructionId: null,
-        isEmergency: false,
-        emergencyStage: 0,
-        lastDistressReason: null,
-        incidentLocation: null,
-        incidentSubReason: null
-    }),
+    endSession: () => {
+        const { sessionId } = get();
+        if (sessionId) {
+            endClinicalSession(sessionId, "COMPLETED");
+        }
+        set({
+            sessionId: null,
+            patientRef: null,
+            radiographerId: null,
+            currentInstructionId: null,
+            isEmergency: false,
+            emergencyStage: 0,
+            lastDistressReason: null,
+            incidentLocation: null,
+            incidentSubReason: null
+        });
+    },
 
-    setInstruction: (id) => set({ currentInstructionId: id }),
+    setInstruction: (id) => {
+        const { sessionId } = get();
+        if (sessionId) {
+            logInstructionChange(sessionId, id);
+        }
+        set({ currentInstructionId: id });
+    },
+
     stopInstruction: () => set({ currentInstructionId: null }),
 
     setHandDetected: (detected: boolean) => set({ isHandDetected: detected }),
     setVisionStatus: (status: 'idle' | 'loading' | 'ready' | 'error') => set({ visionStatus: status }),
     setLastGesture: (gesture: string | null) => set({ lastGesture: gesture }),
 
-    triggerEmergency: () => set({ isEmergency: true, emergencyStage: 1, currentInstructionId: null }),
+    triggerEmergency: () => {
+        const { sessionId } = get();
+        if (sessionId) {
+            logEmergencyEvent({ sessionId, stage: 1 });
+        }
+        set({ isEmergency: true, emergencyStage: 1, currentInstructionId: null });
+    },
 
-    resolveEmergency: (reason) => set({
-        isEmergency: false,
-        emergencyStage: 0,
-        lastGesture: null,
-        lastDistressReason: reason
-    }),
+    resolveEmergency: (reason) => {
+        const { sessionId } = get();
+        if (sessionId) {
+            logEmergencyEvent({
+                sessionId,
+                stage: 3,
+                reason
+            });
+        }
+        set({
+            isEmergency: false,
+            emergencyStage: 0,
+            lastGesture: null,
+            lastDistressReason: reason
+        });
+    },
 
     setEmergencyStage: (stage) => set({ emergencyStage: stage }),
 

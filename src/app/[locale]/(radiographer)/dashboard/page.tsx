@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Link } from "@/navigation";
 import {
     Users,
@@ -10,7 +11,8 @@ import {
     AlertTriangle,
     PlayCircle,
     Activity,
-    Hand
+    Hand,
+    ChevronRight
 } from 'lucide-react';
 import { useSessionStore } from "@/store/useSessionStore";
 import { InstructionSelector } from "@/components/dashboard/instruction-selector";
@@ -187,6 +189,41 @@ export default function DashboardPage() {
                             </Link>
                         </CardContent>
                     </Card>
+
+                    {/* RECENT TREATMENTS / AUDIT TRAIL */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-2xl font-black text-medical-green-900 uppercase tracking-tight">Recent Patient Treatments</h3>
+                            <Button variant="outline" className="text-xs font-bold uppercase tracking-widest border-2">View Full Archive</Button>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                            {[1].map((_, i) => (
+                                <Card key={i} className="border-2 border-zinc-100 hover:border-medical-green-500 transition-all group">
+                                    <div className="flex items-center justify-between p-6">
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-16 h-16 bg-zinc-50 rounded-xl flex items-center justify-center border-2 border-zinc-100 group-hover:border-medical-green-200 transition-colors">
+                                                <Activity className="text-zinc-300 w-8 h-8 group-hover:text-medical-green-600 transition-colors" />
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-3 mb-1">
+                                                    <p className="text-lg font-black text-zinc-900">P-10052</p>
+                                                    <Badge variant="success" className="text-[10px] py-0">COMPLETED</Badge>
+                                                </div>
+                                                <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest leading-none">Chest SBRT • 14:22 • 20 Feb 2026</p>
+                                            </div>
+                                        </div>
+                                        <Link href="/sessions/cl_mock_123">
+                                            <Button variant="ghost" className="text-medical-green-600 font-black uppercase tracking-tight hover:bg-medical-green-50">
+                                                Audit Trail
+                                                <ChevronRight className="w-5 h-5 ml-2" />
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
                 </>
             )}
         </div>
