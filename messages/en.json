@@ -12,10 +12,49 @@
         "authorizing": "Authorizing..."
     },
     "Dashboard": {
-        "title": "Dashboard",
-        "setupSession": "Setup Patient Session",
-        "history": "Treatment History",
-        "settings": "System Settings"
+        "title": "Clinical Workspace",
+        "setupSession": "Initialize Patient Session",
+        "history": "Treatment Logs",
+        "settings": "System Config",
+        "activeSession": "Active Session",
+        "startSession": "Start New Session",
+        "welcome": "Welcome, Clinical Staff",
+        "logout": "End Shift & Logout",
+        "stats": {
+            "today": "Sessions Today",
+            "avgTime": "Avg. Duration",
+            "emergency": "Emergency Triggers"
+        }
+    },
+    "Setup": {
+        "title": "Patient Intake",
+        "name": "Patient Full Name",
+        "mrn": "Medical Record Number (MRN)",
+        "treatment": "Treatment Modality",
+        "notes": "Clinical Observations",
+        "submit": "Confirm & Start Treatment",
+        "generating": "Generating MRN...",
+        "placeholders": {
+            "name": "e.g., John Doe",
+            "notes": "Enter patient-specific clinical requirements..."
+        }
+    },
+    "History": {
+        "title": "Clinical Audit Trail",
+        "description": "Historical record of all authorized treatment sessions.",
+        "table": {
+            "patient": "Patient Identifier",
+            "mrn": "MRN",
+            "treatment": "Modality",
+            "date": "Execution Date",
+            "status": "Shift Status",
+            "noRecords": "No clinical history found."
+        },
+        "status": {
+            "active": "Active",
+            "completed": "Completed",
+            "interrupted": "Interrupted"
+        }
     },
     "Common": {
         "loading": "Loading...",

@@ -18,9 +18,13 @@ model Radiographer {
 
 model Session {
   id              String           @id @default(cuid())
-  startTime       DateTime         @default(now())
+  createdAt       DateTime         @default(now())
   endTime         DateTime?
-  patientRef      String           // Anonymized patient reference
+  patientName     String
+  patientMrn      String
+  treatmentType   String
+  notes           String?
+  status          String           @default("ACTIVE") // ACTIVE, COMPLETED, INTERRUPTED
   isFirstDay      Boolean          @default(false)
   isLastDay       Boolean          @default(false)
   

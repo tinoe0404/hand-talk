@@ -12,10 +12,49 @@
         "authorizing": "Iyaqinisekisa..."
     },
     "Dashboard": {
-        "title": "Ideshibhodi",
-        "setupSession": "Setha Iseshini Yesiguli",
-        "history": "Umlando Wokwelashwa",
-        "settings": "Izilungiselelo Zohlelo"
+        "title": "Indawo Yokusebenzela",
+        "setupSession": "Qala Iseshini Yesiguli",
+        "history": "Amalogi Okwelashwa",
+        "settings": "Izilungiselelo Zohlelo",
+        "activeSession": "Iseshini Eqhubekayo",
+        "startSession": "Qala Iseshini Entsha",
+        "welcome": "Wamukelekile, Thidiyeli",
+        "logout": "Phela Ishifu & Phuma",
+        "stats": {
+            "today": "Izeshini Zanamuhla",
+            "avgTime": "Isikhathi Esilinganisiwe",
+            "emergency": "Izimo Zezimo Ezishubile"
+        }
+    },
+    "Setup": {
+        "title": "Ukungeniswa Kwesiguli",
+        "name": "Igama Eliphelele Lesiguli",
+        "mrn": "Inombolo Yesiguli (MRN)",
+        "treatment": "Uhlobo Lokwelashwa",
+        "notes": "Amanothi Akwelashwa",
+        "submit": "Qinisekisa & Qala Ukwelashwa",
+        "generating": "Ikhiqiza i-MRN...",
+        "placeholders": {
+            "name": "isib., John Doe",
+            "notes": "Faka amanothi ashiwo isiguli..."
+        }
+    },
+    "History": {
+        "title": "Amalogi Okwelashwa",
+        "description": "Umlando wezeshini zokwelashwa ezigunyaziwe.",
+        "table": {
+            "patient": "Isiguli",
+            "mrn": "MRN",
+            "treatment": "Uhlobo",
+            "date": "Usuku",
+            "status": "Isimo",
+            "noRecords": "Awukho umlando otholakele."
+        },
+        "status": {
+            "active": "Eqhubekayo",
+            "completed": "Iqediwe",
+            "interrupted": "Inqanyuliwe"
+        }
     },
     "Common": {
         "loading": "Iyalayisha...",
