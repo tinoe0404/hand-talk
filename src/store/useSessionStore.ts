@@ -19,6 +19,8 @@ interface SessionState {
     lastGesture: string | null;
     emergencyStage: number; // 0 (none), 1, 2, 3
     lastDistressReason: string | null;
+    incidentLocation: string | null;
+    incidentSubReason: string | null;
 
     // Actions
     startSession: (data: { sessionId: string; patientRef: string; radiographerId: string; isFirstDay: boolean; isLastDay: boolean }) => void;
@@ -47,13 +49,17 @@ export const useSessionStore = create<SessionState>((set) => ({
     lastGesture: null,
     emergencyStage: 0,
     lastDistressReason: null,
+    incidentLocation: null,
+    incidentSubReason: null,
 
     startSession: (data) => set({
         ...data,
         currentInstructionId: null,
         isEmergency: false,
         emergencyStage: 0,
-        lastDistressReason: null
+        lastDistressReason: null,
+        incidentLocation: null,
+        incidentSubReason: null
     }),
 
     endSession: () => set({
@@ -63,7 +69,9 @@ export const useSessionStore = create<SessionState>((set) => ({
         currentInstructionId: null,
         isEmergency: false,
         emergencyStage: 0,
-        lastDistressReason: null
+        lastDistressReason: null,
+        incidentLocation: null,
+        incidentSubReason: null
     }),
 
     setInstruction: (id) => set({ currentInstructionId: id }),
@@ -92,6 +100,8 @@ export const useSessionStore = create<SessionState>((set) => ({
         isEmergency: false,
         emergencyStage: 0,
         lastDistressReason: null,
+        incidentLocation: null,
+        incidentSubReason: null,
         isHandDetected: false,
         visionStatus: 'idle',
         lastGesture: null
