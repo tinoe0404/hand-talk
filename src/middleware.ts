@@ -1,6 +1,8 @@
+import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from "jose";
+import { routing } from './routing';
 
 const SECRET = new TextEncoder().encode(
     process.env.AUTH_SECRET || "clinical-safety-secret-default-key-12345"
@@ -8,52 +10,58 @@ const SECRET = new TextEncoder().encode(
 
 const COOKIE_NAME = "hand_talk_session";
 
-/**
- * Hand Talk Auth Middleware
- * Clinical justification: Ensures only authorized radiographers 
- * can access session management and dashboard controls.
- */
+const i18nMiddleware = createMiddleware(routing);
+
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // Paths requiring authentication
-    const protectedPaths = ['/dashboard'];
-    const isProtected = protectedPaths.some(path => pathname.startsWith(path));
+    // 1. Run i18n middleware
+    const response = i18nMiddleware(request);
 
-    if (isProtected) {
+    // 2. Clinical Auth Logic
+    const isProtectedPath = routing.locales.some((locale: string) =>
+        pathname.startsWith(`/${locale}/dashboard`)
+    );
+
+    if (isProtectedPath) {
         const session = request.cookies.get(COOKIE_NAME)?.value;
 
         if (!session) {
-            return NextResponse.redirect(new URL('/login', request.url));
+            const locale = pathname.split('/')[1] || routing.defaultLocale;
+            return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
         }
 
         try {
             await jwtVerify(session, SECRET);
-            return NextResponse.next();
-        } catch {
-            // Invalid or expired session
-            const response = NextResponse.redirect(new URL('/login', request.url));
-            response.cookies.delete(COOKIE_NAME);
             return response;
+        } catch {
+            const locale = pathname.split('/')[1] || routing.defaultLocale;
+            const res = NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+            res.cookies.delete(COOKIE_NAME);
+            return res;
         }
     }
 
-    // Redirect to dashboard if logged in and trying to access login page
-    if (pathname === '/login') {
+    const isLoginPath = routing.locales.some((locale: string) =>
+        pathname.startsWith(`/${locale}/login`)
+    );
+
+    if (isLoginPath) {
         const session = request.cookies.get(COOKIE_NAME)?.value;
         if (session) {
             try {
                 await jwtVerify(session, SECRET);
-                return NextResponse.redirect(new URL('/dashboard', request.url));
+                const locale = pathname.split('/')[1] || routing.defaultLocale;
+                return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
             } catch {
-                // Continue to login if session is invalid
+                // Continue to login
             }
         }
     }
 
-    return NextResponse.next();
+    return response;
 }
 
 export const config = {
-    matcher: ['/dashboard/:path*', '/login'],
+    matcher: ['/((?!api|_next|.*\\..*).*)']
 };

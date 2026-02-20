@@ -8,7 +8,7 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
     const pin = formData.get("pin") as string;
 
     if (!pin || pin.length !== 4) {
-        return { error: "Invalid PIN format. Please enter 4 digits." };
+        return { error: "errorInvalid" };
     }
 
     // In a real scenario, we might have multiple radiographers.
@@ -17,20 +17,22 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
         const radiographer = await prisma.radiographer.findFirst();
 
         if (!radiographer) {
-            return { error: "No radiographer registered in the clinical system." };
+            return { error: "errorNoStaff" };
         }
 
         const isValid = await verifyPin(pin, radiographer.pin);
 
         if (!isValid) {
-            return { error: "Incorrect clinical PIN. Access denied." };
+            return { error: "errorIncorrect" };
         }
 
         await createSession(radiographer.id);
     } catch (error) {
         console.error("Auth Error:", error);
-        return { error: "Clinical system authentication failed. Please contact IT." };
+        return { error: "errorSystem" };
     }
 
+    // Redirect is handled by middleware but we specify dashboard here.
+    // next-intl redirect would be better but simple relative should work with middleware.
     redirect("/dashboard");
 }

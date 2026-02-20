@@ -1,0 +1,26 @@
+{
+    "Auth": {
+        "title": "Iphothali Yomthidiyeli",
+        "description": "Faka i-PIN yakho enezinhlamvu ezi-4 ukuze ugunyaze iseshini yasemtholampilo",
+        "pinPlaceholder": "● ● ● ●",
+        "button": "Ngena ku-Dashboard",
+        "security": "Ezokuphepha Zeleveli Yezokwelapha",
+        "errorInvalid": "I-PIN ayivumelekile. Faka izinhlamvu ezi-4.",
+        "errorNoStaff": "Akukho mthidiyeli obhaliswe ohlelweni.",
+        "errorIncorrect": "I-PIN ayilungile. Ukungena kuyanqanyulwa.",
+        "errorSystem": "Ukuqinisekisa kuhlulekile. Thinta abezobuchwepheshe.",
+        "authorizing": "Iyaqinisekisa..."
+    },
+    "Dashboard": {
+        "title": "Ideshibhodi",
+        "setupSession": "Setha Iseshini Yesiguli",
+        "history": "Umlando Wokwelashwa",
+        "settings": "Izilungiselelo Zohlelo"
+    },
+    "Common": {
+        "loading": "Iyalayisha...",
+        "save": "Gcina",
+        "cancel": "Khansela",
+        "back": "Emuva"
+    }
+}

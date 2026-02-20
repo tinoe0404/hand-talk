@@ -1,0 +1,26 @@
+{
+    "Auth": {
+        "title": "Radiographer Portal",
+        "description": "Enter your 4-digit PIN to authorize clinical session",
+        "pinPlaceholder": "● ● ● ●",
+        "button": "Access Dashboard",
+        "security": "Medical Grade Security",
+        "errorInvalid": "Invalid PIN format. Please enter 4 digits.",
+        "errorNoStaff": "No radiographer registered in the clinical system.",
+        "errorIncorrect": "Incorrect clinical PIN. Access denied.",
+        "errorSystem": "Clinical system authentication failed. Please contact IT.",
+        "authorizing": "Authorizing..."
+    },
+    "Dashboard": {
+        "title": "Dashboard",
+        "setupSession": "Setup Patient Session",
+        "history": "Treatment History",
+        "settings": "System Settings"
+    },
+    "Common": {
+        "loading": "Loading...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "back": "Back"
+    }
+}
