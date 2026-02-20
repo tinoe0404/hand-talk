@@ -9,6 +9,7 @@ import {
     Hand
 } from "lucide-react";
 import { InstructionPlayer } from "@/components/patient/instruction-player";
+import { CameraFeed } from "@/components/patient/camera-feed";
 
 export default function PatientPage() {
     const t = useTranslations("Patient");
@@ -72,6 +73,8 @@ export default function PatientPage() {
                             </div>
                         </div>
                     )}
+                    {/* Gesture Detection Engine (Phase 11) */}
+                    <CameraFeed />
                 </div>
             ) : (
                 <div className="space-y-12 animate-in fade-in duration-1000">

@@ -8,14 +8,16 @@ import {
     Users,
     Clock,
     AlertTriangle,
-    PlayCircle
+    PlayCircle,
+    Activity,
+    Hand
 } from 'lucide-react';
 import { useSessionStore } from "@/store/useSessionStore";
 import { InstructionSelector } from "@/components/dashboard/instruction-selector";
 
 export default function DashboardPage() {
     const t = useTranslations('Dashboard');
-    const { sessionId } = useSessionStore();
+    const { sessionId, visionStatus, isHandDetected } = useSessionStore();
     const isActive = !!sessionId;
 
     const stats = [
@@ -65,6 +67,37 @@ export default function DashboardPage() {
                                 SID: {sessionId}
                             </div>
                         </div>
+
+                        {/* Vision Engine Health Bar (Phase 11 Feedback Loop) */}
+                        <div className="bg-medical-green-50 border-b-2 border-medical-green-100 px-8 py-3 flex items-center justify-between">
+                            <div className="flex items-center gap-6">
+                                <div className="flex items-center gap-2">
+                                    <Activity className={`w-5 h-5 ${visionStatus === 'ready' ? 'text-medical-green-600 animate-pulse' : 'text-zinc-400'}`} />
+                                    <span className="text-xs font-bold uppercase tracking-widest text-medical-green-900">Vision System:</span>
+                                    <span className={`text-xs font-black uppercase ${visionStatus === 'ready' ? 'text-medical-green-600' : 'text-zinc-500'}`}>
+                                        {visionStatus || 'offline'}
+                                    </span>
+                                </div>
+
+                                <div className="h-4 w-[2px] bg-medical-green-200" />
+
+                                <div className="flex items-center gap-2">
+                                    <Hand className={`w-5 h-5 ${isHandDetected ? 'text-blue-600 animate-bounce' : 'text-zinc-400'}`} />
+                                    <span className="text-xs font-bold uppercase tracking-widest text-medical-green-900">Patient Presence:</span>
+                                    <span className={`text-xs font-black uppercase ${isHandDetected ? 'text-blue-600' : 'text-zinc-500'}`}>
+                                        {isHandDetected ? 'HANDS DETECTED' : 'AWAITING INPUT'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {isHandDetected && (
+                                <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 border border-blue-200 rounded-md animate-in fade-in zoom-in duration-300">
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-ping" />
+                                    <span className="text-[10px] font-black text-blue-700 uppercase">Input Bridge Active</span>
+                                </div>
+                            )}
+                        </div>
+
                         <CardContent className="p-8">
                             <div className="space-y-6">
                                 <div className="flex flex-col gap-1">
