@@ -20,6 +20,7 @@ interface SessionState {
     startSession: (data: { sessionId: string; patientRef: string; radiographerId: string; isFirstDay: boolean; isLastDay: boolean }) => void;
     endSession: () => void;
     setInstruction: (id: string) => void;
+    stopInstruction: () => void;
     triggerEmergency: () => void;
     setEmergencyStage: (stage: number) => void;
 }
@@ -44,14 +45,16 @@ export const useSessionStore = create<SessionState>((set) => ({
     endSession: () => set({
         sessionId: null,
         patientRef: null,
+        radiographerId: null,
         currentInstructionId: null,
         isEmergency: false,
         emergencyStage: 0
     }),
 
     setInstruction: (id) => set({ currentInstructionId: id }),
+    stopInstruction: () => set({ currentInstructionId: null }),
 
-    triggerEmergency: () => set({ isEmergency: true, emergencyStage: 1 }),
+    triggerEmergency: () => set({ isEmergency: true, emergencyStage: 1, currentInstructionId: null }),
 
     setEmergencyStage: (stage) => set({ emergencyStage: stage }),
 }));
