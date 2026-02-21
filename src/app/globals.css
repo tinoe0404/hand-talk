@@ -91,4 +91,25 @@
   .text-patient-instruction {
     @apply text-patient-xl font-medium;
   }
+
+  /* Skip-to-content link — visible only on keyboard focus */
+  .skip-nav {
+    @apply absolute -translate-y-full left-4 top-4 z-[9999]
+           bg-medical-green-600 text-white font-bold
+           px-6 py-3 rounded-clinical shadow-clinical
+           transition-transform duration-200;
+  }
+  .skip-nav:focus {
+    @apply translate-y-0;
+  }
+}
+
+/* Accessibility: reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

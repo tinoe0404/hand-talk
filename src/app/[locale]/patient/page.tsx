@@ -23,7 +23,7 @@ export default function PatientPage() {
     const isActive = !!sessionId;
 
     return (
-        <div className="flex-1 flex flex-col items-center justify-center p-12 text-center relative overflow-hidden">
+        <main role="main" aria-label="Patient display" className="flex-1 flex flex-col items-center justify-center p-12 text-center relative overflow-hidden">
             {/* Clinical State Mesh Background (Subtle) */}
             <div className="absolute inset-0 opacity-10 pointer-events-none">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--medical-green-500)_0%,transparent_70%)]" />
@@ -37,7 +37,7 @@ export default function PatientPage() {
 
             {/* Emergency Overlay (Top Priority) */}
             {isEmergency && (
-                <div className="absolute inset-0 z-50 bg-red-600 flex flex-col items-center justify-center p-20 animate-in fade-in duration-300">
+                <div role="alert" aria-live="assertive" aria-atomic="true" className="absolute inset-0 z-50 bg-red-600 flex flex-col items-center justify-center p-20 animate-in fade-in duration-300">
                     {/* Pulsing Alert Ring */}
                     <div className="absolute inset-0 border-[40px] border-red-500 animate-[pulse_0.5s_ease-in-out_infinite]" />
 
@@ -76,7 +76,7 @@ export default function PatientPage() {
                             </div>
 
                             {/* Instruction Card - Phase 10 Preview */}
-                            <div className="aspect-video w-full bg-zinc-900 rounded-[2rem] border-4 border-medical-green-500/30 flex flex-col items-center justify-center overflow-hidden shadow-2xl relative group">
+                            <div className="aspect-video w-full bg-zinc-900 rounded-[2rem] border-4 border-medical-green-500/30 flex flex-col items-center justify-center overflow-hidden shadow-2xl relative group" aria-label="Instruction preview area">
                                 <div className="flex flex-col items-center gap-8 opacity-40">
                                     <Hand className="w-48 h-48 text-medical-green-400" />
                                     <p className="text-4xl font-bold uppercase tracking-widest text-zinc-500">Preparation in progress...</p>
@@ -105,6 +105,6 @@ export default function PatientPage() {
                     </div>
                 </div>
             )}
-        </div>
+        </main>
     );
 }

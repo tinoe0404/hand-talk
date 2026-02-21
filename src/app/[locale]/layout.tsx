@@ -11,6 +11,7 @@ const geistSans = localFont({
   variable: "--font-geist-sans",
   weight: "100 900",
   display: "swap",
+  preload: true,
 });
 
 const geistMono = localFont({
@@ -18,6 +19,7 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
   display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -60,8 +62,13 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased h-full overflow-x-hidden`}
       >
+        <a href="#main-content" className="skip-nav">
+          Skip to content
+        </a>
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <div id="main-content">
+            {children}
+          </div>
         </NextIntlClientProvider>
       </body>
     </html>

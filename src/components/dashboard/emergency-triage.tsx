@@ -113,13 +113,15 @@ export function EmergencyTriage() {
                         <button
                             key={reason.id}
                             onClick={() => setSelectedReason(reason.id)}
+                            aria-label={`Select distress reason: ${reason.label}`}
+                            aria-pressed={isActive}
                             className={cn(
-                                "flex items-center gap-4 p-6 rounded-clinical border-4 transition-all duration-300 text-left",
+                                "flex items-center gap-4 p-6 rounded-clinical border-4 transition-all duration-300 text-left focus:outline-none focus:ring-4 focus:ring-medical-green-500/50",
                                 reason.color,
                                 isActive ? "ring-8 ring-offset-4 ring-red-500/20 scale-[1.02] border-red-500 shadow-clinical-lg" : "hover:border-zinc-300 opacity-80"
                             )}
                         >
-                            <Icon className="w-10 h-10" />
+                            <Icon className="w-10 h-10" aria-hidden="true" />
                             <span className="text-xl font-black uppercase tracking-tight">{reason.label}</span>
                         </button>
                     );
