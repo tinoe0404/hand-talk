@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useSessionStore } from "@/store/useSessionStore";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
     Brain,
@@ -24,6 +25,8 @@ import { BreathingLog } from "./breathing-log";
  * - Final: Mandatory Audit Resolution
  */
 export function EmergencyTriage() {
+    const t = useTranslations("Emergency");
+    const tTriage = useTranslations("Triage");
     const { resolveEmergency } = useSessionStore();
     const [step, setStep] = useState<1 | 2>(1);
     const [selectedReason, setSelectedReason] = useState<string | null>(null);
@@ -31,11 +34,11 @@ export function EmergencyTriage() {
     const [subReason, setSubReason] = useState<string | null>(null);
 
     const reasons = [
-        { id: "PANIC", label: "Panic / Anxiety", icon: Brain, color: "bg-red-50 text-red-600 border-red-200" },
-        { id: "PAIN", label: "Physical Pain", icon: Zap, color: "bg-orange-50 text-orange-600 border-orange-200" },
-        { id: "BREATHING", label: "Breathing Issue", icon: Wind, color: "bg-blue-50 text-blue-600 border-blue-200" },
-        { id: "EQUIP_FEAR", label: "Equipment Fear", icon: Box, color: "bg-purple-50 text-purple-600 border-purple-200" },
-        { id: "OTHER", label: "Other / Manual", icon: MessageSquare, color: "bg-zinc-50 text-zinc-600 border-zinc-200" },
+        { id: "PANIC", icon: Brain, color: "bg-red-50 text-red-600 border-red-200" },
+        { id: "PAIN", icon: Zap, color: "bg-orange-50 text-orange-600 border-orange-200" },
+        { id: "BREATHING", icon: Wind, color: "bg-blue-50 text-blue-600 border-blue-200" },
+        { id: "EQUIP_FEAR", icon: Box, color: "bg-purple-50 text-purple-600 border-purple-200" },
+        { id: "OTHER", icon: MessageSquare, color: "bg-zinc-50 text-zinc-600 border-zinc-200" },
     ];
 
     const handleNext = () => {
@@ -62,23 +65,21 @@ export function EmergencyTriage() {
                         className="flex items-center gap-2 text-zinc-500 hover:text-medical-green-600 font-bold uppercase tracking-widest transition-colors"
                     >
                         <ChevronLeft className="w-6 h-6" />
-                        Back to Triage
+                        {t('backToTriage')}
                     </button>
                     <div className="text-sm font-black uppercase tracking-widest text-zinc-400">
-                        Diagnostic Follow-up: <span className="text-zinc-900">{selectedReason}</span>
+                        {t('diagnosticTitle')}: <span className="text-zinc-900">{selectedReason ? tTriage(selectedReason) : ""}</span>
                     </div>
                 </div>
 
                 {selectedReason === "PAIN" && (
                     <div className="space-y-4">
-                        <p className="text-xl font-bold text-zinc-700">Localize Distress Area:</p>
                         <BodyMapper onSelect={setLocation} selectedRegion={location} />
                     </div>
                 )}
 
                 {selectedReason === "BREATHING" && (
                     <div className="space-y-4">
-                        <p className="text-xl font-bold text-zinc-700">Specify Respiratory Issue:</p>
                         <BreathingLog onSelect={setSubReason} selectedIssue={subReason} />
                     </div>
                 )}
@@ -90,12 +91,12 @@ export function EmergencyTriage() {
                         onClick={handleResolve}
                         disabled={selectedReason === "PAIN" ? !location : selectedReason === "BREATHING" ? !subReason : false}
                         className={cn(
-                            "h-20 px-16 text-2xl font-black rounded-clinical shadow-clinical-lg transition-all",
+                            "h-14 md:h-20 px-6 md:px-16 text-base md:text-2xl font-black rounded-clinical shadow-clinical-lg transition-all w-full sm:w-auto",
                             ((selectedReason === "PAIN" && !location) || (selectedReason === "BREATHING" && !subReason)) ? "opacity-30" : "animate-pulse"
                         )}
                     >
-                        <CheckCircle2 className="w-8 h-8 mr-3" />
-                        COMPLETE RESOLUTION
+                        <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 shrink-0" />
+                        {t('completeResolution')}
                     </Button>
                 </div>
             </div>
@@ -113,7 +114,7 @@ export function EmergencyTriage() {
                         <button
                             key={reason.id}
                             onClick={() => setSelectedReason(reason.id)}
-                            aria-label={`Select distress reason: ${reason.label}`}
+                            aria-label={`Select distress reason: ${tTriage(reason.id)}`}
                             aria-pressed={isActive}
                             className={cn(
                                 "flex items-center gap-4 p-6 rounded-clinical border-4 transition-all duration-300 text-left focus:outline-none focus:ring-4 focus:ring-medical-green-500/50",
@@ -122,7 +123,7 @@ export function EmergencyTriage() {
                             )}
                         >
                             <Icon className="w-10 h-10" aria-hidden="true" />
-                            <span className="text-xl font-black uppercase tracking-tight">{reason.label}</span>
+                            <span className="text-xl font-black uppercase tracking-tight">{tTriage(reason.id)}</span>
                         </button>
                     );
                 })}
@@ -135,19 +136,19 @@ export function EmergencyTriage() {
                     disabled={!selectedReason}
                     onClick={handleNext}
                     className={cn(
-                        "h-20 px-16 text-2xl font-black rounded-clinical shadow-clinical-lg transition-all",
+                        "h-14 md:h-20 px-6 md:px-16 text-base md:text-2xl font-black rounded-clinical shadow-clinical-lg transition-all w-full sm:w-auto",
                         !selectedReason ? "opacity-30" : ""
                     )}
                 >
                     {selectedReason === "PAIN" || selectedReason === "BREATHING" ? (
                         <>
-                            CONTINUE TO DIAGNOSTICS
-                            <ArrowRight className="w-8 h-8 ml-3" />
+                            {t('continueToDiagnostics')}
+                            <ArrowRight className="w-6 h-6 md:w-8 md:h-8 ml-2 md:ml-3 shrink-0" />
                         </>
                     ) : (
                         <>
-                            <CheckCircle2 className="w-8 h-8 mr-3" />
-                            CONFIRM & RESOLVE HALT
+                            <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 shrink-0" />
+                            {t('confirmResolve')}
                         </>
                     )}
                 </Button>

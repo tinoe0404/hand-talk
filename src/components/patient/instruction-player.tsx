@@ -26,14 +26,14 @@ export function InstructionPlayer({ instructionId }: InstructionPlayerProps) {
     const Icon = IconsMap[instruction.iconName] || CircleHelp;
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-between p-8 space-y-8 animate-in fade-in zoom-in duration-500">
+        <div className="w-full h-full flex flex-col items-center justify-between p-4 md:p-8 space-y-4 md:space-y-8 animate-in fade-in zoom-in duration-500">
             {/* Visual Indicator Area */}
             <div className="flex-1 w-full flex items-center justify-center relative">
                 <div className="absolute inset-0 bg-medical-green-500/5 rounded-[3rem] animate-pulse" />
 
                 <div className="relative z-10 flex flex-col items-center gap-12">
-                    <div className="w-64 h-64 bg-medical-green-600 rounded-full flex items-center justify-center shadow-[0_0_80px_rgba(21,128,61,0.4)] border-8 border-medical-green-400/30">
-                        <Icon className="w-32 h-32 text-white" strokeWidth={2.5} />
+                    <div className="w-32 h-32 md:w-64 md:h-64 bg-medical-green-600 rounded-full flex items-center justify-center shadow-[0_0_80px_rgba(21,128,61,0.4)] border-4 md:border-8 border-medical-green-400/30">
+                        <Icon className="w-16 h-16 md:w-32 md:h-32 text-white" strokeWidth={2.5} />
                     </div>
 
                     <div className="space-y-4">
@@ -46,11 +46,11 @@ export function InstructionPlayer({ instructionId }: InstructionPlayerProps) {
             </div>
 
             {/* Text Command Area */}
-            <div className="w-full bg-zinc-900/50 border-2 border-white/10 p-12 rounded-[2.5rem] space-y-6">
-                <h1 className="text-8xl font-black text-white tracking-tighter leading-none mb-2">
+            <div className="w-full bg-zinc-900/50 border-2 border-white/10 p-6 md:p-12 rounded-[1.5rem] md:rounded-[2.5rem] space-y-3 md:space-y-6">
+                <h1 className="text-4xl md:text-8xl font-black text-white tracking-tighter leading-none mb-1 md:mb-2">
                     {t(`${instructionId}.title`)}
                 </h1>
-                <p className="text-4xl text-medical-green-400 font-bold leading-relaxed max-w-4xl mx-auto">
+                <p className="text-xl md:text-4xl text-medical-green-400 font-bold leading-relaxed max-w-4xl mx-auto">
                     {t(`${instructionId}.desc`)}
                 </p>
             </div>

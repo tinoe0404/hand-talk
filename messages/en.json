@@ -24,7 +24,12 @@
             "today": "Sessions Today",
             "avgTime": "Avg. Duration",
             "emergency": "Emergency Triggers"
-        }
+        },
+        "playbackTitle": "Instruction Playback",
+        "playbackDesc": "Select a protocol below to broadcast instantly to the patient display.",
+        "noActive": "No clinical session is currently active. Initialize a new patient record to begin.",
+        "recent": "Recent Treatments",
+        "viewFull": "View Full Archive"
     },
     "Setup": {
         "title": "Patient Intake",
@@ -152,5 +157,46 @@
         "save": "Save",
         "cancel": "Cancel",
         "back": "Back"
+    },
+    "Emergency": {
+        "triageTitle": "Incident Triage Required",
+        "triageDesc": "Select the primary reason for patient distress to resolve the halt.",
+        "diagnosticTitle": "Diagnostic Follow-up",
+        "backToTriage": "Back to Triage",
+        "completeResolution": "COMPLETE RESOLUTION",
+        "continueToDiagnostics": "CONTINUE TO DIAGNOSTICS",
+        "confirmResolve": "CONFIRM & RESOLVE",
+        "haltTitle": "TREATMENT HALTED",
+        "shiftControl": "Active Shift Control",
+        "preparation": "Preparation in progress...",
+        "connected": "Connected to Controller",
+        "staffAlerted": "Clinical staff have been alerted. Please remain still.",
+        "alertingStaff": "Emergency signal detected. Alerting staff...",
+        "statusOffline": "offline",
+        "presenceAwaiting": "AWAITING",
+        "inputBridge": "Input Bridge Active"
+    },
+    "Triage": {
+        "PANIC": "Panic / Anxiety",
+        "PAIN": "Physical Pain",
+        "BREATHING": "Breathing Issue",
+        "EQUIP_FEAR": "Equipment Fear",
+        "OTHER": "Other / Manual"
+    },
+    "BodyMapper": {
+        "title": "Localize Distress Area:",
+        "HEAD": "Head/Neck",
+        "CHEST": "Chest/Torso",
+        "ARM_L": "Left Arm",
+        "ARM_R": "Right Arm",
+        "LEG_L": "Left Leg",
+        "LEG_R": "Right Leg"
+    },
+    "BreathingLog": {
+        "title": "Specify Respiratory Issue:",
+        "SHORTNESS": "Shortness of Breath",
+        "COUGH": "Coughing Fit",
+        "EARLY_RELEASE": "Early Breath Release",
+        "UNABLE_HOLD": "Unable to Hold Breath"
     }
 }

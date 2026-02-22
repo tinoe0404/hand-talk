@@ -24,7 +24,12 @@
             "today": "Izeshini Zanamuhla",
             "avgTime": "Isikhathi Esilinganisiwe",
             "emergency": "Izimo Zezimo Ezishubile"
-        }
+        },
+        "playbackTitle": "Ukudlalwa Kwemiyalelo",
+        "playbackDesc": "Khetha umthetho olandelwayo ngezansi ukuze usakaze isiguli ngokushesha.",
+        "noActive": "Ayikho iseshini yasemtholampilo esebenzayo njengamanje. Qala irekhodi elisha lesiguli ukuze uqale.",
+        "recent": "Izindlela Zokwelashwa Zamuva",
+        "viewFull": "Buka Wonke Umlando"
     },
     "Setup": {
         "title": "Ukungeniswa Kwesiguli",
@@ -152,5 +157,46 @@
         "save": "Gcina",
         "cancel": "Khansela",
         "back": "Emuva"
+    },
+    "Emergency": {
+        "triageTitle": "Kudingeka Ukuhlungwa Kwesigameko",
+        "triageDesc": "Khetha isizathu esiyinhloko sokucindezeleka kwesiguli ukuze uqalise kabusha.",
+        "diagnosticTitle": "Ukuhlola Okwengeziwe",
+        "backToTriage": "Buyela Emuva",
+        "completeResolution": "QEDELA UKUXAZULULA",
+        "continueToDiagnostics": "QHUBEKA NOKUHLOLA",
+        "confirmResolve": "QINISEKISA & XAZULULA",
+        "haltTitle": "UKWELASHWA KUMISIWE",
+        "shiftControl": "Ukulawulwa Kweshifu",
+        "preparation": "Ukulungiselela kuyaqhubeka...",
+        "connected": "Ixhunywe ku-Controller",
+        "staffAlerted": "Abasebenzi basemtholampilo bazisiwe. Sicela unganyakazi.",
+        "alertingStaff": "Kutholwe isignali yesimo esiphuthumayo. Kwaziswa abasebenzi...",
+        "statusOffline": "ayikho",
+        "presenceAwaiting": "KULINDIWE",
+        "inputBridge": "Ibhuloho Lokufaka liyasebenza"
+    },
+    "Triage": {
+        "PANIC": "Ukuvuka Komunvalo / Ukukhathazeka",
+        "PAIN": "Ubuhlungu Somzimba",
+        "BREATHING": "Inkinga Yokuphefumula",
+        "EQUIP_FEAR": "Ukwesaba Imishini",
+        "OTHER": "Okunye / Okwenziwa Ngesandla"
+    },
+    "BodyMapper": {
+        "title": "Khombisa Lapho Kubuhlungu Khona:",
+        "HEAD": "Ikhanda/Intamo",
+        "CHEST": "Isifuba/Isibili",
+        "ARM_L": "Ingalo Yesobunxele",
+        "ARM_R": "Ingalo Yesokudla",
+        "LEG_L": "Umfunda Wesobunxele",
+        "LEG_R": "Umfunda Wesokudla"
+    },
+    "BreathingLog": {
+        "title": "Cacisa Inkinga Yokuphefumula:",
+        "SHORTNESS": "Ukushonelwa Ngumoya",
+        "COUGH": "Ukukhwehlela Okungapheli",
+        "EARLY_RELEASE": "Ukukhipha Umoya Masinyane",
+        "UNABLE_HOLD": "Ukwehluleka Ukubamba Umoya"
     }
 }
