@@ -17,7 +17,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
-import { CLINICAL_INSTRUCTIONS } from "@/lib/constants/instructions";
 
 interface EmergencyLog {
     timestamp: string | Date;

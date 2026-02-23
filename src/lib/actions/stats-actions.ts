@@ -11,7 +11,9 @@ import { startOfDay, endOfDay } from "date-fns";
 
 export async function getDashboardStats() {
     const session = await getSession();
-    if (!session) return { today: 0, avgTime: "0m", emergencies: 0 };
+    if (!session) {
+        return { today: 0, avgTime: "0m", emergencies: 0 };
+    }
 
     const today = new Date();
     const start = startOfDay(today);
@@ -63,7 +65,9 @@ export async function getDashboardStats() {
     let avgTime = "0m";
     if (completedSessions.length > 0) {
         const totalDurationMs = completedSessions.reduce((acc, sess) => {
-            if (!sess.endTime) return acc;
+            if (!sess.endTime) {
+                return acc;
+            }
             return acc + (sess.endTime.getTime() - sess.createdAt.getTime());
         }, 0);
 
