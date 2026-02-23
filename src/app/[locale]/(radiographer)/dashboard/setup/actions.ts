@@ -12,9 +12,9 @@ import { revalidatePath } from "next/cache";
  * authenticated radiographer.
  */
 export async function createSessionAction(_prevState: unknown, formData: FormData) {
-    const radiographerId = await getSession();
+    const authSession = await getSession();
 
-    if (!radiographerId) {
+    if (!authSession || !authSession.radiographerId) {
         redirect({ href: "/login", locale: "en" }); // Fallback to en if session is lost
         return;
     }
@@ -39,7 +39,7 @@ export async function createSessionAction(_prevState: unknown, formData: FormDat
                 notes,
                 isFirstDay,
                 isLastDay,
-                radiographerId: String(radiographerId), // Ensure string
+                radiographerId: authSession.radiographerId,
                 status: "ACTIVE"
             }
         });
