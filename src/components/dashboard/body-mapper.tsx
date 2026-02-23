@@ -32,12 +32,12 @@ export function BodyMapper({ onSelect, selectedRegion }: BodyMapperProps) {
     ];
 
     return (
-        <div className="flex flex-col md:flex-row items-center gap-12 p-6 bg-zinc-50 rounded-clinical border-2 border-zinc-200">
-            <div className="relative w-full max-w-[300px] aspect-[2/3] bg-white rounded-xl shadow-inner border border-zinc-100 p-4">
-                <p className="absolute top-2 left-0 right-0 text-center text-[10px] font-bold text-zinc-400 uppercase tracking-widest pointer-events-none">
+        <div className="flex flex-col items-center gap-4 p-4 bg-zinc-50 rounded-xl border-2 border-zinc-200">
+            <div className="relative w-full max-w-[180px] aspect-[2/3] bg-white rounded-xl shadow-inner border border-zinc-100 p-2">
+                <p className="absolute top-1 left-0 right-0 text-center text-[8px] font-bold text-zinc-400 uppercase tracking-widest pointer-events-none">
                     {t('title')}
                 </p>
-                <svg viewBox="0 0 100 110" className="w-full h-full drop-shadow-clinical">
+                <svg viewBox="0 0 100 110" className="w-full h-full drop-shadow-md">
                     {regions.map((region) => (
                         <path
                             key={region.id}
@@ -54,15 +54,15 @@ export function BodyMapper({ onSelect, selectedRegion }: BodyMapperProps) {
                 </svg>
             </div>
 
-            <div className="flex-1 grid grid-cols-2 gap-3 w-full">
+            <div className="flex-1 grid grid-cols-2 gap-2 w-full">
                 {regions.map((region) => (
                     <button
                         key={region.id}
                         onClick={() => onSelect(region.id)}
                         className={cn(
-                            "p-4 text-sm font-black uppercase tracking-widest rounded-lg border-2 transition-all",
+                            "p-3 text-[10px] font-black uppercase tracking-widest rounded-lg border-2 transition-all",
                             selectedRegion === region.id
-                                ? "bg-red-600 text-white border-red-700 shadow-clinical-sm scale-105"
+                                ? "bg-red-600 text-white border-red-700 shadow-md scale-105"
                                 : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400"
                         )}
                     >

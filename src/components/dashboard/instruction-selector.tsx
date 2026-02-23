@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import { useSessionStore } from "@/store/useSessionStore";
+import { useTranslations } from "next-intl";
 import {
     GROUPED_INSTRUCTIONS,
-    INSTRUCTION_LABELS,
     InstructionCategory,
 } from "@/lib/constants/instructions";
 import * as LucideIcons from "lucide-react";
@@ -26,6 +26,7 @@ const TABS: { id: InstructionCategory; label: string; color: string; activeColor
  * Tap a button → setInstruction() → PatientView auto-updates.
  */
 export function InstructionTabs() {
+    const t = useTranslations("Instructions");
     const [activeTab, setActiveTab] = useState<InstructionCategory>("POSITIONING");
     const { currentInstructionId, setInstruction, stopInstruction } = useSessionStore();
 
@@ -65,7 +66,7 @@ export function InstructionTabs() {
             <div className="grid grid-cols-2 gap-2">
                 {instructions.map((inst) => {
                     const isActive = currentInstructionId === inst.id;
-                    const label = INSTRUCTION_LABELS[inst.id] ?? inst.id;
+                    const label = t(`${inst.id}.title`);
                     const Icon = IconMap[inst.iconName] ?? LucideIcons.CircleHelp;
 
                     return (

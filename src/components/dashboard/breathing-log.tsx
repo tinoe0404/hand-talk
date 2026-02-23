@@ -25,9 +25,9 @@ export function BreathingLog({ onSelect, selectedIssue }: BreathingLogProps) {
     ];
 
     return (
-        <div className="space-y-4">
-            <p className="text-xl font-bold text-zinc-700">{t('title')}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-6 bg-zinc-50 rounded-clinical border-2 border-zinc-200">
+        <div className="space-y-3">
+            <p className="text-sm font-bold text-zinc-700 tracking-tight">{t('title')}</p>
+            <div className="grid grid-cols-2 gap-2 p-3 bg-zinc-50 rounded-xl border-2 border-zinc-200">
                 {issues.map((issue) => {
                     const Icon = issue.icon;
                     const isActive = selectedIssue === issue.id;
@@ -37,15 +37,15 @@ export function BreathingLog({ onSelect, selectedIssue }: BreathingLogProps) {
                             key={issue.id}
                             onClick={() => onSelect(issue.id)}
                             className={cn(
-                                "flex items-center gap-4 p-6 rounded-xl border-4 transition-all text-left",
+                                "flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all text-center",
                                 issue.color,
                                 isActive
-                                    ? "ring-8 ring-offset-2 ring-blue-500/20 scale-[1.02] border-blue-500 shadow-clinical-lg opacity-100"
+                                    ? "scale-[1.02] border-blue-500 shadow-md opacity-100"
                                     : "hover:border-zinc-300 opacity-70"
                             )}
                         >
-                            <Icon className="w-10 h-10" />
-                            <span className="text-xl font-black uppercase tracking-tight leading-tight">
+                            <Icon className="w-6 h-6" />
+                            <span className="text-[10px] font-black uppercase tracking-tight leading-tight">
                                 {issue.label}
                             </span>
                         </button>

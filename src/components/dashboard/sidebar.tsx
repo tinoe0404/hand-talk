@@ -24,7 +24,7 @@ const navItems = [
         labelKey: 'title'
     },
     {
-        href: '/dashboard/setup',
+        href: '/dashboard/session/new',
         icon: PlusCircle,
         labelKey: 'setupSession'
     },

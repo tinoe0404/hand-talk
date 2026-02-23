@@ -4,6 +4,7 @@ import { useSessionStore } from "@/store/useSessionStore";
 import { PatientView } from "@/components/dashboard/patient-view";
 import { InstructionTabs } from "@/components/dashboard/instruction-selector";
 import { EmergencyTriage } from "@/components/dashboard/emergency-triage";
+import { VisionEngine } from "@/components/dashboard/vision-engine";
 import {
     AlertTriangle,
     ChevronRight,
@@ -150,7 +151,7 @@ export default function DashboardPage() {
                                 Start a session to begin communication
                             </p>
                         </div>
-                        <Link href="/dashboard/setup">
+                        <Link href="/dashboard/session/new">
                             <button className="h-14 px-8 text-base font-black rounded-xl bg-medical-green-600 text-white shadow-lg hover:bg-medical-green-700 active:scale-95 transition-all min-w-[200px]">
                                 Start Session
                             </button>
@@ -164,6 +165,9 @@ export default function DashboardPage() {
                 ) : (
                     /* ACTIVE SESSION */
                     <div className="flex flex-col gap-3 p-3 pb-24">
+                        {/* Background Vision Logic */}
+                        <VisionEngine />
+
                         {/* Session info bar */}
                         <div className="flex items-center justify-between">
                             <div>

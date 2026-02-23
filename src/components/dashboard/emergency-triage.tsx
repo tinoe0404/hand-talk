@@ -105,7 +105,7 @@ export function EmergencyTriage() {
 
     return (
         <div className="space-y-6 animate-in slide-in-from-top-8 duration-500">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-2">
                 {reasons.map((reason) => {
                     const Icon = reason.icon;
                     const isActive = selectedReason === reason.id;
@@ -117,26 +117,26 @@ export function EmergencyTriage() {
                             aria-label={`Select distress reason: ${tTriage(reason.id)}`}
                             aria-pressed={isActive}
                             className={cn(
-                                "flex items-center gap-4 p-6 rounded-clinical border-4 transition-all duration-300 text-left focus:outline-none focus:ring-4 focus:ring-medical-green-500/50",
+                                "flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all duration-300 text-center focus:outline-none focus:ring-4 focus:ring-medical-green-500/50",
                                 reason.color,
-                                isActive ? "ring-8 ring-offset-4 ring-red-500/20 scale-[1.02] border-red-500 shadow-clinical-lg" : "hover:border-zinc-300 opacity-80"
+                                isActive ? "scale-[1.02] border-red-500 shadow-md ring-2 ring-red-500/20" : "hover:border-zinc-300 opacity-80"
                             )}
                         >
-                            <Icon className="w-10 h-10" aria-hidden="true" />
-                            <span className="text-xl font-black uppercase tracking-tight">{tTriage(reason.id)}</span>
+                            <Icon className="w-6 h-6" aria-hidden="true" />
+                            <span className="text-xs font-black uppercase tracking-tight">{tTriage(reason.id)}</span>
                         </button>
                     );
                 })}
             </div>
 
-            <div className="pt-8 flex justify-end">
+            <div className="pt-4 flex justify-end">
                 <Button
                     variant="emergency"
-                    size="xl"
+                    size="lg"
                     disabled={!selectedReason}
                     onClick={handleNext}
                     className={cn(
-                        "h-14 md:h-20 px-6 md:px-16 text-base md:text-2xl font-black rounded-clinical shadow-clinical-lg transition-all w-full sm:w-auto",
+                        "h-12 px-8 text-sm font-black rounded-xl shadow-md transition-all w-full",
                         !selectedReason ? "opacity-30" : ""
                     )}
                 >

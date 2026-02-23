@@ -62,85 +62,85 @@
         }
     },
     "Instructions": {
-        "B-001": {
-            "title": "Inhale",
-            "desc": "Take a deep breath in."
+        "lie-down": {
+            "title": "Lie Down",
+            "desc": "Lie down on the treatment couch."
         },
-        "B-002": {
-            "title": "Exhale",
-            "desc": "Breathe out slowly."
+        "head-straight": {
+            "title": "Head Straight",
+            "desc": "Keep your head straight and aligned."
         },
-        "B-003": {
-            "title": "Hold Breath",
-            "desc": "Hold your breath and stay still."
+        "chin-up": {
+            "title": "Chin Up",
+            "desc": "Lift your chin slightly."
         },
-        "B-004": {
-            "title": "Breathe Normally",
-            "desc": "You can breathe normally now."
+        "turn-left": {
+            "title": "Turn Left",
+            "desc": "Turn your head to the left."
         },
-        "P-001": {
-            "title": "Move Up",
-            "desc": "Shift your position slightly upwards."
+        "turn-right": {
+            "title": "Turn Right",
+            "desc": "Turn your head to the right."
         },
-        "P-002": {
-            "title": "Move Down",
-            "desc": "Shift your position slightly downwards."
-        },
-        "P-003": {
-            "title": "Move Left",
-            "desc": "Shift your position to the left."
-        },
-        "P-004": {
-            "title": "Move Right",
-            "desc": "Shift your position to the right."
-        },
-        "P-005": {
-            "title": "Stay Still",
-            "desc": "Please remain perfectly still."
-        },
-        "P-006": {
+        "arms-up": {
             "title": "Arms Up",
             "desc": "Raise your arms above your head."
         },
-        "P-007": {
-            "title": "Arms Down",
-            "desc": "Place your arms by your sides."
+        "slide-up": {
+            "title": "Slide Up",
+            "desc": "Slide your body slightly upwards."
         },
-        "S-001": {
-            "title": "Emergency Stop",
-            "desc": "Treatment halted. Stay calm."
+        "slide-down": {
+            "title": "Slide Down",
+            "desc": "Slide your body slightly downwards."
         },
-        "S-002": {
-            "title": "Preparing",
-            "desc": "Machine is positioning. Please wait."
+        "lift-hips": {
+            "title": "Lift Hips",
+            "desc": "Lift your hips for positioning."
         },
-        "S-003": {
-            "title": "Authorizing",
-            "desc": "Waiting for clinical authorization."
+        "good-day-welcome": {
+            "title": "Good Day & Welcome",
+            "desc": "Welcome the patient to the session."
         },
-        "S-004": {
-            "title": "Laser Alignment",
-            "desc": "Aligning with treatment lasers."
-        },
-        "R-001": {
-            "title": "Ready",
-            "desc": "Ready to begin treatment."
-        },
-        "R-002": {
-            "title": "Complete",
-            "desc": "Session finished. Wait for staff."
-        },
-        "R-003": {
-            "title": "Wait",
-            "desc": "Clinical check in progress."
-        },
-        "R-004": {
+        "relax": {
             "title": "Relax",
             "desc": "You can relax your muscles now."
         },
-        "R-005": {
-            "title": "Check",
-            "desc": "Final safety verification."
+        "dont-move": {
+            "title": "Don't Move",
+            "desc": "Please remain perfectly still."
+        },
+        "comfortable": {
+            "title": "Comfortable?",
+            "desc": "Ask if the patient is comfortable."
+        },
+        "same-as-yesterday": {
+            "title": "Same as Yesterday",
+            "desc": "Positioning is same as yesterday."
+        },
+        "see-you-tomorrow": {
+            "title": "See You Tomorrow",
+            "desc": "Treatment finished for today."
+        },
+        "thank-you": {
+            "title": "Thank You",
+            "desc": "Thank the patient for their cooperation."
+        },
+        "treatment-finished": {
+            "title": "Treatment Finished",
+            "desc": "Session completely finished."
+        },
+        "breathe-normally": {
+            "title": "Breathe Normally",
+            "desc": "You can breathe normally now."
+        },
+        "painless": {
+            "title": "Painless",
+            "desc": "This part of the treatment is painless."
+        },
+        "machine-moving": {
+            "title": "Machine Moving",
+            "desc": "The machine is moving into position."
         }
     },
     "Patient": {

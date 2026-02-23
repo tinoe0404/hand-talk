@@ -5,15 +5,15 @@ import { useSessionStore } from "@/store/useSessionStore";
 import {
     getInstruction,
     videoPath,
-    INSTRUCTION_LABELS,
 } from "@/lib/constants/instructions";
+import { useTranslations } from "next-intl";
 import * as LucideIcons from "lucide-react";
 import { AlertTriangle } from "lucide-react";
 import { GestureGuide } from "./gesture-guide";
 
 // Resolve a Lucide icon by name string
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const IconMap = LucideIcons as Record<string, React.ElementType>;
+const IconMap = LucideIcons as unknown as Record<string, React.ElementType>;
 function DynIcon({ name, className }: { name: string; className?: string }) {
     const Icon = IconMap[name] ?? LucideIcons.CircleHelp;
     return <Icon className={className} />;
@@ -26,6 +26,7 @@ function DynIcon({ name, className }: { name: string; className?: string }) {
  * Driven entirely by `displayMode` in useSessionStore.
  */
 export function PatientView() {
+    const t = useTranslations("Instructions");
     const {
         displayMode,
         currentInstructionId,
@@ -128,7 +129,7 @@ export function PatientView() {
     // ── INSTRUCTION ───────────────────────────────────────────
     const inst = currentInstructionId ? getInstruction(currentInstructionId) : null;
     const label = currentInstructionId
-        ? INSTRUCTION_LABELS[currentInstructionId] ?? currentInstructionId
+        ? t(`${currentInstructionId}.title`)
         : null;
 
     if (!inst || !label) {

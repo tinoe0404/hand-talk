@@ -19,12 +19,12 @@ self.onmessage = async (event: MessageEvent) => {
             return GestureClassifier.classify(landmarks as any);
         });
 
-        // We prioritize the most "urgent" gesture (OPEN_PALM) if multiple hands are present
+        // We prioritize the most "urgent" gesture (PEACE_SIGN = PAIN)
         let primaryGesture: ClinicalGesture | null = null;
-        if (detectedGestures.includes('OPEN_PALM')) {
+        if (detectedGestures.includes('PEACE_SIGN')) {
+            primaryGesture = 'PEACE_SIGN';
+        } else if (detectedGestures.includes('OPEN_PALM')) {
             primaryGesture = 'OPEN_PALM';
-        } else if (detectedGestures.includes('CLOSED_FIST')) {
-            primaryGesture = 'CLOSED_FIST';
         } else {
             primaryGesture = detectedGestures[0] || null;
         }
