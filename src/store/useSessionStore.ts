@@ -2,158 +2,189 @@ import { create } from 'zustand';
 import {
     logInstructionChange,
     logEmergencyEvent,
-    endClinicalSession
-} from "@/lib/actions/log-actions";
+    endClinicalSession,
+} from '@/lib/actions/log-actions';
+import type { GestureId } from '@/lib/constants/instructions';
 
 /**
- * Session State Store
- * Manages the real-time radiotherapy session state.
- * Clinical justification: Ensures consistent state between radiographer controls 
- * and patient display, and facilitates automatic auditing.
+ * Display mode controls what the TOP (patient-facing) panel shows.
+ * Everything happens on one screen; the radiographer holds the phone
+ * and tilts it toward the patient as needed.
  */
+export type DisplayMode =
+    | 'idle'          // No session — show logo/ready state
+    | 'gesture-guide' // 4-card gesture guide shown to patient at session start
+    | 'instruction'   // Active instruction: large text + icon + video
+    | 'welcome'       // First-day welcome video plays in full
+    | 'farewell'      // Last-day farewell video plays in full
+    | 'emergency';    // Red screen "TREATMENT HALTED"
+
+export interface GestureResult {
+    gestureId: GestureId;
+    emoji: string;
+    label: string;
+    color: string;
+    dotColor: string;
+    confidence: number;
+    timestamp: number;
+}
+
 interface SessionState {
+    // ── Session meta ──────────────────────────────────────────
     sessionId: string | null;
     patientRef: string | null;
     radiographerId: string | null;
     isFirstDay: boolean;
     isLastDay: boolean;
+
+    // ── Display state (drives the TOP panel) ─────────────────
+    displayMode: DisplayMode;
     currentInstructionId: string | null;
+
+    // ── Emergency ─────────────────────────────────────────────
     isEmergency: boolean;
+    emergencyStage: number; // 0 = none, 1 = reason, 2 = body, 3 = notes
+
+    // ── Gesture detection ─────────────────────────────────────
     isHandDetected: boolean;
     visionStatus: 'idle' | 'loading' | 'ready' | 'error';
-    lastGesture: string | null;
-    emergencyStage: number; // 0 (none), 1, 2, 3
-    lastDistressReason: string | null;
-    incidentLocation: string | null;
-    incidentSubReason: string | null;
-    hasSeenWelcomeVideo: boolean;
-    hasSeenGestureGuide: boolean;
+    lastGesture: GestureResult | null;
+    gestureLog: GestureResult[];
 
-    // Actions
-    startSession: (data: { sessionId: string; patientRef: string; radiographerId: string; isFirstDay: boolean; isLastDay: boolean }) => void;
+    // ── Actions ───────────────────────────────────────────────
+    startSession: (data: {
+        sessionId: string;
+        patientRef: string;
+        radiographerId: string;
+        isFirstDay: boolean;
+        isLastDay: boolean;
+    }) => void;
     endSession: () => void;
+
     setInstruction: (id: string) => void;
     stopInstruction: () => void;
-    setHandDetected: (detected: boolean) => void;
-    setVisionStatus: (status: 'idle' | 'loading' | 'ready' | 'error') => void;
-    setLastGesture: (gesture: string | null) => void;
+
+    /** Radiographer taps "Continue" on gesture-guide → switch to instruction mode */
+    acknowledgeGestureGuide: () => void;
+    /** Called when the first-day welcome video finishes playing */
+    onWelcomeVideoEnd: () => void;
+    /** Called when the last-day farewell video finishes playing */
+    onFarewellVideoEnd: () => void;
+
     triggerEmergency: () => void;
     resolveEmergency: (reason: string) => void;
     setEmergencyStage: (stage: number) => void;
-    setHasSeenWelcomeVideo: (seen: boolean) => void;
-    setHasSeenGestureGuide: (seen: boolean) => void;
+
+    setHandDetected: (detected: boolean) => void;
+    setVisionStatus: (status: 'idle' | 'loading' | 'ready' | 'error') => void;
+    recordGesture: (result: GestureResult) => void;
+
     reset: () => void;
 }
 
-export const useSessionStore = create<SessionState>((set, get) => ({
+const INITIAL_STATE = {
     sessionId: null,
     patientRef: null,
     radiographerId: null,
     isFirstDay: false,
     isLastDay: false,
+    displayMode: 'idle' as DisplayMode,
     currentInstructionId: null,
     isEmergency: false,
-    isHandDetected: false,
-    visionStatus: 'idle',
-    lastGesture: null,
     emergencyStage: 0,
-    lastDistressReason: null,
-    incidentLocation: null,
-    incidentSubReason: null,
-    hasSeenWelcomeVideo: false,
-    hasSeenGestureGuide: false,
+    isHandDetected: false,
+    visionStatus: 'idle' as const,
+    lastGesture: null,
+    gestureLog: [],
+};
 
-    startSession: (data) => set({
-        ...data,
-        currentInstructionId: null,
-        isEmergency: false,
-        emergencyStage: 0,
-        lastDistressReason: null,
-        incidentLocation: null,
-        incidentSubReason: null,
-        hasSeenWelcomeVideo: false,
-        hasSeenGestureGuide: false
-    }),
+export const useSessionStore = create<SessionState>((set, get) => ({
+    ...INITIAL_STATE,
+
+    startSession: (data) => {
+        // If first day → play welcome video, then gesture guide
+        // Otherwise → show gesture guide immediately
+        const displayMode: DisplayMode = data.isFirstDay ? 'welcome' : 'gesture-guide';
+        set({
+            ...data,
+            displayMode,
+            currentInstructionId: null,
+            isEmergency: false,
+            emergencyStage: 0,
+            lastGesture: null,
+            gestureLog: [],
+        });
+    },
 
     endSession: () => {
         const { sessionId } = get();
         if (sessionId) {
-            endClinicalSession(sessionId, "COMPLETED");
+            endClinicalSession(sessionId, 'COMPLETED');
         }
-        set({
-            sessionId: null,
-            patientRef: null,
-            radiographerId: null,
-            currentInstructionId: null,
-            isEmergency: false,
-            emergencyStage: 0,
-            lastDistressReason: null,
-            incidentLocation: null,
-            incidentSubReason: null,
-            hasSeenWelcomeVideo: false,
-            hasSeenGestureGuide: false
-        });
+        set({ ...INITIAL_STATE });
     },
 
     setInstruction: (id) => {
-        const { sessionId } = get();
+        const { sessionId, isLastDay } = get();
         if (sessionId) {
             logInstructionChange(sessionId, id);
         }
-        set({ currentInstructionId: id });
+        // Special: treatment-finished on last day triggers farewell
+        if (id === 'treatment-finished' && isLastDay) {
+            set({ currentInstructionId: id, displayMode: 'farewell' });
+        } else {
+            set({ currentInstructionId: id, displayMode: 'instruction' });
+        }
     },
 
-    stopInstruction: () => set({ currentInstructionId: null }),
+    stopInstruction: () =>
+        set({ currentInstructionId: null, displayMode: 'instruction' }),
 
-    setHandDetected: (detected: boolean) => set({ isHandDetected: detected }),
-    setVisionStatus: (status: 'idle' | 'loading' | 'ready' | 'error') => set({ visionStatus: status }),
-    setLastGesture: (gesture: string | null) => set({ lastGesture: gesture }),
+    acknowledgeGestureGuide: () =>
+        set({ displayMode: 'instruction' }),
+
+    onWelcomeVideoEnd: () =>
+        set({ displayMode: 'gesture-guide' }),
+
+    onFarewellVideoEnd: () => {
+        const { sessionId } = get();
+        if (sessionId) {
+            endClinicalSession(sessionId, 'COMPLETED');
+        }
+        set({ ...INITIAL_STATE });
+    },
 
     triggerEmergency: () => {
         const { sessionId } = get();
         if (sessionId) {
             logEmergencyEvent({ sessionId, stage: 1 });
         }
-        set({ isEmergency: true, emergencyStage: 1, currentInstructionId: null });
+        set({ isEmergency: true, emergencyStage: 1, displayMode: 'emergency', currentInstructionId: null });
     },
 
     resolveEmergency: (reason) => {
         const { sessionId } = get();
         if (sessionId) {
-            logEmergencyEvent({
-                sessionId,
-                stage: 3,
-                reason
-            });
+            logEmergencyEvent({ sessionId, stage: 3, reason });
         }
         set({
             isEmergency: false,
             emergencyStage: 0,
-            lastGesture: null,
-            lastDistressReason: reason
+            displayMode: 'instruction',
+            currentInstructionId: null,
         });
     },
 
     setEmergencyStage: (stage) => set({ emergencyStage: stage }),
 
-    setHasSeenWelcomeVideo: (seen) => set({ hasSeenWelcomeVideo: seen }),
+    setHandDetected: (detected) => set({ isHandDetected: detected }),
+    setVisionStatus: (status) => set({ visionStatus: status }),
 
-    setHasSeenGestureGuide: (seen) => set({ hasSeenGestureGuide: seen }),
+    recordGesture: (result) =>
+        set((state) => ({
+            lastGesture: result,
+            gestureLog: [...state.gestureLog, result],
+        })),
 
-    reset: () => set({
-        sessionId: null,
-        patientRef: null,
-        radiographerId: null,
-        currentInstructionId: null,
-        isEmergency: false,
-        emergencyStage: 0,
-        lastDistressReason: null,
-        incidentLocation: null,
-        incidentSubReason: null,
-        isHandDetected: false,
-        visionStatus: 'idle',
-        lastGesture: null,
-        hasSeenWelcomeVideo: false,
-        hasSeenGestureGuide: false
-    }),
+    reset: () => set({ ...INITIAL_STATE }),
 }));

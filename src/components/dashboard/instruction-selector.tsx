@@ -1,35 +1,37 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import React, { useState } from "react";
 import { useSessionStore } from "@/store/useSessionStore";
-import { GROUPED_INSTRUCTIONS } from "@/lib/constants/instructions";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    Play,
-    Square,
-    Wind,
-    Move,
-    ShieldCheck,
-    Activity,
-    CircleHelp
-} from "lucide-react";
-import * as Icons from "lucide-react";
+    GROUPED_INSTRUCTIONS,
+    INSTRUCTION_LABELS,
+    InstructionCategory,
+} from "@/lib/constants/instructions";
+import * as LucideIcons from "lucide-react";
 import { cn } from "@/lib/utils";
-import React from "react";
 
-export function InstructionSelector() {
-    const t = useTranslations("Instructions");
-    const { currentInstructionId, setInstruction, stopInstruction, isLastDay } = useSessionStore();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const IconMap = LucideIcons as unknown as Record<string, React.ElementType>;
 
-    const categories = [
-        { id: "BREATHING", icon: Wind, color: "text-blue-500", bg: "bg-blue-50" },
-        { id: "POSITIONING", icon: Move, color: "text-amber-500", bg: "bg-amber-50" },
-        { id: "SAFETY", icon: ShieldCheck, color: "text-red-500", bg: "bg-red-50" },
-        { id: "READINESS", icon: Activity, color: "text-medical-green-500", bg: "bg-medical-green-50" },
-    ];
+const TABS: { id: InstructionCategory; label: string; color: string; activeColor: string }[] = [
+    { id: "POSITIONING", label: "Positioning", color: "text-amber-600", activeColor: "bg-amber-500 text-white" },
+    { id: "SESSION", label: "Session", color: "text-medical-green-700", activeColor: "bg-medical-green-600 text-white" },
+    { id: "BREATHING", label: "Breathing", color: "text-blue-600", activeColor: "bg-blue-500 text-white" },
+    { id: "SAFETY", label: "Safety", color: "text-red-600", activeColor: "bg-red-500 text-white" },
+];
 
-    const handleToggle = (id: string) => {
+/**
+ * InstructionTabs — radiographer-side control panel.
+ * Shows 4 category tabs, each with a grid of instruction buttons.
+ * Tap a button → setInstruction() → PatientView auto-updates.
+ */
+export function InstructionTabs() {
+    const [activeTab, setActiveTab] = useState<InstructionCategory>("POSITIONING");
+    const { currentInstructionId, setInstruction, stopInstruction } = useSessionStore();
+
+    const instructions = GROUPED_INSTRUCTIONS[activeTab];
+
+    const handleTap = (id: string) => {
         if (currentInstructionId === id) {
             stopInstruction();
         } else {
@@ -38,71 +40,57 @@ export function InstructionSelector() {
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((cat) => {
-                const Icon = cat.icon;
-                const categoryKey = cat.id as keyof typeof GROUPED_INSTRUCTIONS;
-                let instructions = GROUPED_INSTRUCTIONS[categoryKey];
+        <div className="flex flex-col gap-3">
+            {/* Tab bar */}
+            <div className="flex rounded-xl overflow-hidden border border-zinc-200 bg-zinc-50 shrink-0">
+                {TABS.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    return (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={cn(
+                                "flex-1 py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-200 min-h-[44px]",
+                                isActive ? tab.activeColor : `${tab.color} hover:bg-zinc-100`
+                            )}
+                            aria-pressed={isActive}
+                        >
+                            {tab.label}
+                        </button>
+                    );
+                })}
+            </div>
 
-                if (categoryKey === "READINESS") {
-                    instructions = instructions.filter(inst => {
-                        if (isLastDay && inst.id === 'see-you-tomorrow') return false;
-                        if (!isLastDay && inst.id === 'treatment-finished') return false;
-                        return true;
-                    });
-                }
+            {/* Instruction button grid */}
+            <div className="grid grid-cols-2 gap-2">
+                {instructions.map((inst) => {
+                    const isActive = currentInstructionId === inst.id;
+                    const label = INSTRUCTION_LABELS[inst.id] ?? inst.id;
+                    const Icon = IconMap[inst.iconName] ?? LucideIcons.CircleHelp;
 
-                return (
-                    <Card key={cat.id} className="border-2 border-slate-100 shadow-clinical-sm overflow-hidden">
-                        <CardHeader className={cn("py-3 px-4 border-b", cat.bg)}>
-                            <div className="flex items-center gap-2">
-                                <Icon className={cn("w-5 h-5", cat.color)} />
-                                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-700">
-                                    {cat.id}
-                                </CardTitle>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-3 space-y-2">
-                            {instructions.map((inst) => {
-                                const isActive = currentInstructionId === inst.id;
-                                // Dynamically get icon from Lucide
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                const IconsMap: Record<string, React.ElementType> = Icons as any;
-                                const InstIcon = IconsMap[inst.iconName] || CircleHelp;
-
-                                return (
-                                    <Button
-                                        key={inst.id}
-                                        variant={isActive ? "primary" : "outline"}
-                                        className={cn(
-                                            "w-full justify-between h-auto py-3 px-4 border-2 transition-all duration-200",
-                                            isActive
-                                                ? "bg-medical-green-600 border-medical-green-700 scale-[1.02] shadow-clinical-md"
-                                                : "hover:border-medical-green-200 hover:bg-medical-green-50/50"
-                                        )}
-                                        onClick={() => handleToggle(inst.id)}
-                                    >
-                                        <div className="flex items-center gap-3 text-left">
-                                            <InstIcon className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : "text-slate-400")} />
-                                            <div className="flex flex-col">
-                                                <span className="font-bold text-sm leading-tight">{t(`${inst.id}.title`)}</span>
-                                                <span className={cn("text-[10px] font-medium uppercase opacity-60", isActive ? "text-medical-white" : "text-slate-500")}>
-                                                    {inst.id}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        {isActive ? (
-                                            <Square className="w-4 h-4 fill-current animate-pulse" />
-                                        ) : (
-                                            <Play className="w-4 h-4 text-slate-300" />
-                                        )}
-                                    </Button>
-                                );
-                            })}
-                        </CardContent>
-                    </Card>
-                );
-            })}
+                    return (
+                        <button
+                            key={inst.id}
+                            onClick={() => handleTap(inst.id)}
+                            aria-pressed={isActive}
+                            className={cn(
+                                "flex items-center gap-3 px-4 py-3 rounded-xl border-2 font-bold text-sm text-left transition-all duration-200 min-h-[56px]",
+                                isActive
+                                    ? "bg-medical-green-600 text-white border-medical-green-700 shadow-md scale-[1.02]"
+                                    : "bg-white text-zinc-800 border-zinc-200 hover:border-medical-green-300 hover:bg-medical-green-50 active:scale-95"
+                            )}
+                        >
+                            <Icon
+                                className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : "text-zinc-400")}
+                            />
+                            <span className="leading-snug">{label}</span>
+                            {isActive && (
+                                <LucideIcons.Volume2 className="w-4 h-4 ml-auto shrink-0 animate-pulse" />
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
         </div>
     );
 }

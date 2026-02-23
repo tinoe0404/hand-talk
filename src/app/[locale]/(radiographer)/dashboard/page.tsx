@@ -1,277 +1,280 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Link } from "@/navigation";
+import { useSessionStore } from "@/store/useSessionStore";
+import { PatientView } from "@/components/dashboard/patient-view";
+import { InstructionTabs } from "@/components/dashboard/instruction-selector";
+import { EmergencyTriage } from "@/components/dashboard/emergency-triage";
 import {
-    Users,
-    Clock,
     AlertTriangle,
-    PlayCircle,
+    ChevronRight,
     Activity,
     Hand,
-    ChevronRight
-} from 'lucide-react';
-import { useSessionStore } from "@/store/useSessionStore";
-import { InstructionSelector } from "@/components/dashboard/instruction-selector";
-import { EmergencyTriage } from "@/components/dashboard/emergency-triage";
-import { useEffect, useState } from 'react';
+    Wifi,
+    WifiOff,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { GESTURE_RESULTS, GestureId } from "@/lib/constants/instructions";
+import { Link } from "@/navigation";
 
-import { getDashboardStats } from "@/lib/actions/stats-actions";
+/* ────────────────────────────────────────────────────────────
+   GESTURE RESULT BANNER
+   Shows in the RadioControls section when a gesture is detected
+──────────────────────────────────────────────────────────── */
+function GestureResultBanner() {
+    const { lastGesture } = useSessionStore();
+    if (!lastGesture) return null;
 
+    const gestureInfo = GESTURE_RESULTS.find(
+        (g) => g.id === (lastGesture.gestureId as GestureId)
+    );
+    if (!gestureInfo) return null;
+
+    return (
+        <div
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 animate-in slide-in-from-bottom-2 duration-300 ${gestureInfo.color}`}
+            role="status"
+            aria-live="polite"
+        >
+            <span className="text-2xl leading-none">{gestureInfo.emoji}</span>
+            <div className="flex-1 min-w-0">
+                <p className="font-black text-sm leading-tight">{gestureInfo.label}</p>
+                <p className="text-xs opacity-70 mt-0.5">
+                    {Math.round(lastGesture.confidence * 100)}% confidence
+                </p>
+            </div>
+            <div className={`w-2 h-2 rounded-full animate-pulse ${gestureInfo.dotColor}`} />
+        </div>
+    );
+}
+
+/* ────────────────────────────────────────────────────────────
+   VISION STATUS BAR
+──────────────────────────────────────────────────────────── */
+function VisionBar({ isOnline }: { isOnline: boolean }) {
+    const { visionStatus, isHandDetected, sessionId } = useSessionStore();
+    if (!sessionId) return null;
+
+    return (
+        <div className="flex flex-wrap items-center gap-3 px-4 py-2 bg-zinc-50 border border-zinc-100 rounded-xl text-xs font-bold uppercase tracking-wider">
+            <div className="flex items-center gap-1.5">
+                <Activity
+                    className={`w-3.5 h-3.5 ${visionStatus === "ready" ? "text-medical-green-600 animate-pulse" : "text-zinc-400"
+                        }`}
+                />
+                <span className={visionStatus === "ready" ? "text-medical-green-700" : "text-zinc-500"}>
+                    Vision: {visionStatus}
+                </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+                <Hand
+                    className={`w-3.5 h-3.5 ${isHandDetected ? "text-blue-600 animate-bounce" : "text-zinc-400"
+                        }`}
+                />
+                <span className={isHandDetected ? "text-blue-700" : "text-zinc-500"}>
+                    {isHandDetected ? "Hand detected" : "Awaiting gesture"}
+                </span>
+            </div>
+            {!isOnline && (
+                <div className="flex items-center gap-1.5 text-red-600 animate-pulse">
+                    <WifiOff className="w-3.5 h-3.5" />
+                    <span>Offline</span>
+                </div>
+            )}
+            {isOnline && (
+                <div className="flex items-center gap-1.5 text-zinc-400">
+                    <Wifi className="w-3.5 h-3.5" />
+                </div>
+            )}
+        </div>
+    );
+}
+
+/* ────────────────────────────────────────────────────────────
+   MAIN DASHBOARD PAGE
+──────────────────────────────────────────────────────────── */
 export default function DashboardPage() {
-    const t = useTranslations('Dashboard');
-    const tE = useTranslations('Emergency');
-    const { sessionId, visionStatus, isHandDetected, lastGesture, isEmergency, hasSeenGestureGuide, setHasSeenGestureGuide } = useSessionStore();
+    const {
+        sessionId,
+        patientRef,
+        displayMode,
+        isEmergency,
+        triggerEmergency,
+        acknowledgeGestureGuide,
+        endSession,
+    } = useSessionStore();
+
     const [isOnline, setIsOnline] = useState(true);
-    const [liveStats, setLiveStats] = useState({ today: 0, avgTime: "0m", emergencies: 0 });
 
     useEffect(() => {
         setIsOnline(navigator.onLine);
-        const handleOnline = () => setIsOnline(true);
-        const handleOffline = () => setIsOnline(false);
-
-        window.addEventListener('online', handleOnline);
-        window.addEventListener('offline', handleOffline);
-
-        // Fetch initial stats
-        const fetchStats = async () => {
-            const stats = await getDashboardStats();
-            setLiveStats(stats);
-        };
-        fetchStats();
-
+        const on = () => setIsOnline(true);
+        const off = () => setIsOnline(false);
+        window.addEventListener("online", on);
+        window.addEventListener("offline", off);
         return () => {
-            window.removeEventListener('online', handleOnline);
-            window.removeEventListener('offline', handleOffline);
+            window.removeEventListener("online", on);
+            window.removeEventListener("offline", off);
         };
-    }, [sessionId]); // Re-fetch when session state changes
+    }, []);
 
     const isActive = !!sessionId;
 
-    const stats = [
-        {
-            label: t('stats.today'),
-            value: liveStats.today.toString(),
-            icon: Users,
-            color: "text-blue-600",
-            bg: "bg-blue-50"
-        },
-        {
-            label: t('stats.avgTime'),
-            value: liveStats.avgTime,
-            icon: Clock,
-            color: "text-medical-green-600",
-            bg: "bg-medical-green-50"
-        },
-        {
-            label: t('stats.emergency'),
-            value: liveStats.emergencies.toString(),
-            icon: AlertTriangle,
-            color: "text-orange-600",
-            bg: "bg-orange-50"
-        }
-    ];
-
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
-            {/* Global Emergency Alert Overlay (Dashboard Side) */}
-            {isEmergency && (
-                <div className="fixed inset-0 pointer-events-none z-[60] border-[24px] border-red-600 animate-[pulse_0.75s_ease-in-out_infinite]" />
-            )}
+        /*
+          Full viewport split:
+          - TOP HALF  (patient-view): PatientView — radiographer tilts phone toward patient
+          - BOTTOM HALF (radio-controls): instruction tabs + emergency — radiographer operates
+        */
+        <div className="dashboard-root">
+            {/* ── TOP: Patient-facing display ───────────────────────── */}
+            <section className="patient-view" aria-label="Patient display">
+                <PatientView />
+            </section>
 
-            <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl md:text-4xl font-extrabold text-medical-green-900 tracking-tight">
-                            {t('welcome')}
-                        </h1>
-                        <p className="text-base md:text-xl text-medical-green-600 font-medium">
-                            {isActive ? "Live Clinical Session Active" : "Ready to authorize patient treatment sessions."}
-                        </p>
-                    </div>
-                </div>
-            </div>
+            {/* ── DIVIDER ──────────────────────────────────────────── */}
+            <div className="h-1 bg-gradient-to-r from-medical-green-600 via-medical-green-400 to-medical-green-600 shrink-0" />
 
-            {isActive ? (
-                <div className="space-y-8 animate-in zoom-in duration-500">
-                    <Card className={`border-4 ${isEmergency ? 'border-red-600 bg-red-50' : 'border-medical-green-600'} shadow-clinical-lg overflow-hidden transition-colors duration-500`}>
-                        <div className={`${isEmergency ? 'bg-red-600' : 'bg-medical-green-600'} p-3 md:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-white transition-colors duration-500`}>
-                            <div className="flex items-center gap-3">
-                                {isEmergency ? <AlertTriangle className="w-6 h-6 md:w-8 md:h-8 animate-bounce" /> : <PlayCircle className="w-6 h-6 md:w-8 md:h-8 animate-pulse" />}
-                                <h2 className="text-base md:text-2xl font-black uppercase tracking-widest">
-                                    {isEmergency ? tE("haltTitle") : tE("shiftControl")}
-                                </h2>
-                            </div>
-                            <div className="text-xs md:text-lg font-mono bg-medical-green-900/50 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-medical-green-400/30 truncate max-w-full">
-                                SID: {sessionId}
-                            </div>
+            {/* ── BOTTOM: Radiographer controls ─────────────────────── */}
+            <section className="radio-controls" aria-label="Radiographer controls">
+                {!isActive ? (
+                    /* NO SESSION — show start prompt */
+                    <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-6">
+                        <div className="w-16 h-16 bg-medical-green-100 rounded-2xl flex items-center justify-center">
+                            <Activity className="w-8 h-8 text-medical-green-600" />
                         </div>
-
-                        {/* Vision Engine Health Bar (Phase 11 Feedback Loop) */}
-                        <div className="bg-medical-green-50 border-b-2 border-medical-green-100 px-4 md:px-8 py-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-                            <div className="flex flex-wrap items-center gap-3 md:gap-6">
-                                <div className="flex items-center gap-2">
-                                    <Activity className={`w-4 h-4 md:w-5 md:h-5 ${visionStatus === 'ready' ? 'text-medical-green-600 animate-pulse' : 'text-zinc-400'}`} />
-                                    <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-medical-green-900">Vision:</span>
-                                    <span className={`text-[10px] md:text-xs font-black uppercase ${visionStatus === 'ready' ? 'text-medical-green-600' : 'text-zinc-500'}`}>
-                                        {visionStatus || tE('statusOffline')}
-                                    </span>
-                                </div>
-
-                                <div className="hidden md:block h-4 w-[2px] bg-medical-green-200" />
-
-                                <div className="flex items-center gap-2">
-                                    <Hand className={`w-4 h-4 md:w-5 md:h-5 ${isHandDetected ? 'text-blue-600 animate-bounce' : 'text-zinc-400'}`} />
-                                    <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-medical-green-900">Presence:</span>
-                                    <span className={`text-[10px] md:text-xs font-black uppercase ${isHandDetected ? 'text-blue-600' : 'text-zinc-500'}`}>
-                                        {isHandDetected ? 'DETECTED' : tE('presenceAwaiting')}
-                                    </span>
-                                </div>
-
-                                {!isOnline && (
-                                    <div className="flex items-center gap-2 animate-pulse">
-                                        <AlertTriangle className="w-4 h-4 text-red-600" />
-                                        <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">{tE('statusOffline').toUpperCase()}</span>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="flex items-center gap-4">
-                                {!hasSeenGestureGuide && !isEmergency && (
-                                    <Button
-                                        variant="outline"
-                                        className="bg-medical-green-100 hover:bg-medical-green-200 text-medical-green-900 border-medical-green-300 font-bold animate-pulse"
-                                        onClick={() => setHasSeenGestureGuide(true)}
-                                    >
-                                        Continue to Instructions
-                                        <ChevronRight className="w-4 h-4 ml-2" />
-                                    </Button>
-                                )}
-
-                                {lastGesture && (
-                                    <div className="flex items-center gap-2 px-3 py-1 bg-medical-green-600 text-white rounded-md animate-in slide-in-from-right-4 duration-300 shadow-clinical-sm">
-                                        <Activity className="w-4 h-4" />
-                                        <span className="text-xs font-black uppercase tracking-tighter">Active Signal: {lastGesture}</span>
-                                    </div>
-                                )}
-
-                                {isHandDetected && (
-                                    <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 border border-blue-200 rounded-md animate-in fade-in zoom-in duration-300">
-                                        <div className="w-2 h-2 bg-blue-600 rounded-full animate-ping" />
-                                        <span className="text-[10px] font-black text-blue-700 uppercase">{tE('inputBridge')}</span>
-                                    </div>
-                                )}
-                            </div>
+                        <div>
+                            <h2 className="text-xl font-black text-medical-green-900">
+                                No Active Session
+                            </h2>
+                            <p className="text-sm text-zinc-500 mt-1">
+                                Start a session to begin communication
+                            </p>
                         </div>
-
-                        <CardContent className="p-4 md:p-8">
-                            {isEmergency ? (
-                                <div className="space-y-8 animate-in fade-in duration-500">
-                                    <div className="flex flex-col gap-1 border-b-2 border-red-100 pb-4">
-                                        <h3 className="text-xl md:text-3xl font-black text-red-900 tracking-tight flex items-center gap-3">
-                                            <AlertTriangle className="w-6 h-6 md:w-8 md:h-8 animate-pulse" />
-                                            {tE('triageTitle')}
-                                        </h3>
-                                        <p className="text-base md:text-xl text-red-600 font-medium italic">{tE('triageDesc')}</p>
-                                    </div>
-                                    <EmergencyTriage />
-                                </div>
-                            ) : (
-                                <div className="space-y-6">
-                                    <div className="flex flex-col gap-1">
-                                        <h3 className="text-xl md:text-3xl font-black text-medical-green-900 tracking-tight">{t('playbackTitle')}</h3>
-                                        <p className="text-sm md:text-xl text-medical-green-600 font-medium italic">{t('playbackDesc')}</p>
-                                    </div>
-                                    <InstructionSelector />
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
-            ) : (
-                <>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {stats.map((stat, i) => (
-                            <Card key={i} className="border-2 border-medical-green-100 shadow-clinical-sm overflow-hidden group hover:border-medical-green-500 transition-all duration-300">
-                                <CardContent className="p-6 flex items-center justify-between">
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-bold text-medical-green-600 uppercase tracking-widest">
-                                            {stat.label}
-                                        </p>
-                                        <p className="text-3xl font-black text-medical-green-900">
-                                            {stat.value}
-                                        </p>
-                                    </div>
-                                    <div className={`${stat.bg} p-4 rounded-2xl group-hover:scale-110 transition-transform duration-300`}>
-                                        <stat.icon className={`w-8 h-8 ${stat.color}`} />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
+                        <Link href="/dashboard/setup">
+                            <button className="h-14 px-8 text-base font-black rounded-xl bg-medical-green-600 text-white shadow-lg hover:bg-medical-green-700 active:scale-95 transition-all min-w-[200px]">
+                                Start Session
+                            </button>
+                        </Link>
+                        <Link href="/dashboard/history">
+                            <button className="text-sm font-bold text-medical-green-600 underline underline-offset-2">
+                                View History
+                            </button>
+                        </Link>
                     </div>
-
-                    <Card className="border-4 border-dashed border-medical-green-200 bg-medical-green-50/30">
-                        <CardContent className="flex flex-col items-center justify-center py-20 text-center space-y-8">
-                            <div className="bg-white p-8 rounded-full shadow-clinical-md">
-                                <PlayCircle className="w-20 h-20 text-medical-green-600 animate-pulse" />
-                            </div>
-
-                            <div className="max-w-md space-y-4">
-                                <h3 className="text-3xl font-bold text-medical-green-900">
-                                    {t('activeSession')}
-                                </h3>
-                                <p className="text-lg text-medical-green-700 font-medium">
-                                    {t('noActive')}
+                ) : (
+                    /* ACTIVE SESSION */
+                    <div className="flex flex-col gap-3 p-3 pb-24">
+                        {/* Session info bar */}
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
+                                    Active Session
+                                </p>
+                                <p className="text-sm font-black text-zinc-900 truncate max-w-[180px]">
+                                    {patientRef ?? "Unknown Patient"}
                                 </p>
                             </div>
-
-                            <Link href="/dashboard/setup">
-                                <Button size="lg" className="h-[56px] md:h-[72px] px-8 md:px-12 text-lg md:text-2xl font-black rounded-clinical shadow-clinical-lg hover:scale-105 transition-transform">
-                                    {t('startSession')}
-                                </Button>
-                            </Link>
-                        </CardContent>
-                    </Card>
-
-                    {/* RECENT TREATMENTS / AUDIT TRAIL */}
-                    <div className="space-y-4">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                            <h3 className="text-lg md:text-2xl font-black text-medical-green-900 uppercase tracking-tight">{t('recent')}</h3>
-                            <Button variant="outline" className="text-xs font-bold uppercase tracking-widest border-2">{t('viewFull')}</Button>
+                            <div className="text-xs font-mono text-zinc-400 truncate max-w-[120px] text-right">
+                                {sessionId?.slice(0, 16)}…
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4">
-                            {[1].map((_, i) => (
-                                <Card key={i} className="border-2 border-zinc-100 hover:border-medical-green-500 transition-all group">
-                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 md:p-6 gap-4">
-                                        <div className="flex items-center gap-4 md:gap-6">
-                                            <div className="w-12 h-12 md:w-16 md:h-16 bg-zinc-50 rounded-xl flex items-center justify-center border-2 border-zinc-100 group-hover:border-medical-green-200 transition-colors shrink-0">
-                                                <Activity className="text-zinc-300 w-6 h-6 md:w-8 md:h-8 group-hover:text-medical-green-600 transition-colors" />
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-3 mb-1">
-                                                    <p className="text-base md:text-lg font-black text-zinc-900">P-10052</p>
-                                                    <Badge variant="success" className="text-[10px] py-0">COMPLETED</Badge>
-                                                </div>
-                                                <p className="text-[10px] md:text-xs font-bold text-zinc-400 uppercase tracking-widest leading-none">Chest SBRT • 14:22 • 20 Feb 2026</p>
-                                            </div>
-                                        </div>
-                                        <Link href="/sessions/cl_mock_123">
-                                            <Button variant="ghost" className="text-medical-green-600 font-black uppercase tracking-tight hover:bg-medical-green-50 text-sm">
-                                                Audit Trail
-                                                <ChevronRight className="w-5 h-5 ml-1" />
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                </Card>
-                            ))}
-                        </div>
+                        {/* Gesture result display */}
+                        <GestureResultBanner />
+
+                        {/* Vision status */}
+                        <VisionBar isOnline={isOnline} />
+
+                        {/* GESTURE GUIDE: show "Continue" button while guide is visible */}
+                        {displayMode === "gesture-guide" && !isEmergency && (
+                            <button
+                                onClick={acknowledgeGestureGuide}
+                                className="flex items-center justify-center gap-2 h-12 px-6 rounded-xl bg-medical-green-600 text-white font-black text-sm uppercase tracking-wider animate-pulse shadow-md min-h-[48px]"
+                            >
+                                Patient has read the guide — Continue
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        )}
+
+                        {/* EMERGENCY MODE: show triage */}
+                        {isEmergency ? (
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border-2 border-red-200 rounded-xl">
+                                    <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
+                                    <p className="text-red-800 font-black text-sm">
+                                        Emergency — Triage in progress
+                                    </p>
+                                </div>
+                                <EmergencyTriage />
+                            </div>
+                        ) : (
+                            /* INSTRUCTION TABS */
+                            (displayMode === "instruction" ||
+                                displayMode === "idle" ||
+                                displayMode === "gesture-guide") && (
+                                <InstructionTabs />
+                            )
+                        )}
+
+                        {/* End session */}
+                        {!isEmergency && (
+                            <button
+                                onClick={endSession}
+                                className="mt-2 h-11 px-4 rounded-xl border-2 border-zinc-200 text-zinc-600 font-bold text-sm hover:border-red-200 hover:text-red-600 hover:bg-red-50 transition-all active:scale-95 min-h-[44px]"
+                            >
+                                End Session
+                            </button>
+                        )}
                     </div>
-                </>
-            )}
+                )}
+
+                {/* ── EMERGENCY BUTTON — always sticky at bottom ──────── */}
+                {isActive && !isEmergency && (
+                    <div className="emergency-sticky">
+                        <button
+                            onClick={triggerEmergency}
+                            className="w-full h-14 rounded-xl bg-red-600 text-white font-black text-base uppercase tracking-widest shadow-lg hover:bg-red-700 active:scale-95 transition-all flex items-center justify-center gap-3 min-h-[56px]"
+                            aria-label="Trigger emergency"
+                        >
+                            <AlertTriangle className="w-6 h-6" />
+                            Emergency
+                        </button>
+                    </div>
+                )}
+            </section>
+
+            <style jsx>{`
+        .dashboard-root {
+          display: flex;
+          flex-direction: column;
+          height: 100dvh;
+          width: 100%;
+          overflow: hidden;
+          position: fixed;
+          inset: 0;
+        }
+        .patient-view {
+          flex: 0 0 50dvh;
+          overflow: hidden;
+          position: relative;
+        }
+        .radio-controls {
+          flex: 1;
+          overflow-y: auto;
+          overflow-x: hidden;
+          position: relative;
+          background: #f8fafc;
+        }
+        .emergency-sticky {
+          position: sticky;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 12px;
+          background: linear-gradient(to top, #f8fafc 70%, transparent);
+          z-index: 10;
+        }
+      `}</style>
         </div>
     );
 }
