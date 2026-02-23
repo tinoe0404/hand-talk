@@ -1,6 +1,6 @@
 import { getRequestConfig } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { routing, Locale } from './routing';
+import { routing, Locale } from '../routing';
 
 import { AbstractIntlMessages } from 'next-intl';
 
