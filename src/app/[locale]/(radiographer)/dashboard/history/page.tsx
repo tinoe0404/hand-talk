@@ -18,6 +18,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ClipboardCheck } from "lucide-react";
+import { Link } from "@/navigation";
 
 export default async function HistoryPage() {
     const t = await getTranslations("History");
@@ -74,8 +75,12 @@ export default async function HistoryPage() {
                                 </TableRow>
                             ) : (
                                 sessions.map((session) => (
-                                    <TableRow key={session.id} className="hover:bg-medical-green-50/50 transition-colors">
-                                        <TableCell className="font-bold text-medical-green-900">{session.patientName}</TableCell>
+                                    <TableRow key={session.id} className="hover:bg-medical-green-50/50 transition-colors group cursor-pointer">
+                                        <TableCell className="font-bold text-medical-green-900">
+                                            <Link href={`/sessions/${session.id}`} className="hover:underline">
+                                                {session.patientName}
+                                            </Link>
+                                        </TableCell>
                                         <TableCell className="font-mono text-sm text-medical-green-700">{session.patientMrn}</TableCell>
                                         <TableCell>
                                             <Badge variant="outline" className="border-medical-green-200 text-medical-green-700 bg-medical-green-50">
