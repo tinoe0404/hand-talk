@@ -23,6 +23,8 @@ export async function createSessionAction(_prevState: unknown, formData: FormDat
     const patientMrn = formData.get("mrn") as string;
     const treatmentType = formData.get("treatment") as string;
     const notes = formData.get("notes") as string;
+    const isFirstDay = formData.get("isFirstDay") === "on";
+    const isLastDay = formData.get("isLastDay") === "on";
 
     if (!patientName || !patientMrn || !treatmentType) {
         return { error: "Please fill in all clinical requirements." };
@@ -35,13 +37,15 @@ export async function createSessionAction(_prevState: unknown, formData: FormDat
                 patientMrn,
                 treatmentType,
                 notes,
+                isFirstDay,
+                isLastDay,
                 radiographerId: String(radiographerId), // Ensure string
                 status: "ACTIVE"
             }
         });
 
         revalidatePath("/dashboard");
-        return { success: true, sessionId: session.id };
+        return { success: true, sessionId: session.id, isFirstDay, isLastDay };
     } catch (error) {
         console.error("Clinical Session Creation Error:", error);
         return { error: "Failed to initialize clinical session. Please retry or contact IT." };

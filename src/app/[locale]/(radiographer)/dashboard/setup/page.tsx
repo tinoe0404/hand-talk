@@ -65,8 +65,8 @@ export default function SessionSetupPage() {
                 sessionId: state.sessionId,
                 patientRef: mrn,
                 radiographerId: 'unknown',
-                isFirstDay: false,
-                isLastDay: false
+                isFirstDay: state.isFirstDay || false,
+                isLastDay: state.isLastDay || false
             });
 
             // Redirect to patient display management (future Phase 8/10)
@@ -172,6 +172,33 @@ export default function SessionSetupPage() {
                                     rows={4}
                                     className="w-full rounded-md border-2 border-medical-green-100 bg-white px-3 py-2 text-lg font-medium focus:outline-none focus:ring-2 focus:ring-medical-green-500"
                                 />
+                            </div>
+
+                            {/* Session Flags */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                <label className="flex items-center gap-3 p-4 border-2 border-medical-green-100 rounded-clinical hover:bg-medical-green-50 cursor-pointer transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        name="isFirstDay"
+                                        className="w-6 h-6 rounded text-medical-green-600 focus:ring-medical-green-500 border-medical-green-300"
+                                    />
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-medical-green-900">First Day Session</span>
+                                        <span className="text-sm text-medical-green-600">Plays orientation video</span>
+                                    </div>
+                                </label>
+
+                                <label className="flex items-center gap-3 p-4 border-2 border-medical-green-100 rounded-clinical hover:bg-medical-green-50 cursor-pointer transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        name="isLastDay"
+                                        className="w-6 h-6 rounded text-medical-green-600 focus:ring-medical-green-500 border-medical-green-300"
+                                    />
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-medical-green-900">Last Day Session</span>
+                                        <span className="text-sm text-medical-green-600">Plays farewell video</span>
+                                    </div>
+                                </label>
                             </div>
 
                             {state?.error && (

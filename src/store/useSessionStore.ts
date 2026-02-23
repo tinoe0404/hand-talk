@@ -26,6 +26,8 @@ interface SessionState {
     lastDistressReason: string | null;
     incidentLocation: string | null;
     incidentSubReason: string | null;
+    hasSeenWelcomeVideo: boolean;
+    hasSeenGestureGuide: boolean;
 
     // Actions
     startSession: (data: { sessionId: string; patientRef: string; radiographerId: string; isFirstDay: boolean; isLastDay: boolean }) => void;
@@ -38,6 +40,8 @@ interface SessionState {
     triggerEmergency: () => void;
     resolveEmergency: (reason: string) => void;
     setEmergencyStage: (stage: number) => void;
+    setHasSeenWelcomeVideo: (seen: boolean) => void;
+    setHasSeenGestureGuide: (seen: boolean) => void;
     reset: () => void;
 }
 
@@ -56,6 +60,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     lastDistressReason: null,
     incidentLocation: null,
     incidentSubReason: null,
+    hasSeenWelcomeVideo: false,
+    hasSeenGestureGuide: false,
 
     startSession: (data) => set({
         ...data,
@@ -64,7 +70,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         emergencyStage: 0,
         lastDistressReason: null,
         incidentLocation: null,
-        incidentSubReason: null
+        incidentSubReason: null,
+        hasSeenWelcomeVideo: false,
+        hasSeenGestureGuide: false
     }),
 
     endSession: () => {
@@ -81,7 +89,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
             emergencyStage: 0,
             lastDistressReason: null,
             incidentLocation: null,
-            incidentSubReason: null
+            incidentSubReason: null,
+            hasSeenWelcomeVideo: false,
+            hasSeenGestureGuide: false
         });
     },
 
@@ -126,6 +136,10 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
     setEmergencyStage: (stage) => set({ emergencyStage: stage }),
 
+    setHasSeenWelcomeVideo: (seen) => set({ hasSeenWelcomeVideo: seen }),
+
+    setHasSeenGestureGuide: (seen) => set({ hasSeenGestureGuide: seen }),
+
     reset: () => set({
         sessionId: null,
         patientRef: null,
@@ -138,6 +152,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         incidentSubReason: null,
         isHandDetected: false,
         visionStatus: 'idle',
-        lastGesture: null
+        lastGesture: null,
+        hasSeenWelcomeVideo: false,
+        hasSeenGestureGuide: false
     }),
 }));

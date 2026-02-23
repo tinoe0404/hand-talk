@@ -24,11 +24,11 @@ export function BodyMapper({ onSelect, selectedRegion }: BodyMapperProps) {
     const t = useTranslations("BodyMapper");
     const regions: BodyRegion[] = [
         { id: "HEAD", label: t("HEAD"), path: "M50,15 A10,10 0 1,1 50,35 A10,10 0 1,1 50,15" },
-        { id: "CHEST", label: t("CHEST"), path: "M35,35 L65,35 L65,65 L35,65 Z" },
-        { id: "ARM_L", label: t("ARM_L"), path: "M20,35 L35,35 L35,60 L25,60 Z" },
-        { id: "ARM_R", label: t("ARM_R"), path: "M65,35 L80,35 L75,60 L65,60 Z" },
-        { id: "LEG_L", label: t("LEG_L"), path: "M35,65 L50,65 L50,100 L35,100 Z" },
-        { id: "LEG_R", label: t("LEG_R"), path: "M50,65 L65,65 L65,100 L50,100 Z" },
+        { id: "CHEST", label: t("CHEST"), path: "M40,35 L60,35 L60,55 L40,55 Z" },
+        { id: "ABDOMEN", label: t("ABDOMEN"), path: "M40,55 L60,55 L60,75 L40,75 Z" },
+        { id: "SIDE_L", label: t("SIDE_L"), path: "M25,35 L40,35 L40,75 L25,75 Z" },
+        { id: "SIDE_R", label: t("SIDE_R"), path: "M60,35 L75,35 L75,75 L60,75 Z" },
+        { id: "LOWER_BODY", label: t("LOWER_BODY"), path: "M35,75 L65,75 L65,100 L35,100 Z" },
     ];
 
     return (

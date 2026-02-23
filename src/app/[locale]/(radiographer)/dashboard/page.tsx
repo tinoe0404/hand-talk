@@ -24,7 +24,7 @@ import { getDashboardStats } from "@/lib/actions/stats-actions";
 export default function DashboardPage() {
     const t = useTranslations('Dashboard');
     const tE = useTranslations('Emergency');
-    const { sessionId, visionStatus, isHandDetected, lastGesture, isEmergency } = useSessionStore();
+    const { sessionId, visionStatus, isHandDetected, lastGesture, isEmergency, hasSeenGestureGuide, setHasSeenGestureGuide } = useSessionStore();
     const [isOnline, setIsOnline] = useState(true);
     const [liveStats, setLiveStats] = useState({ today: 0, avgTime: "0m", emergencies: 0 });
 
@@ -140,6 +140,17 @@ export default function DashboardPage() {
                             </div>
 
                             <div className="flex items-center gap-4">
+                                {!hasSeenGestureGuide && !isEmergency && (
+                                    <Button
+                                        variant="outline"
+                                        className="bg-medical-green-100 hover:bg-medical-green-200 text-medical-green-900 border-medical-green-300 font-bold animate-pulse"
+                                        onClick={() => setHasSeenGestureGuide(true)}
+                                    >
+                                        Continue to Instructions
+                                        <ChevronRight className="w-4 h-4 ml-2" />
+                                    </Button>
+                                )}
+
                                 {lastGesture && (
                                     <div className="flex items-center gap-2 px-3 py-1 bg-medical-green-600 text-white rounded-md animate-in slide-in-from-right-4 duration-300 shadow-clinical-sm">
                                         <Activity className="w-4 h-4" />

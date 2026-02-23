@@ -185,12 +185,12 @@
     },
     "BodyMapper": {
         "title": "Localize Distress Area:",
-        "HEAD": "Head/Neck",
-        "CHEST": "Chest/Torso",
-        "ARM_L": "Left Arm",
-        "ARM_R": "Right Arm",
-        "LEG_L": "Left Leg",
-        "LEG_R": "Right Leg"
+        "HEAD": "Head",
+        "CHEST": "Chest",
+        "ABDOMEN": "Abdomen",
+        "SIDE_L": "Left Side",
+        "SIDE_R": "Right Side",
+        "LOWER_BODY": "Lower Body / Legs"
     },
     "BreathingLog": {
         "title": "Specify Respiratory Issue:",

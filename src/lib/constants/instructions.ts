@@ -41,6 +41,8 @@ export const CLINICAL_INSTRUCTIONS: ClinicalInstruction[] = [
     { id: 'R-003', category: 'READINESS', videoPath: '/assets/instructions/R-003.mp4', iconName: 'Clock' },
     { id: 'R-004', category: 'READINESS', videoPath: '/assets/instructions/R-004.mp4', iconName: 'Smile' },
     { id: 'R-005', category: 'READINESS', videoPath: '/assets/instructions/R-005.mp4', iconName: 'Search' },
+    { id: 'see-you-tomorrow', category: 'READINESS', videoPath: '/assets/instructions/see-you-tomorrow.mp4', iconName: 'DoorOpen' },
+    { id: 'treatment-finished', category: 'READINESS', videoPath: '/assets/instructions/treatment-finished.mp4', iconName: 'Award' },
 ];
 
 /**

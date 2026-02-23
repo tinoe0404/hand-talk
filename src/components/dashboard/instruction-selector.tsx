@@ -20,7 +20,7 @@ import React from "react";
 
 export function InstructionSelector() {
     const t = useTranslations("Instructions");
-    const { currentInstructionId, setInstruction, stopInstruction } = useSessionStore();
+    const { currentInstructionId, setInstruction, stopInstruction, isLastDay } = useSessionStore();
 
     const categories = [
         { id: "BREATHING", icon: Wind, color: "text-blue-500", bg: "bg-blue-50" },
@@ -42,7 +42,15 @@ export function InstructionSelector() {
             {categories.map((cat) => {
                 const Icon = cat.icon;
                 const categoryKey = cat.id as keyof typeof GROUPED_INSTRUCTIONS;
-                const instructions = GROUPED_INSTRUCTIONS[categoryKey];
+                let instructions = GROUPED_INSTRUCTIONS[categoryKey];
+
+                if (categoryKey === "READINESS") {
+                    instructions = instructions.filter(inst => {
+                        if (isLastDay && inst.id === 'see-you-tomorrow') return false;
+                        if (!isLastDay && inst.id === 'treatment-finished') return false;
+                        return true;
+                    });
+                }
 
                 return (
                     <Card key={cat.id} className="border-2 border-slate-100 shadow-clinical-sm overflow-hidden">
