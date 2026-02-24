@@ -1,5 +1,6 @@
 import { Users, Activity, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface StatCardProps {
     title: string;
@@ -39,26 +40,27 @@ function StatCard({ title, value, label, icon: Icon, color }: StatCardProps) {
 }
 
 export function DashboardStats({ stats }: { stats: { sessionCount: number; patientCount: number; emergencyCount: number } }) {
+    const t = useTranslations("Stats");
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StatCard
-                title="Sessions Today"
+                title={t("sessionsToday")}
                 value={stats.sessionCount}
-                label="Authorized Clinical Events"
+                label={t("sessionsTodayLabel")}
                 icon={Activity}
                 color="green"
             />
             <StatCard
-                title="Total Patients"
+                title={t("totalPatients")}
                 value={stats.patientCount}
-                label="Permanent Records Cached"
+                label={t("totalPatientsLabel")}
                 icon={Users}
                 color="blue"
             />
             <StatCard
-                title="Active Alarms"
+                title={t("activeAlarms")}
                 value={stats.emergencyCount}
-                label="Distress Signals Today"
+                label={t("activeAlarmsLabel")}
                 icon={AlertCircle}
                 color="red"
             />

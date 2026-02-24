@@ -5,107 +5,23 @@ import { PatientView } from "@/components/dashboard/patient-view";
 import { InstructionTabs } from "@/components/dashboard/instruction-selector";
 import { EmergencyTriage } from "@/components/dashboard/emergency-triage";
 import { VisionEngine } from "@/components/dashboard/vision-engine";
-import {
-    AlertTriangle,
-    ChevronRight,
-    Activity,
-    Hand,
-    Wifi,
-    WifiOff,
-} from "lucide-react";
+import { AlertTriangle, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { GESTURE_RESULTS, GestureId } from "@/lib/constants/instructions";
-
-/* ────────────────────────────────────────────────────────────
-   GESTURE RESULT BANNER
-   Shows in the RadioControls section when a gesture is detected
-──────────────────────────────────────────────────────────── */
-function GestureResultBanner() {
-    const { lastGesture } = useSessionStore();
-    if (!lastGesture) {
-        return null;
-    }
-
-    const gestureInfo = GESTURE_RESULTS.find(
-        (g) => g.id === (lastGesture.gestureId as GestureId)
-    );
-    if (!gestureInfo) {
-        return null;
-    }
-
-    return (
-        <div
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 animate-in slide-in-from-bottom-2 duration-300 ${gestureInfo.color}`}
-            role="status"
-            aria-live="polite"
-        >
-            <span className="text-2xl leading-none">{gestureInfo.emoji}</span>
-            <div className="flex-1 min-w-0">
-                <p className="font-black text-sm leading-tight">{gestureInfo.label}</p>
-                <p className="text-xs opacity-70 mt-0.5">
-                    {Math.round(lastGesture.confidence * 100)}% confidence
-                </p>
-            </div>
-            <div className={`w-2 h-2 rounded-full animate-pulse ${gestureInfo.dotColor}`} />
-        </div>
-    );
-}
-
-/* ────────────────────────────────────────────────────────────
-   VISION STATUS BAR
-──────────────────────────────────────────────────────────── */
-function VisionBar({ isOnline }: { isOnline: boolean }) {
-    const { visionStatus, isHandDetected, sessionId } = useSessionStore();
-    if (!sessionId) {
-        return null;
-    }
-
-    return (
-        <div className="flex flex-wrap items-center gap-3 px-4 py-2 bg-zinc-50 border border-zinc-100 rounded-xl text-xs font-bold uppercase tracking-wider">
-            <div className="flex items-center gap-1.5">
-                <Activity
-                    className={`w-3.5 h-3.5 ${visionStatus === "ready" ? "text-medical-green-600 animate-pulse" : "text-zinc-400"
-                        }`}
-                />
-                <span className={visionStatus === "ready" ? "text-medical-green-700" : "text-zinc-500"}>
-                    Vision: {visionStatus}
-                </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-                <Hand
-                    className={`w-3.5 h-3.5 ${isHandDetected ? "text-blue-600 animate-bounce" : "text-zinc-400"
-                        }`}
-                />
-                <span className={isHandDetected ? "text-blue-700" : "text-zinc-500"}>
-                    {isHandDetected ? "Hand detected" : "Awaiting gesture"}
-                </span>
-            </div>
-            {!isOnline && (
-                <div className="flex items-center gap-1.5 text-red-600 animate-pulse">
-                    <WifiOff className="w-3.5 h-3.5" />
-                    <span>Offline</span>
-                </div>
-            )}
-            {isOnline && (
-                <div className="flex items-center gap-1.5 text-zinc-400">
-                    <Wifi className="w-3.5 h-3.5" />
-                </div>
-            )}
-        </div>
-    );
-}
-
+import { useTranslations } from "next-intl";
+import { GestureResultBanner } from "@/components/dashboard/gesture-result-banner";
+import { VisionBar } from "@/components/dashboard/vision-bar";
+import { SessionInfo } from "@/components/dashboard/session-info";
 import { DashboardHub } from "@/components/dashboard/dashboard-hub";
 
 /* ────────────────────────────────────────────────────────────
    MAIN DASHBOARD PAGE
    - HUB MODE: When no session is active.
    - SESSION MODE: When a treatment is active (split screen).
-──────────────────────────────────────────────────────────── */
+ ──────────────────────────────────────────────────────────── */
 export default function DashboardPage() {
+    const t = useTranslations("Dashboard");
     const {
         sessionId,
-        patientRef,
         displayMode,
         isEmergency,
         triggerEmergency,
@@ -155,19 +71,7 @@ export default function DashboardPage() {
                     <VisionEngine />
 
                     {/* Session info bar */}
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
-                                Active Session
-                            </p>
-                            <p className="text-sm font-black text-zinc-900 truncate max-w-[180px]">
-                                {patientRef ?? "Unknown Patient"}
-                            </p>
-                        </div>
-                        <div className="text-xs font-mono text-zinc-400 truncate max-w-[120px] text-right">
-                            {sessionId?.slice(0, 16)}…
-                        </div>
-                    </div>
+                    <SessionInfo />
 
                     {/* Gesture result display */}
                     <GestureResultBanner />
@@ -181,7 +85,7 @@ export default function DashboardPage() {
                             onClick={acknowledgeGestureGuide}
                             className="flex items-center justify-center gap-2 h-12 px-6 rounded-xl bg-medical-green-600 text-white font-black text-sm uppercase tracking-wider animate-pulse shadow-md min-h-[48px]"
                         >
-                            Patient has read the guide — Continue
+                            {t("acknowledgeGuide")}
                             <ChevronRight className="w-5 h-5" />
                         </button>
                     )}
@@ -192,7 +96,7 @@ export default function DashboardPage() {
                             <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border-2 border-red-200 rounded-xl">
                                 <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
                                 <p className="text-red-800 font-black text-sm">
-                                    Emergency — Triage in progress
+                                    {t("emergencyTriage")}
                                 </p>
                             </div>
                             <EmergencyTriage />
@@ -212,7 +116,7 @@ export default function DashboardPage() {
                             onClick={endSession}
                             className="mt-2 h-11 px-4 rounded-xl border-2 border-zinc-200 text-zinc-600 font-bold text-sm hover:border-red-200 hover:text-red-600 hover:bg-red-50 transition-all active:scale-95 min-h-[44px]"
                         >
-                            End Session
+                            {t("endSession")}
                         </button>
                     )}
                 </div>
@@ -226,7 +130,7 @@ export default function DashboardPage() {
                             aria-label="Trigger emergency"
                         >
                             <AlertTriangle className="w-6 h-6" />
-                            Emergency
+                            {t("emergencyButton")}
                         </button>
                     </div>
                 )}

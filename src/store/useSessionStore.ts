@@ -22,7 +22,6 @@ export type DisplayMode =
 export interface GestureResult {
     gestureId: GestureId;
     emoji: string;
-    label: string;
     color: string;
     dotColor: string;
     confidence: number;

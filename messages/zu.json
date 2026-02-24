@@ -29,7 +29,12 @@
         "playbackDesc": "Khetha umthetho olandelwayo ngezansi ukuze usakaze isiguli ngokushesha.",
         "noActive": "Ayikho iseshini yasemtholampilo esebenzayo njengamanje. Qala irekhodi elisha lesiguli ukuze uqale.",
         "recent": "Izindlela Zokwelashwa Zamuva",
-        "viewFull": "Buka Wonke Umlando"
+        "viewFull": "Buka Wonke Umlando",
+        "unknownPatient": "Isiguli Esingaziwa",
+        "acknowledgeGuide": "Isiguli sesiyifundile imiyalelo — QHUBEKA",
+        "emergencyTriage": "Isimo Esiphuthumayo — Isigaba Sokuhlunga",
+        "endSession": "Phelisa Iseshini",
+        "emergencyButton": "Isimo Esiphuthumayo"
     },
     "Setup": {
         "title": "Ukungeniswa Kwesiguli",
@@ -198,5 +203,25 @@
         "COUGH": "Ukukhwehlela Okungapheli",
         "EARLY_RELEASE": "Ukukhipha Umoya Masinyane",
         "UNABLE_HOLD": "Ukwehluleka Ukubamba Umoya"
+    },
+    "Gestures": {
+        "thumbs-up": "Isiguli: Ngilungile",
+        "open-palm": "Isiguli: Sicela ulinde",
+        "peace-sign": "Isiguli: Ngizwa ubuhlungu",
+        "pointing-down": "Isiguli: Kudingeka ukulungiswa"
+    },
+    "Stats": {
+        "sessionsToday": "Izeshini Zanamuhla",
+        "sessionsTodayLabel": "Imicimbi Yasemtholampilo Egunyaziwe",
+        "totalPatients": "Inani Lesiguli",
+        "totalPatientsLabel": "Amarekhodi Ahleli Ohlelweni",
+        "activeAlarms": "Ama-alamu Akhona",
+        "activeAlarmsLabel": "Izimpawu Zokuhlupheka Zanamuhla"
+    },
+    "Categories": {
+        "POSITIONING": "Ukuma",
+        "SESSION": "Iseshini",
+        "BREATHING": "Ukuphefumula",
+        "SAFETY": "Ezokuphepha"
     }
 }

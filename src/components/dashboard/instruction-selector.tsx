@@ -13,22 +13,23 @@ import { cn } from "@/lib/utils";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const IconMap = LucideIcons as unknown as Record<string, React.ElementType>;
 
-const TABS: { id: InstructionCategory; label: string; color: string; activeColor: string }[] = [
-    { id: "POSITIONING", label: "Positioning", color: "text-amber-600", activeColor: "bg-amber-500 text-white" },
-    { id: "SESSION", label: "Session", color: "text-medical-green-700", activeColor: "bg-medical-green-600 text-white" },
-    { id: "BREATHING", label: "Breathing", color: "text-blue-600", activeColor: "bg-blue-500 text-white" },
-    { id: "SAFETY", label: "Safety", color: "text-red-600", activeColor: "bg-red-500 text-white" },
-];
-
 /**
  * InstructionTabs — radiographer-side control panel.
  * Shows 4 category tabs, each with a grid of instruction buttons.
  * Tap a button → setInstruction() → PatientView auto-updates.
  */
 export function InstructionTabs() {
-    const t = useTranslations("Instructions");
+    const tInst = useTranslations("Instructions");
+    const tCat = useTranslations("Categories");
     const [activeTab, setActiveTab] = useState<InstructionCategory>("POSITIONING");
     const { currentInstructionId, setInstruction, stopInstruction } = useSessionStore();
+
+    const TABS: { id: InstructionCategory; label: string; color: string; activeColor: string }[] = [
+        { id: "POSITIONING", label: tCat("POSITIONING"), color: "text-amber-600", activeColor: "bg-amber-500 text-white" },
+        { id: "SESSION", label: tCat("SESSION"), color: "text-medical-green-700", activeColor: "bg-medical-green-600 text-white" },
+        { id: "BREATHING", label: tCat("BREATHING"), color: "text-blue-600", activeColor: "bg-blue-500 text-white" },
+        { id: "SAFETY", label: tCat("SAFETY"), color: "text-red-600", activeColor: "bg-red-500 text-white" },
+    ];
 
     const instructions = GROUPED_INSTRUCTIONS[activeTab];
 
@@ -66,7 +67,7 @@ export function InstructionTabs() {
             <div className="grid grid-cols-2 gap-2">
                 {instructions.map((inst) => {
                     const isActive = currentInstructionId === inst.id;
-                    const label = t(`${inst.id}.title`);
+                    const label = tInst(`${inst.id}.title`);
                     const Icon = IconMap[inst.iconName] ?? LucideIcons.CircleHelp;
 
                     return (

@@ -61,57 +61,29 @@ export const GROUPED_INSTRUCTIONS: Record<InstructionCategory, ClinicalInstructi
   SAFETY: CLINICAL_INSTRUCTIONS.filter((i) => i.category === 'SAFETY'),
 };
 
-/** Human-friendly labels for each instruction (fallback if i18n not loaded) */
-export const INSTRUCTION_LABELS: Record<string, string> = {
-  'lie-down': 'Lie Down',
-  'head-straight': 'Head Straight',
-  'chin-up': 'Chin Up',
-  'turn-left': 'Turn Left',
-  'turn-right': 'Turn Right',
-  'arms-up': 'Arms Up',
-  'slide-up': 'Slide Up',
-  'slide-down': 'Slide Down',
-  'lift-hips': 'Lift Hips',
-  'good-day-welcome': 'Good Day & Welcome',
-  'relax': 'Relax',
-  'dont-move': "Don't Move",
-  'comfortable': 'Comfortable?',
-  'same-as-yesterday': 'Same as Yesterday',
-  'see-you-tomorrow': 'See You Tomorrow',
-  'thank-you': 'Thank You',
-  'treatment-finished': 'Treatment Finished',
-  'breathe-normally': 'Breathe Normally',
-  'painless': 'Painless',
-  'machine-moving': 'Machine Moving',
-};
-
 /** Gesture detection results */
 export const GESTURE_RESULTS = [
   {
     id: 'thumbs-up',
     emoji: '👍',
-    label: 'Patient: I am okay',
     color: 'bg-green-100 text-green-800 border-green-300',
     dotColor: 'bg-green-500',
   },
   {
     id: 'open-palm',
     emoji: '✋',
-    label: 'Patient: Please wait',
     color: 'bg-yellow-100 text-yellow-800 border-yellow-300',
     dotColor: 'bg-yellow-500',
   },
   {
     id: 'peace-sign',
     emoji: '✌️',
-    label: 'Patient: I am in pain',
     color: 'bg-orange-100 text-orange-800 border-orange-300',
     dotColor: 'bg-orange-500',
   },
   {
     id: 'pointing-down',
     emoji: '👇',
-    label: 'Patient: Needs repositioning',
     color: 'bg-blue-100 text-blue-800 border-blue-300',
     dotColor: 'bg-blue-500',
   },

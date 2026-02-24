@@ -52,7 +52,6 @@ export function VisionEngine() {
                     recordGesture({
                         gestureId,
                         emoji: result.emoji,
-                        label: result.label,
                         color: result.color,
                         dotColor: result.dotColor,
                         confidence: 0.95,

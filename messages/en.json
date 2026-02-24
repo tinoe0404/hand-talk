@@ -29,7 +29,12 @@
         "playbackDesc": "Select a protocol below to broadcast instantly to the patient display.",
         "noActive": "No clinical session is currently active. Initialize a new patient record to begin.",
         "recent": "Recent Treatments",
-        "viewFull": "View Full Archive"
+        "viewFull": "View Full Archive",
+        "unknownPatient": "Unknown Patient",
+        "acknowledgeGuide": "Patient has read the guide — Continue",
+        "emergencyTriage": "Emergency — Triage in progress",
+        "endSession": "End Session",
+        "emergencyButton": "Emergency"
     },
     "Setup": {
         "title": "Patient Intake",
@@ -198,5 +203,25 @@
         "COUGH": "Coughing Fit",
         "EARLY_RELEASE": "Early Breath Release",
         "UNABLE_HOLD": "Unable to Hold Breath"
+    },
+    "Gestures": {
+        "thumbs-up": "Patient: I am okay",
+        "open-palm": "Patient: Please wait",
+        "peace-sign": "Patient: I am in pain",
+        "pointing-down": "Patient: Needs repositioning"
+    },
+    "Stats": {
+        "sessionsToday": "Sessions Today",
+        "sessionsTodayLabel": "Authorized Clinical Events",
+        "totalPatients": "Total Patients",
+        "totalPatientsLabel": "Permanent Records Cached",
+        "activeAlarms": "Active Alarms",
+        "activeAlarmsLabel": "Distress Signals Today"
+    },
+    "Categories": {
+        "POSITIONING": "Positioning",
+        "SESSION": "Session",
+        "BREATHING": "Breathing",
+        "SAFETY": "Safety"
     }
 }
