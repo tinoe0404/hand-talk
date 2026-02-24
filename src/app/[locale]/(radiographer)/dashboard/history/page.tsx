@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ClipboardCheck } from "lucide-react";
 import { Link } from "@/navigation";
+import { BackButton } from "@/components/dashboard/back-button";
 
 export default async function HistoryPage() {
     const t = await getTranslations("History");
@@ -34,6 +35,10 @@ export default async function HistoryPage() {
 
     return (
         <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex justify-start">
+                <BackButton />
+            </div>
+
             <div className="flex flex-col gap-1 md:gap-2">
                 <h1 className="text-3xl md:text-4xl font-extrabold text-medical-green-900 tracking-tight">
                     {t('title')}

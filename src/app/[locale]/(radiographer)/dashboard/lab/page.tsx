@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Hand, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { BackButton } from "@/components/dashboard/back-button";
 
 /**
  * Component Lab
@@ -11,6 +12,8 @@ import { Hand, AlertTriangle, CheckCircle2 } from "lucide-react";
 export default function ComponentLab() {
     return (
         <div className="min-h-screen bg-clinical-offwhite p-10 space-y-12">
+            <BackButton />
+
             <section className="space-y-6">
                 <h2 className="text-3xl font-bold text-medical-green-900 border-b-2 border-medical-green-200 pb-2">
                     Clinical Buttons (48px Min Touch Target)

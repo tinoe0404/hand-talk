@@ -1,8 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { SessionAuditViewer } from "@/components/dashboard/session-audit-viewer";
-import { ChevronLeft } from "lucide-react";
-import { Link } from "@/navigation";
+import { BackButton } from "@/components/dashboard/back-button";
 
 interface SessionDetailsPageProps {
     params: {
@@ -40,12 +39,7 @@ export default async function SessionDetailsPage({ params }: SessionDetailsPageP
         <div className="container mx-auto py-12 px-6 space-y-8">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Link
-                        href="/dashboard"
-                        className="p-3 bg-zinc-100 rounded-full hover:bg-medical-green-100 hover:text-medical-green-700 transition-colors"
-                    >
-                        <ChevronLeft className="w-6 h-6" />
-                    </Link>
+                    <BackButton />
                     <div>
                         <h1 className="text-3xl font-black text-zinc-900 uppercase tracking-tight">
                             Clinical Session Audit

@@ -10,6 +10,7 @@ import { ShieldAlert, Loader2, Sparkles, ClipboardList } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "@/navigation";
 import { useSessionStore } from "@/store/useSessionStore";
+import { BackButton } from "@/components/dashboard/back-button";
 
 function SubmitButton() {
     const { pending } = useFormStatus();
@@ -77,6 +78,10 @@ export default function SessionSetupPage() {
 
     return (
         <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+            <div className="flex justify-start">
+                <BackButton />
+            </div>
+
             <div className="flex flex-col gap-2">
                 <h1 className="text-4xl font-extrabold text-medical-green-900 tracking-tight">
                     {t('title')}
