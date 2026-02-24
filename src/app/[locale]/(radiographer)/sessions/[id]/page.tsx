@@ -27,7 +27,8 @@ export default async function SessionDetailsPage({ params }: SessionDetailsPageP
             },
             gestureLogs: {
                 orderBy: { timestamp: "asc" }
-            }
+            },
+            patient: true
         }
     });
 

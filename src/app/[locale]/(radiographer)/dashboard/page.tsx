@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { GESTURE_RESULTS, GestureId } from "@/lib/constants/instructions";
-import { Link } from "@/navigation";
 
 /* ────────────────────────────────────────────────────────────
    GESTURE RESULT BANNER
@@ -96,8 +95,12 @@ function VisionBar({ isOnline }: { isOnline: boolean }) {
     );
 }
 
+import { DashboardHub } from "@/components/dashboard/dashboard-hub";
+
 /* ────────────────────────────────────────────────────────────
    MAIN DASHBOARD PAGE
+   - HUB MODE: When no session is active.
+   - SESSION MODE: When a treatment is active (split screen).
 ──────────────────────────────────────────────────────────── */
 export default function DashboardPage() {
     const {
@@ -126,6 +129,10 @@ export default function DashboardPage() {
 
     const isActive = !!sessionId;
 
+    if (!isActive) {
+        return <DashboardHub />;
+    }
+
     return (
         /*
           Full viewport split:
@@ -143,103 +150,75 @@ export default function DashboardPage() {
 
             {/* ── BOTTOM: Radiographer controls ─────────────────────── */}
             <section className="radio-controls" aria-label="Radiographer controls">
-                {!isActive ? (
-                    /* NO SESSION — show start prompt */
-                    <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-6">
-                        <div className="w-16 h-16 bg-medical-green-100 rounded-2xl flex items-center justify-center">
-                            <Activity className="w-8 h-8 text-medical-green-600" />
-                        </div>
+                <div className="flex flex-col gap-3 p-3 pb-24">
+                    {/* Background Vision Logic */}
+                    <VisionEngine />
+
+                    {/* Session info bar */}
+                    <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-xl font-black text-medical-green-900">
-                                No Active Session
-                            </h2>
-                            <p className="text-sm text-zinc-500 mt-1">
-                                Start a session to begin communication
+                            <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
+                                Active Session
+                            </p>
+                            <p className="text-sm font-black text-zinc-900 truncate max-w-[180px]">
+                                {patientRef ?? "Unknown Patient"}
                             </p>
                         </div>
-                        <Link href="/dashboard/session/new">
-                            <button className="h-14 px-8 text-base font-black rounded-xl bg-medical-green-600 text-white shadow-lg hover:bg-medical-green-700 active:scale-95 transition-all min-w-[200px]">
-                                Start Session
-                            </button>
-                        </Link>
-                        <Link href="/dashboard/history">
-                            <button className="text-sm font-bold text-medical-green-600 underline underline-offset-2">
-                                View History
-                            </button>
-                        </Link>
-                    </div>
-                ) : (
-                    /* ACTIVE SESSION */
-                    <div className="flex flex-col gap-3 p-3 pb-24">
-                        {/* Background Vision Logic */}
-                        <VisionEngine />
-
-                        {/* Session info bar */}
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
-                                    Active Session
-                                </p>
-                                <p className="text-sm font-black text-zinc-900 truncate max-w-[180px]">
-                                    {patientRef ?? "Unknown Patient"}
-                                </p>
-                            </div>
-                            <div className="text-xs font-mono text-zinc-400 truncate max-w-[120px] text-right">
-                                {sessionId?.slice(0, 16)}…
-                            </div>
+                        <div className="text-xs font-mono text-zinc-400 truncate max-w-[120px] text-right">
+                            {sessionId?.slice(0, 16)}…
                         </div>
-
-                        {/* Gesture result display */}
-                        <GestureResultBanner />
-
-                        {/* Vision status */}
-                        <VisionBar isOnline={isOnline} />
-
-                        {/* GESTURE GUIDE: show "Continue" button while guide is visible */}
-                        {displayMode === "gesture-guide" && !isEmergency && (
-                            <button
-                                onClick={acknowledgeGestureGuide}
-                                className="flex items-center justify-center gap-2 h-12 px-6 rounded-xl bg-medical-green-600 text-white font-black text-sm uppercase tracking-wider animate-pulse shadow-md min-h-[48px]"
-                            >
-                                Patient has read the guide — Continue
-                                <ChevronRight className="w-5 h-5" />
-                            </button>
-                        )}
-
-                        {/* EMERGENCY MODE: show triage */}
-                        {isEmergency ? (
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border-2 border-red-200 rounded-xl">
-                                    <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
-                                    <p className="text-red-800 font-black text-sm">
-                                        Emergency — Triage in progress
-                                    </p>
-                                </div>
-                                <EmergencyTriage />
-                            </div>
-                        ) : (
-                            /* INSTRUCTION TABS */
-                            (displayMode === "instruction" ||
-                                displayMode === "idle" ||
-                                displayMode === "gesture-guide") && (
-                                <InstructionTabs />
-                            )
-                        )}
-
-                        {/* End session */}
-                        {!isEmergency && (
-                            <button
-                                onClick={endSession}
-                                className="mt-2 h-11 px-4 rounded-xl border-2 border-zinc-200 text-zinc-600 font-bold text-sm hover:border-red-200 hover:text-red-600 hover:bg-red-50 transition-all active:scale-95 min-h-[44px]"
-                            >
-                                End Session
-                            </button>
-                        )}
                     </div>
-                )}
+
+                    {/* Gesture result display */}
+                    <GestureResultBanner />
+
+                    {/* Vision status */}
+                    <VisionBar isOnline={isOnline} />
+
+                    {/* GESTURE GUIDE: show "Continue" button while guide is visible */}
+                    {displayMode === "gesture-guide" && !isEmergency && (
+                        <button
+                            onClick={acknowledgeGestureGuide}
+                            className="flex items-center justify-center gap-2 h-12 px-6 rounded-xl bg-medical-green-600 text-white font-black text-sm uppercase tracking-wider animate-pulse shadow-md min-h-[48px]"
+                        >
+                            Patient has read the guide — Continue
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    )}
+
+                    {/* EMERGENCY MODE: show triage */}
+                    {isEmergency ? (
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border-2 border-red-200 rounded-xl">
+                                <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
+                                <p className="text-red-800 font-black text-sm">
+                                    Emergency — Triage in progress
+                                </p>
+                            </div>
+                            <EmergencyTriage />
+                        </div>
+                    ) : (
+                        /* INSTRUCTION TABS */
+                        (displayMode === "instruction" ||
+                            displayMode === "idle" ||
+                            displayMode === "gesture-guide") && (
+                            <InstructionTabs />
+                        )
+                    )}
+
+                    {/* End session */}
+                    {!isEmergency && (
+                        <button
+                            onClick={endSession}
+                            className="mt-2 h-11 px-4 rounded-xl border-2 border-zinc-200 text-zinc-600 font-bold text-sm hover:border-red-200 hover:text-red-600 hover:bg-red-50 transition-all active:scale-95 min-h-[44px]"
+                        >
+                            End Session
+                        </button>
+                    )}
+                </div>
 
                 {/* ── EMERGENCY BUTTON — always sticky at bottom ──────── */}
-                {isActive && !isEmergency && (
+                {!isEmergency && (
                     <div className="emergency-sticky">
                         <button
                             onClick={triggerEmergency}
@@ -254,37 +233,39 @@ export default function DashboardPage() {
             </section>
 
             <style jsx>{`
-        .dashboard-root {
-          display: flex;
-          flex-direction: column;
-          height: 100dvh;
-          width: 100%;
-          overflow: hidden;
-          position: fixed;
-          inset: 0;
-        }
-        .patient-view {
-          flex: 0 0 50dvh;
-          overflow: hidden;
-          position: relative;
-        }
-        .radio-controls {
-          flex: 1;
-          overflow-y: auto;
-          overflow-x: hidden;
-          position: relative;
-          background: #f8fafc;
-        }
-        .emergency-sticky {
-          position: sticky;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          padding: 12px;
-          background: linear-gradient(to top, #f8fafc 70%, transparent);
-          z-index: 10;
-        }
-      `}</style>
+                .dashboard-root {
+                  display: flex;
+                  flex-direction: column;
+                  height: 100dvh;
+                  width: 100%;
+                  overflow: hidden;
+                  position: fixed;
+                  inset: 0;
+                  z-index: 50;
+                  background: white;
+                }
+                .patient-view {
+                  flex: 0 0 50dvh;
+                  overflow: hidden;
+                  position: relative;
+                }
+                .radio-controls {
+                  flex: 1;
+                  overflow-y: auto;
+                  overflow-x: hidden;
+                  position: relative;
+                  background: #f8fafc;
+                }
+                .emergency-sticky {
+                  position: sticky;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
+                  padding: 12px;
+                  background: linear-gradient(to top, #f8fafc 70%, transparent);
+                  z-index: 10;
+                }
+            `}</style>
         </div>
     );
 }

@@ -17,12 +17,25 @@ model Radiographer {
   updatedAt DateTime  @updatedAt
 }
 
+model Patient {
+  id              String    @id @default(cuid())
+  mrn             String    @unique
+  name            String
+  dateOfBirth     DateTime?
+  gender          String?
+  sessions        Session[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
 model Session {
   id              String           @id @default(cuid())
   createdAt       DateTime         @default(now())
   endTime         DateTime?
-  patientName     String
-  patientMrn      String
+  
+  patient         Patient          @relation(fields: [patientId], references: [id])
+  patientId       String
+  
   treatmentType   String
   notes           String?
   status          String           @default("ACTIVE") // ACTIVE, COMPLETED, INTERRUPTED

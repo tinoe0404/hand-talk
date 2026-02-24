@@ -29,7 +29,8 @@ export default async function HistoryPage() {
         orderBy: { createdAt: "desc" },
         take: 50,
         include: {
-            radiographer: true
+            radiographer: true,
+            patient: true
         }
     });
 
@@ -85,10 +86,10 @@ export default async function HistoryPage() {
                                         <TableRow key={session.id} className="hover:bg-medical-green-50/50 transition-colors group cursor-pointer border-medical-green-50">
                                             <TableCell className="font-bold text-medical-green-900">
                                                 <Link href={`/sessions/${session.id}`} className="hover:underline flex items-center gap-2">
-                                                    {session.patientName}
+                                                    {session.patient.name}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell className="font-mono text-sm text-medical-green-700">{session.patientMrn}</TableCell>
+                                            <TableCell className="font-mono text-sm text-medical-green-700">{session.patient.mrn}</TableCell>
                                             <TableCell>
                                                 <Badge variant="outline" className="border-medical-green-200 text-medical-green-700 bg-medical-green-50 font-bold">
                                                     {session.treatmentType}
@@ -128,10 +129,10 @@ export default async function HistoryPage() {
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="space-y-0.5">
                                             <p className="font-black text-medical-green-900 text-lg uppercase leading-tight">
-                                                {session.patientName}
+                                                {session.patient.name}
                                             </p>
                                             <p className="font-mono text-[10px] text-medical-green-600 tracking-widest font-bold">
-                                                MRN: {session.patientMrn}
+                                                MRN: {session.patient.mrn}
                                             </p>
                                         </div>
                                         <Badge

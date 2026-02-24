@@ -38,7 +38,11 @@ interface GestureLog {
 }
 
 interface ClinicalSession {
-    patientMrn: string;
+    id: string;
+    patient: {
+        name: string;
+        mrn: string;
+    };
     createdAt: string | Date;
     status: string;
     emergencyLogs: EmergencyLog[];
@@ -82,8 +86,20 @@ export function SessionAuditViewer({ session }: SessionSummaryProps) {
                         <div className="flex items-center gap-3">
                             <User className="text-medical-green-600 w-6 h-6 shrink-0" />
                             <div>
+                                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest leading-none mb-1">Patient Name</p>
+                                <p className="text-base font-black text-zinc-900">{session.patient.name}</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="bg-zinc-50 border-zinc-100">
+                    <CardContent className="pt-6">
+                        <div className="flex items-center gap-3">
+                            <User className="text-zinc-600 w-6 h-6 shrink-0" />
+                            <div>
                                 <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest leading-none mb-1">Patient MRN</p>
-                                <p className="text-base font-black text-zinc-900">{session.patientMrn}</p>
+                                <p className="text-base font-black text-zinc-900">{session.patient.mrn}</p>
                             </div>
                         </div>
                     </CardContent>

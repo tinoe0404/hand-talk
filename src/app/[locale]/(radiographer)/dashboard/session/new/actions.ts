@@ -31,10 +31,23 @@ export async function createSessionAction(_prevState: unknown, formData: FormDat
     }
 
     try {
+        // Upsert logic for patient record
+        let patient = await prisma.patient.findUnique({
+            where: { mrn: patientMrn }
+        });
+
+        if (!patient) {
+            patient = await prisma.patient.create({
+                data: {
+                    name: patientName,
+                    mrn: patientMrn
+                }
+            });
+        }
+
         const session = await prisma.session.create({
             data: {
-                patientName,
-                patientMrn,
+                patientId: patient.id,
                 treatmentType,
                 notes,
                 isFirstDay,

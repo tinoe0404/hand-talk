@@ -1,0 +1,43 @@
+  Γû▓ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô (serwist) Bundling the service worker script with the URL '/sw.js' and the scope '/'...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+
+./src/app/[locale]/page.tsx
+68:13  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/6) ...
+   Generating static pages (1/6) 
+   Generating static pages (2/6) 
+   Generating static pages (4/6) 
+ Γ£ô Generating static pages (6/6)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+Γöî Γùï /_not-found                          876 B          89.8 kB
+Γö£ ╞Æ /[locale]                            177 B           112 kB
+Γö£ ╞Æ /[locale]/dashboard                  198 kB          319 kB
+Γö£ ╞Æ /[locale]/dashboard/history          295 B           112 kB
+Γö£ ╞Æ /[locale]/dashboard/lab              295 B           112 kB
+Γö£ ╞Æ /[locale]/dashboard/session/new      6.34 kB         128 kB
+Γö£ ╞Æ /[locale]/login                      4.73 kB         126 kB
+Γö£ ╞Æ /[locale]/sessions/[id]              9.64 kB         131 kB
+Γö£ ╞Æ /api/auth/seed                       0 B                0 B
+Γöö Γùï /manifest.webmanifest                0 B                0 B
++ First Load JS shared by all            88.9 kB
+  Γö£ chunks/734-7ccfd82f6f515510.js       33.3 kB
+  Γö£ chunks/fd9d1056-84584f756061b5b8.js  53.6 kB
+  Γöö other shared chunks (total)          2.02 kB
+
+
+╞Æ Middleware                             43.8 kB
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

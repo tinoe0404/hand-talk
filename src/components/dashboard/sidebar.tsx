@@ -5,7 +5,6 @@ import { Link, usePathname } from '@/navigation';
 import { cn } from '@/lib/utils';
 import {
     LayoutDashboard,
-    PlusCircle,
     History,
     Settings,
     LogOut,
@@ -22,11 +21,6 @@ const navItems = [
         href: '/dashboard',
         icon: LayoutDashboard,
         labelKey: 'title'
-    },
-    {
-        href: '/dashboard/session/new',
-        icon: PlusCircle,
-        labelKey: 'setupSession'
     },
     {
         href: '/dashboard/history',
