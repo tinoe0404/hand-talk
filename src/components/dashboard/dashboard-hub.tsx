@@ -1,14 +1,59 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { DashboardStats } from "./stats-cards";
 import { PatientList } from "./patient-list";
 import { PatientRegistrationModal } from "./patient-registration-form";
 import { getDashboardStats, getPatients } from "@/app/[locale]/(radiographer)/dashboard/actions";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Users, ClipboardList } from "lucide-react";
+import { Users, ClipboardList, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-export async function DashboardHub() {
-    const stats = await getDashboardStats();
-    const patients = await getPatients();
+interface DashboardStatsData {
+    sessionCount: number;
+    patientCount: number;
+    emergencyCount: number;
+}
+
+interface Patient {
+    id: string;
+    name: string;
+    mrn: string;
+    gender: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export function DashboardHub() {
+    const [stats, setStats] = useState<DashboardStatsData | null>(null);
+    const [patients, setPatients] = useState<Patient[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [s, p] = await Promise.all([
+                    getDashboardStats(),
+                    getPatients()
+                ]);
+                setStats(s as DashboardStatsData);
+                setPatients(p as Patient[]);
+            } catch (error) {
+                console.error("Failed to fetch dashboard data:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="w-8 h-8 text-medical-green-600 animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col gap-8 p-6 md:p-8 animate-in fade-in duration-500">
