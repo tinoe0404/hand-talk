@@ -65,7 +65,7 @@ export default async function RootLayout({
         <a href="#main-content" className="skip-nav">
           Skip to content
         </a>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={messages} locale={locale}>
           <div id="main-content">
             {children}
           </div>
