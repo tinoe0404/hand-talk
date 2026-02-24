@@ -23,12 +23,16 @@ import { Link } from "@/navigation";
 ──────────────────────────────────────────────────────────── */
 function GestureResultBanner() {
     const { lastGesture } = useSessionStore();
-    if (!lastGesture) return null;
+    if (!lastGesture) {
+        return null;
+    }
 
     const gestureInfo = GESTURE_RESULTS.find(
         (g) => g.id === (lastGesture.gestureId as GestureId)
     );
-    if (!gestureInfo) return null;
+    if (!gestureInfo) {
+        return null;
+    }
 
     return (
         <div
@@ -53,7 +57,9 @@ function GestureResultBanner() {
 ──────────────────────────────────────────────────────────── */
 function VisionBar({ isOnline }: { isOnline: boolean }) {
     const { visionStatus, isHandDetected, sessionId } = useSessionStore();
-    if (!sessionId) return null;
+    if (!sessionId) {
+        return null;
+    }
 
     return (
         <div className="flex flex-wrap items-center gap-3 px-4 py-2 bg-zinc-50 border border-zinc-100 rounded-xl text-xs font-bold uppercase tracking-wider">

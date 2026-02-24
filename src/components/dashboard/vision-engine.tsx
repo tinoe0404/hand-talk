@@ -22,7 +22,9 @@ export function VisionEngine() {
     } = useSessionStore();
 
     useEffect(() => {
-        if (!sessionId) return;
+        if (!sessionId) {
+            return;
+        }
 
         // 1. Initialize Worker
         workerRef.current = new Worker(
@@ -100,11 +102,15 @@ export function VisionEngine() {
         requestRef.current = requestAnimationFrame(processFrame);
 
         return () => {
-            if (requestRef.current) cancelAnimationFrame(requestRef.current);
+            if (requestRef.current) {
+                cancelAnimationFrame(requestRef.current);
+            }
             workerRef.current?.terminate();
-            if (videoRef.current?.srcObject) {
-                const stream = videoRef.current.srcObject as MediaStream;
-                stream.getTracks().forEach(track => track.stop());
+
+            const currentVideo = videoRef.current;
+            if (currentVideo?.srcObject) {
+                const stream = currentVideo.srcObject as MediaStream;
+                stream.getTracks().forEach((track) => track.stop());
             }
         };
     }, [sessionId, setVisionStatus, setHandDetected, recordGesture]);

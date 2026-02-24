@@ -39,7 +39,9 @@ export function PatientView() {
     // Whenever the instruction or mode changes, restart + play the video
     useEffect(() => {
         const vid = videoRef.current;
-        if (!vid) return;
+        if (!vid) {
+            return;
+        }
         vid.load();
         vid.play().catch(() => {/* autoplay blocked — user interaction required */ });
     }, [currentInstructionId, displayMode]);

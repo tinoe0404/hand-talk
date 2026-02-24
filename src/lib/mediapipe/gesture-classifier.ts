@@ -17,16 +17,18 @@ export class GestureClassifier {
      * THUMBS_UP: Thumb tip is above all other finger tips and joints.
      */
     private static isThumbsUp(landmarks: Landmark[]): boolean {
-        if (!landmarks || landmarks.length < 21) return false;
-        const l: any = landmarks;
-        const thumbTip = l[4];
-        const thumbIp = l[3];
-        const indexMcp = l[5];
+        if (!landmarks || landmarks.length < 21) {
+            return false;
+        }
+        const l = landmarks;
+        const thumbTip = l[4]!;
+        const thumbIp = l[3]!;
+        const indexMcp = l[5]!;
 
         const isUp = thumbTip.y < thumbIp.y && thumbTip.y < indexMcp.y;
 
-        const othersFolded = [8, 12, 16, 20].every(tipIdx => {
-            return l[tipIdx].y > l[tipIdx - 2].y;
+        const othersFolded = [8, 12, 16, 20].every((tipIdx) => {
+            return l[tipIdx]!.y > l[tipIdx - 2]!.y;
         });
 
         return isUp && othersFolded;
@@ -36,10 +38,12 @@ export class GestureClassifier {
      * OPEN_PALM: All fingers extended and spread.
      */
     private static isOpenPalm(landmarks: Landmark[]): boolean {
-        if (!landmarks || landmarks.length < 21) return false;
-        const l: any = landmarks;
-        const fingersExtended = [8, 12, 16, 20].every(tipIdx => {
-            return l[tipIdx].y < l[tipIdx - 2].y;
+        if (!landmarks || landmarks.length < 21) {
+            return false;
+        }
+        const l = landmarks;
+        const fingersExtended = [8, 12, 16, 20].every((tipIdx) => {
+            return l[tipIdx]!.y < l[tipIdx - 2]!.y;
         });
 
         return fingersExtended;
@@ -49,12 +53,14 @@ export class GestureClassifier {
      * PEACE_SIGN: Index and Middle extended, others folded.
      */
     private static isPeaceSign(landmarks: Landmark[]): boolean {
-        if (!landmarks || landmarks.length < 21) return false;
-        const l: any = landmarks;
-        const indexExtended = l[8].y < l[6].y;
-        const middleExtended = l[12].y < l[10].y;
-        const othersFolded = [16, 20].every(tipIdx => {
-            return l[tipIdx].y > l[tipIdx - 2].y;
+        if (!landmarks || landmarks.length < 21) {
+            return false;
+        }
+        const l = landmarks;
+        const indexExtended = l[8]!.y < l[6]!.y;
+        const middleExtended = l[12]!.y < l[10]!.y;
+        const othersFolded = [16, 20].every((tipIdx) => {
+            return l[tipIdx]!.y > l[tipIdx - 2]!.y;
         });
 
         return indexExtended && middleExtended && othersFolded;
@@ -64,12 +70,15 @@ export class GestureClassifier {
      * POINTING_DOWN: Index finger extended downwards, others folded.
      */
     private static isPointingDown(landmarks: Landmark[]): boolean {
-        if (!landmarks || landmarks.length < 21) return false;
-        const l: any = landmarks;
-        const indexPointingDown = l[8].y > l[6].y && l[8].y > l[5].y;
+        if (!landmarks || landmarks.length < 21) {
+            return false;
+        }
+        const l = landmarks;
+        const indexPointingDown = l[8]!.y > l[6]!.y && l[8]!.y > l[5]!.y;
 
         // Simpler check: index tip is the lowest point (highest Y)
-        const isLowest = l[8].y > l[12].y && l[8].y > l[16].y && l[8].y > l[20].y;
+        const isLowest =
+            l[8]!.y > l[12]!.y && l[8]!.y > l[16]!.y && l[8]!.y > l[20]!.y;
 
         return indexPointingDown && isLowest;
     }
