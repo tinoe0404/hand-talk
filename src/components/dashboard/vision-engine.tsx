@@ -101,15 +101,18 @@ export function VisionEngine() {
 
         requestRef.current = requestAnimationFrame(processFrame);
 
+        const videoElement = videoRef.current;
+
         return () => {
             if (requestRef.current) {
                 cancelAnimationFrame(requestRef.current);
             }
-            workerRef.current?.terminate();
+            if (workerRef.current) {
+                workerRef.current.terminate();
+            }
 
-            const currentVideo = videoRef.current;
-            if (currentVideo?.srcObject) {
-                const stream = currentVideo.srcObject as MediaStream;
+            if (videoElement?.srcObject) {
+                const stream = videoElement.srcObject as MediaStream;
                 stream.getTracks().forEach((track) => track.stop());
             }
         };
