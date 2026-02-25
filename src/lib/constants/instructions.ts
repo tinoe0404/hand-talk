@@ -43,10 +43,8 @@ export const CLINICAL_INSTRUCTIONS: ClinicalInstruction[] = [
   { id: 'machine-moving', category: 'SAFETY', iconName: 'Settings' },
 ];
 
-/** Resolve the Supabase Storage path for any instruction or special video */
 export const videoPath = (id: string) => {
-  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_URL || '/videos';
-  return `${baseUrl}/${id}.mp4`;
+  return `/videos/${id}.mp4`;
 };
 
 /** Lookup by id */
