@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import {
     logInstructionChange,
     logEmergencyEvent,
@@ -39,6 +40,7 @@ interface SessionState {
     // ── Display state (drives the TOP panel) ─────────────────
     displayMode: DisplayMode;
     currentInstructionId: string | null;
+    currentInstructionStartTime: number | null;
 
     // ── Emergency ─────────────────────────────────────────────
     isEmergency: boolean;
@@ -78,7 +80,6 @@ interface SessionState {
     setVisionStatus: (status: 'idle' | 'loading' | 'ready' | 'error') => void;
     recordGesture: (result: GestureResult) => void;
 
-    reset: () => void;
 }
 
 const INITIAL_STATE = {
@@ -89,6 +90,7 @@ const INITIAL_STATE = {
     isLastDay: false,
     displayMode: 'idle' as DisplayMode,
     currentInstructionId: null,
+    currentInstructionStartTime: null,
     isEmergency: false,
     emergencyStage: 0,
     isHandDetected: false,
@@ -97,93 +99,137 @@ const INITIAL_STATE = {
     gestureLog: [],
 };
 
-export const useSessionStore = create<SessionState>((set, get) => ({
-    ...INITIAL_STATE,
+export const useSessionStore = create<SessionState>()(
+    persist(
+        (set, get) => ({
+            ...INITIAL_STATE,
 
-    startSession: (data) => {
-        // If first day → play welcome video, then gesture guide
-        // Otherwise → show gesture guide immediately
-        const displayMode: DisplayMode = data.isFirstDay ? 'welcome' : 'gesture-guide';
-        set({
-            ...data,
-            displayMode,
-            currentInstructionId: null,
-            isEmergency: false,
-            emergencyStage: 0,
-            lastGesture: null,
-            gestureLog: [],
-        });
-    },
+            startSession: (data) => {
+                // If first day → play welcome video, then gesture guide
+                // Otherwise → show gesture guide immediately
+                const displayMode: DisplayMode = data.isFirstDay ? 'welcome' : 'gesture-guide';
+                set({
+                    ...data,
+                    displayMode,
+                    currentInstructionId: null,
+                    currentInstructionStartTime: null,
+                    isEmergency: false,
+                    emergencyStage: 0,
+                    lastGesture: null,
+                    gestureLog: [],
+                });
+            },
 
-    endSession: () => {
-        const { sessionId } = get();
-        if (sessionId) {
-            endClinicalSession(sessionId, 'COMPLETED');
+            endSession: () => {
+                const { sessionId, currentInstructionId, currentInstructionStartTime } = get();
+                // Log final instruction duration if one was active
+                if (sessionId && currentInstructionId && currentInstructionStartTime) {
+                    const durationMs = Date.now() - currentInstructionStartTime;
+                    logInstructionChange(sessionId, currentInstructionId, durationMs);
+                }
+
+                if (sessionId) {
+                    endClinicalSession(sessionId, 'COMPLETED');
+                }
+                set({ ...INITIAL_STATE });
+            },
+
+            setInstruction: (id) => {
+                const { sessionId, isLastDay, currentInstructionId, currentInstructionStartTime } = get();
+
+                if (sessionId) {
+                    // If changing instructions, log the duration of the PREVIOUS one
+                    if (currentInstructionId && currentInstructionStartTime) {
+                        const durationMs = Date.now() - currentInstructionStartTime;
+                        logInstructionChange(sessionId, currentInstructionId, durationMs);
+                    }
+                    // Log the start of the NEW instruction (duration will be null initially)
+                    logInstructionChange(sessionId, id);
+                }
+
+                const now = Date.now();
+
+                // Special: treatment-finished on last day triggers farewell
+                if (id === 'treatment-finished' && isLastDay) {
+                    set({ currentInstructionId: id, currentInstructionStartTime: now, displayMode: 'farewell' });
+                } else {
+                    set({ currentInstructionId: id, currentInstructionStartTime: now, displayMode: 'instruction' });
+                }
+            },
+
+            stopInstruction: () => {
+                const { sessionId, currentInstructionId, currentInstructionStartTime } = get();
+
+                if (sessionId && currentInstructionId && currentInstructionStartTime) {
+                    const durationMs = Date.now() - currentInstructionStartTime;
+                    // Log the 'stop' event with the final calculated duration
+                    logInstructionChange(sessionId, currentInstructionId, durationMs);
+                }
+
+                set({ currentInstructionId: null, currentInstructionStartTime: null, displayMode: 'instruction' });
+            },
+            acknowledgeGestureGuide: () =>
+                set({ displayMode: 'instruction' }),
+
+            onWelcomeVideoEnd: () =>
+                set({ displayMode: 'gesture-guide' }),
+
+            onFarewellVideoEnd: () => {
+                const { sessionId } = get();
+                if (sessionId) {
+                    endClinicalSession(sessionId, 'COMPLETED');
+                }
+                set({ ...INITIAL_STATE });
+            },
+
+            triggerEmergency: () => {
+                const { sessionId } = get();
+                if (sessionId) {
+                    logEmergencyEvent({ sessionId, stage: 1 });
+                }
+                set({ isEmergency: true, emergencyStage: 1, displayMode: 'emergency', currentInstructionId: null });
+            },
+
+            resolveEmergency: (reason) => {
+                const { sessionId } = get();
+                if (sessionId) {
+                    logEmergencyEvent({ sessionId, stage: 3, reason });
+                }
+                set({
+                    isEmergency: false,
+                    emergencyStage: 0,
+                    displayMode: 'instruction',
+                    currentInstructionId: null,
+                });
+            },
+
+            setEmergencyStage: (stage) => set({ emergencyStage: stage }),
+
+            setHandDetected: (detected) => set({ isHandDetected: detected }),
+            setVisionStatus: (status) => set({ visionStatus: status }),
+
+            recordGesture: (result) =>
+                set((state) => ({
+                    lastGesture: result,
+                    gestureLog: [...state.gestureLog, result],
+                })),
+
+            reset: () => set({ ...INITIAL_STATE }),
+        }),
+        {
+            name: 'hand-talk-session',
+            partialize: (state) => ({
+                sessionId: state.sessionId,
+                patientRef: state.patientRef,
+                radiographerId: state.radiographerId,
+                isFirstDay: state.isFirstDay,
+                isLastDay: state.isLastDay,
+                displayMode: state.displayMode,
+                currentInstructionId: state.currentInstructionId,
+                currentInstructionStartTime: state.currentInstructionStartTime,
+                isEmergency: state.isEmergency,
+                emergencyStage: state.emergencyStage,
+            }),
         }
-        set({ ...INITIAL_STATE });
-    },
-
-    setInstruction: (id) => {
-        const { sessionId, isLastDay } = get();
-        if (sessionId) {
-            logInstructionChange(sessionId, id);
-        }
-        // Special: treatment-finished on last day triggers farewell
-        if (id === 'treatment-finished' && isLastDay) {
-            set({ currentInstructionId: id, displayMode: 'farewell' });
-        } else {
-            set({ currentInstructionId: id, displayMode: 'instruction' });
-        }
-    },
-
-    stopInstruction: () =>
-        set({ currentInstructionId: null, displayMode: 'instruction' }),
-
-    acknowledgeGestureGuide: () =>
-        set({ displayMode: 'instruction' }),
-
-    onWelcomeVideoEnd: () =>
-        set({ displayMode: 'gesture-guide' }),
-
-    onFarewellVideoEnd: () => {
-        const { sessionId } = get();
-        if (sessionId) {
-            endClinicalSession(sessionId, 'COMPLETED');
-        }
-        set({ ...INITIAL_STATE });
-    },
-
-    triggerEmergency: () => {
-        const { sessionId } = get();
-        if (sessionId) {
-            logEmergencyEvent({ sessionId, stage: 1 });
-        }
-        set({ isEmergency: true, emergencyStage: 1, displayMode: 'emergency', currentInstructionId: null });
-    },
-
-    resolveEmergency: (reason) => {
-        const { sessionId } = get();
-        if (sessionId) {
-            logEmergencyEvent({ sessionId, stage: 3, reason });
-        }
-        set({
-            isEmergency: false,
-            emergencyStage: 0,
-            displayMode: 'instruction',
-            currentInstructionId: null,
-        });
-    },
-
-    setEmergencyStage: (stage) => set({ emergencyStage: stage }),
-
-    setHandDetected: (detected) => set({ isHandDetected: detected }),
-    setVisionStatus: (status) => set({ visionStatus: status }),
-
-    recordGesture: (result) =>
-        set((state) => ({
-            lastGesture: result,
-            gestureLog: [...state.gestureLog, result],
-        })),
-
-    reset: () => set({ ...INITIAL_STATE }),
-}));
+    )
+);

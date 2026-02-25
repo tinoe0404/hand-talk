@@ -8,14 +8,24 @@ import { prisma } from "@/lib/prisma";
  * - Ensures all medical data is saved to the local database.
  */
 
-export async function logInstructionChange(sessionId: string, instructionId: string) {
+export async function logInstructionChange(sessionId: string, instructionId: string, durationMs: number | null = null) {
     try {
-        await prisma.instructionLog.create({
-            data: {
-                sessionId,
-                instructionId
-            }
-        });
+        await prisma.$transaction([
+            prisma.instructionLog.create({
+                data: {
+                    sessionId,
+                    instructionId,
+                    durationMs
+                }
+            }),
+            prisma.session.update({
+                where: { id: sessionId },
+                data: {
+                    lastInstructionId: instructionId,
+                    lastInstructionAt: new Date()
+                }
+            })
+        ]);
     } catch (error) {
         console.error("FAILED TO LOG INSTRUCTION CHANGE:", error);
     }
@@ -67,7 +77,9 @@ export async function endClinicalSession(sessionId: string, status: "COMPLETED" 
             where: { id: sessionId },
             data: {
                 endTime: new Date(),
-                status
+                status,
+                lastInstructionId: null,
+                lastInstructionAt: null
             }
         });
     } catch (error) {

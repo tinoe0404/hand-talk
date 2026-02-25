@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import {
     GROUPED_INSTRUCTIONS,
     InstructionCategory,
+    videoPath,
 } from "@/lib/constants/instructions";
 import * as LucideIcons from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,6 +33,24 @@ export function InstructionTabs() {
     ];
 
     const instructions = GROUPED_INSTRUCTIONS[activeTab];
+
+    // Preload videos for the active tab to ensure instant playback
+    React.useEffect(() => {
+        instructions.forEach((inst) => {
+            const link = document.createElement("link");
+            link.rel = "preload";
+            link.as = "video";
+            link.href = videoPath(inst.id);
+            document.head.appendChild(link);
+
+            // Optional: remove after a delay so we don't bloat the head
+            setTimeout(() => {
+                if (document.head.contains(link)) {
+                    document.head.removeChild(link);
+                }
+            }, 60000); // 1 minute
+        });
+    }, [instructions]);
 
     const handleTap = (id: string) => {
         if (currentInstructionId === id) {

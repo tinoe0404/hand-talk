@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import * as LucideIcons from "lucide-react";
 import { AlertTriangle } from "lucide-react";
 import { GestureGuide } from "./gesture-guide";
+import { VideoPlayer } from "./video-player";
 
 // Resolve a Lucide icon by name string
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -151,16 +152,12 @@ export function PatientView() {
 
     return (
         <div className="relative h-full bg-black flex flex-col">
-            {/* Sign language video — fills the space, object-contain to keep aspect ratio */}
-            <video
-                ref={videoRef}
-                key={inst.id}
-                className="flex-1 w-full object-contain min-h-0"
+            {/* Sign language video — uses VideoPlayer for error handling */}
+            <VideoPlayer
                 src={videoPath(inst.id)}
                 autoPlay
-                muted
                 loop
-                playsInline
+                className="flex-1 min-h-0"
             />
 
             {/* Overlay: instruction label + icon */}
@@ -178,3 +175,4 @@ export function PatientView() {
         </div>
     );
 }
+

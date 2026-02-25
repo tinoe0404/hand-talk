@@ -61,7 +61,7 @@ export default function Sidebar() {
 
             {/* Sidebar */}
             <aside className={cn(
-                "w-64 bg-medical-green-900 text-white flex flex-col h-full shadow-clinical-2xl shrink-0 z-[60] transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1)",
+                "w-64 bg-medical-green-900 text-white flex flex-col h-full shadow-clinical-2xl shrink-0 z-[60] transition-transform duration-500 ease-in-out",
                 // Mobile: off-canvas drawer, Desktop: always visible
                 "fixed md:relative",
                 isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"

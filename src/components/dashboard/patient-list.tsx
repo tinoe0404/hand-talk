@@ -3,8 +3,7 @@
 import { Link } from "@/navigation";
 import {
     Search,
-    User,
-    Play
+    User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,13 +63,12 @@ export function PatientList({ initialPatients }: { initialPatients: Patient[] })
                                 </div>
                             </div>
 
-                            <Link href={`/dashboard/session/new?patientId=${patient.id}`}>
+                            <Link href={`/dashboard/patient/${patient.id}`}>
                                 <Button
                                     size="sm"
                                     className="h-10 px-4 rounded-lg bg-zinc-50 text-medical-green-700 border-2 border-transparent hover:bg-medical-green-600 hover:text-white transition-all gap-2 font-bold"
                                 >
-                                    <Play className="w-4 h-4" />
-                                    Start
+                                    View
                                 </Button>
                             </Link>
                         </div>
