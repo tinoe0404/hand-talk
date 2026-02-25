@@ -18,13 +18,11 @@ export default async function PatientDashboardPage(props: {
     }
 
     return (
-        <div className="max-w-4xl mx-auto py-8 px-4">
-            <PatientSessionHub
-                patientId={patient.id}
-                patientName={patient.name}
-                mrn={patient.mrn}
-                sessions={patient.sessions}
-            />
-        </div>
+        <PatientSessionHub
+            patientId={patient.id}
+            patientName={patient.name}
+            mrn={patient.mrn}
+            sessions={patient.sessions}
+        />
     );
 }

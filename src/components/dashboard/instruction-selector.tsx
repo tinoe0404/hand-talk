@@ -14,11 +14,13 @@ import { cn } from "@/lib/utils";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const IconMap = LucideIcons as unknown as Record<string, React.ElementType>;
 
-/**
- * InstructionTabs — radiographer-side control panel.
- * Shows 4 category tabs, each with a grid of instruction buttons.
- * Tap a button → setInstruction() → PatientView auto-updates.
- */
+const TAB_ICONS: Record<InstructionCategory, React.ElementType> = {
+    POSITIONING: LucideIcons.Move,
+    SESSION: LucideIcons.MessageSquare,
+    BREATHING: LucideIcons.Wind,
+    SAFETY: LucideIcons.Shield,
+};
+
 export function InstructionTabs() {
     const tInst = useTranslations("Instructions");
     const tCat = useTranslations("Categories");
@@ -34,7 +36,7 @@ export function InstructionTabs() {
 
     const instructions = GROUPED_INSTRUCTIONS[activeTab];
 
-    // Preload videos for the active tab to ensure instant playback
+    // Preload videos for the active tab
     React.useEffect(() => {
         instructions.forEach((inst) => {
             const link = document.createElement("link");
@@ -42,13 +44,11 @@ export function InstructionTabs() {
             link.as = "video";
             link.href = videoPath(inst.id);
             document.head.appendChild(link);
-
-            // Optional: remove after a delay so we don't bloat the head
             setTimeout(() => {
                 if (document.head.contains(link)) {
                     document.head.removeChild(link);
                 }
-            }, 60000); // 1 minute
+            }, 60000);
         });
     }, [instructions]);
 
@@ -62,20 +62,22 @@ export function InstructionTabs() {
 
     return (
         <div className="flex flex-col gap-3">
-            {/* Tab bar */}
-            <div className="flex rounded-xl overflow-hidden border border-zinc-200 bg-zinc-50 shrink-0">
+            {/* Tab bar with icons */}
+            <div className="flex rounded-2xl overflow-hidden border-2 border-zinc-200 bg-zinc-50 shrink-0">
                 {TABS.map((tab) => {
                     const isActive = activeTab === tab.id;
+                    const TabIcon = TAB_ICONS[tab.id];
                     return (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={cn(
-                                "flex-1 py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-200 min-h-[44px]",
+                                "flex-1 flex flex-col items-center justify-center gap-1 py-3 text-[10px] font-black uppercase tracking-wider transition-all duration-200 min-h-[56px]",
                                 isActive ? tab.activeColor : `${tab.color} hover:bg-zinc-100`
                             )}
                             aria-pressed={isActive}
                         >
+                            <TabIcon className="w-5 h-5" />
                             {tab.label}
                         </button>
                     );
@@ -95,14 +97,14 @@ export function InstructionTabs() {
                             onClick={() => handleTap(inst.id)}
                             aria-pressed={isActive}
                             className={cn(
-                                "flex items-center gap-3 px-4 py-3 rounded-xl border-2 font-bold text-sm text-left transition-all duration-200 min-h-[56px]",
+                                "flex items-center gap-3 px-4 py-4 rounded-2xl border-2 font-bold text-sm text-left transition-all duration-200 min-h-[64px]",
                                 isActive
-                                    ? "bg-medical-green-600 text-white border-medical-green-700 shadow-md scale-[1.02]"
+                                    ? "bg-medical-green-600 text-white border-medical-green-700 shadow-lg scale-[1.02]"
                                     : "bg-white text-zinc-800 border-zinc-200 hover:border-medical-green-300 hover:bg-medical-green-50 active:scale-95"
                             )}
                         >
                             <Icon
-                                className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : "text-zinc-400")}
+                                className={cn("w-6 h-6 shrink-0", isActive ? "text-white" : "text-zinc-400")}
                             />
                             <span className="leading-snug">{label}</span>
                             {isActive && (

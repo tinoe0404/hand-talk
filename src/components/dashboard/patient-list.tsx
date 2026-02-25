@@ -1,13 +1,8 @@
 "use client";
 
 import { Link } from "@/navigation";
-import {
-    Search,
-    User
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search, User, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 
 interface Patient {
@@ -26,56 +21,58 @@ export function PatientList({ initialPatients }: { initialPatients: Patient[] })
         p.mrn.toLowerCase().includes(search.toLowerCase())
     );
 
-
     return (
-        <div className="space-y-4">
+        <div className="space-y-3">
+            {/* Search bar */}
             <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
                 <Input
-                    placeholder="Search patients by name or MRN..."
-                    className="pl-12 h-14 bg-zinc-50 border-2 border-zinc-100 rounded-xl font-medium"
+                    placeholder="Search by name or MRN..."
+                    className="pl-10 h-12 bg-white border-2 border-zinc-100 rounded-2xl font-medium text-base"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
             </div>
 
-            <div className="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            {/* Patient cards */}
+            <div className="flex flex-col gap-2">
                 {filteredPatients.length > 0 ? (
                     filteredPatients.map(patient => (
-                        <div
+                        <Link
                             key={patient.id}
-                            className="group flex items-center justify-between p-4 bg-white border-2 border-zinc-100 rounded-2xl hover:border-medical-green-200 hover:shadow-clinical-md transition-all"
+                            href={`/dashboard/patient/${patient.id}`}
+                            className="flex items-center gap-3 p-4 bg-white border-2 border-zinc-100 rounded-2xl active:bg-medical-green-50 active:border-medical-green-200 transition-all min-h-[64px]"
                         >
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-medical-green-50 flex items-center justify-center text-medical-green-600 group-hover:bg-medical-green-600 group-hover:text-white transition-colors">
-                                    <User className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h4 className="font-black text-medical-green-950">{patient.name}</h4>
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                        <Badge variant="outline" className="text-[10px] font-mono leading-none py-0.5">
-                                            {patient.mrn}
-                                        </Badge>
-                                        <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">
-                                            {patient.gender || "Gender not set"}
-                                        </span>
-                                    </div>
+                            <div className="w-11 h-11 rounded-xl bg-medical-green-50 flex items-center justify-center text-medical-green-600 shrink-0">
+                                <User className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-zinc-900 text-[15px] leading-tight truncate">
+                                    {patient.name}
+                                </h4>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                    <span className="text-xs font-mono text-zinc-500 font-bold">
+                                        {patient.mrn}
+                                    </span>
+                                    {patient.gender && (
+                                        <>
+                                            <span className="text-zinc-300">·</span>
+                                            <span className="text-xs text-zinc-400 font-medium">
+                                                {patient.gender}
+                                            </span>
+                                        </>
+                                    )}
                                 </div>
                             </div>
-
-                            <Link href={`/dashboard/patient/${patient.id}`}>
-                                <Button
-                                    size="sm"
-                                    className="h-10 px-4 rounded-lg bg-zinc-50 text-medical-green-700 border-2 border-transparent hover:bg-medical-green-600 hover:text-white transition-all gap-2 font-bold"
-                                >
-                                    View
-                                </Button>
-                            </Link>
-                        </div>
+                            <ChevronRight className="w-5 h-5 text-zinc-300 shrink-0" />
+                        </Link>
                     ))
                 ) : (
-                    <div className="py-12 text-center bg-zinc-50 rounded-2xl border-2 border-dashed border-zinc-200">
-                        <p className="text-zinc-500 font-bold italic">No patients found matching your search.</p>
+                    <div className="py-16 text-center">
+                        <User className="w-10 h-10 text-zinc-200 mx-auto mb-3" />
+                        <p className="text-zinc-400 font-bold text-sm">
+                            No patients found.
+                        </p>
                     </div>
                 )}
             </div>

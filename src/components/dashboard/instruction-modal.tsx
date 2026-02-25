@@ -118,7 +118,7 @@ export function InstructionModal() {
 
                 <button
                     onClick={stopInstruction}
-                    className="w-full mt-4 h-14 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 text-white font-black text-sm uppercase tracking-widest transition-all active:scale-[0.98] min-h-[56px]"
+                    className="w-full mt-4 h-16 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 text-white font-black text-base uppercase tracking-widest transition-all active:scale-[0.98] min-h-[64px]"
                 >
                     Dismiss Instruction
                 </button>
