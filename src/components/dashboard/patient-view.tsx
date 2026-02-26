@@ -58,7 +58,7 @@ export function PatientView() {
                     Hand Talk
                 </p>
                 <p className="text-sm text-medical-green-400 mt-1">
-                    Ready for session
+                    System Ready. Awaiting Radiographer.
                 </p>
             </div>
         );
@@ -136,12 +136,12 @@ export function PatientView() {
         : null;
 
     if (!inst || !label) {
-        // Instruction mode but nothing selected yet — prompt
+        // Instruction mode but nothing selected yet — patient-facing prompt
         return (
             <div className="flex flex-col items-center justify-center h-full bg-medical-green-50 text-medical-green-700 select-none px-6">
                 <LucideIcons.Hand className="w-16 h-16 mb-4 opacity-30" />
                 <p className="text-2xl font-bold text-center">
-                    Tap an instruction below
+                    Please Wait for Instructions
                 </p>
                 <p className="text-base text-medical-green-500 mt-2 text-center">
                     The sign language video will appear here
@@ -151,7 +151,14 @@ export function PatientView() {
     }
 
     return (
-        <div className="relative h-full bg-black flex flex-col">
+        <div className="relative h-full bg-black flex flex-col overflow-hidden">
+            {/* Attention-grabbing visual flash when instruction changes */}
+            <div
+                key={inst.id} // Re-mounts div to trigger CSS animation on ID change
+                className="absolute inset-0 border-4 border-medical-green-500 z-10 pointer-events-none animate-in fade-in zoom-in duration-500 slide-out-to-top-0 fade-out-0"
+                style={{ animationFillMode: "forwards", animationDuration: "1s" }}
+            />
+
             {/* Sign language video — uses VideoPlayer for error handling */}
             <VideoPlayer
                 src={videoPath(inst.id)}
@@ -160,17 +167,19 @@ export function PatientView() {
                 className="flex-1 min-h-0"
             />
 
-            {/* Overlay: instruction label + icon */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-5 py-5 flex items-end gap-4">
-                <div className="bg-medical-green-600/90 rounded-2xl p-3 shrink-0 shadow-lg">
-                    <DynIcon name={inst.iconName} className="w-9 h-9 text-white" />
+            {/* Overlay: instruction label + icon (High Contrast Pill) */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-lg z-20">
+                <div className="bg-black/70 backdrop-blur-xl border border-white/20 rounded-3xl p-4 flex items-center justify-center gap-4 shadow-2xl">
+                    <div className="bg-medical-green-500 rounded-full p-3 shrink-0 shadow-inner">
+                        <DynIcon name={inst.iconName} className="w-8 h-8 text-white" />
+                    </div>
+                    <p
+                        className="text-white font-black leading-tight text-center"
+                        style={{ fontSize: "clamp(1.5rem, 5vw, 2.5rem)" }}
+                    >
+                        {label}
+                    </p>
                 </div>
-                <p
-                    className="text-white font-black leading-tight drop-shadow-lg"
-                    style={{ fontSize: "clamp(2rem, 6vw, 3.5rem)" }}
-                >
-                    {label}
-                </p>
             </div>
         </div>
     );
