@@ -2,7 +2,6 @@
 
 import React, { useRef, useEffect } from "react";
 import { useSessionStore } from "@/store/useSessionStore";
-import { GESTURE_RESULTS, GestureId } from "@/lib/constants/instructions";
 
 /**
  * VisionEngine — Handles camera access and MediaPipe gesture detection.
@@ -14,14 +13,11 @@ export function VisionEngine() {
     const workerRef = useRef<Worker | null>(null);
     const requestRef = useRef<number>();
 
-    const debounceRef = useRef<{ id: string; startTime: number } | null>(null);
-    const lastFiredRef = useRef<{ id: string; time: number } | null>(null);
-
     const {
         sessionId,
         setVisionStatus,
         setHandDetected,
-        recordGesture
+        processVisionResult
     } = useSessionStore();
 
     useEffect(() => {
@@ -50,41 +46,8 @@ export function VisionEngine() {
                 setVisionStatus("ready");
             }
 
-            if (gesture && confidence > 0.85) {
-                const gestureId = gesture as GestureId;
-                const now = Date.now();
-
-                if (debounceRef.current?.id === gestureId) {
-                    // Gesture has been held consistently
-                    if (now - debounceRef.current.startTime > 1500) {
-                        // Don't repeatedly fire the same gesture endlessly; enforce a 5-second cooldown 
-                        if (
-                            lastFiredRef.current?.id !== gestureId ||
-                            now - lastFiredRef.current.time > 5000
-                        ) {
-                            const result = GESTURE_RESULTS.find((g) => g.id === gestureId);
-
-                            if (result) {
-                                recordGesture({
-                                    gestureId,
-                                    emoji: result.emoji || "✋",
-                                    color: result.color,
-                                    dotColor: result.dotColor,
-                                    confidence: confidence,
-                                    timestamp: now,
-                                });
-                                lastFiredRef.current = { id: gestureId, time: now };
-                            }
-                        }
-                    }
-                } else {
-                    // Start tracking a new gesture
-                    debounceRef.current = { id: gestureId, startTime: now };
-                }
-            } else {
-                // Break the debounce tracking if hand drops or gesture is lost
-                debounceRef.current = null;
-            }
+            // Centralized Store Logic handles the 1.5s clinical debounce
+            processVisionResult(gesture, confidence);
         };
 
         // 2. Initialize Camera
@@ -141,7 +104,7 @@ export function VisionEngine() {
                 stream.getTracks().forEach((track) => track.stop());
             }
         };
-    }, [sessionId, setVisionStatus, setHandDetected, recordGesture]);
+    }, [sessionId, setVisionStatus, setHandDetected, processVisionResult]);
 
     return (
         <div className="hidden pointer-events-none" aria-hidden="true">
