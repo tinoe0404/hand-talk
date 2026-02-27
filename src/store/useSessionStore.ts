@@ -1,11 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import {
-    logInstructionChange,
-    logEmergencyEvent,
-    endClinicalSession,
-} from '@/lib/actions/log-actions';
-import type { GestureId } from '@/lib/constants/instructions';
+import { logInstructionChange, logEmergencyEvent, endClinicalSession } from '@/lib/actions/log-actions';
+import { GESTURE_RESULTS, type GestureId } from '@/lib/constants/instructions';
 
 /**
  * Display mode controls what the TOP (patient-facing) panel shows.
@@ -52,6 +48,11 @@ interface SessionState {
     lastGesture: GestureResult | null;
     gestureLog: GestureResult[];
 
+    // ── Debounced Gesture State ───────────────────────────────
+    currentDetectedSign: string | null;
+    currentSignStartTime: number | null;
+    lastPatientSign: { gestureId: string; phrase: string; confidence: number; severity: string } | null;
+
     // ── Actions ───────────────────────────────────────────────
     startSession: (data: {
         sessionId: string;
@@ -80,6 +81,11 @@ interface SessionState {
     setVisionStatus: (status: 'idle' | 'loading' | 'ready' | 'error') => void;
     recordGesture: (result: GestureResult) => void;
 
+    processVisionResult: (gestureName: string | null, confidence: number) => void;
+    clearPatientSign: () => void;
+
+    // For complete store reset
+    reset: () => void;
 }
 
 const INITIAL_STATE = {
@@ -97,6 +103,9 @@ const INITIAL_STATE = {
     visionStatus: 'idle' as const,
     lastGesture: null,
     gestureLog: [],
+    currentDetectedSign: null,
+    currentSignStartTime: null,
+    lastPatientSign: null,
 };
 
 export const useSessionStore = create<SessionState>()(
@@ -208,11 +217,58 @@ export const useSessionStore = create<SessionState>()(
             setHandDetected: (detected) => set({ isHandDetected: detected }),
             setVisionStatus: (status) => set({ visionStatus: status }),
 
-            recordGesture: (result) =>
-                set((state) => ({
+            recordGesture: (result) => {
+                const state = get();
+
+                // If it's a Closed_Fist (Please STOP), automatically trigger emergency
+                if (result.gestureId === 'Closed_Fist' && !state.isEmergency) {
+                    state.triggerEmergency();
+                }
+
+                set((s) => ({
                     lastGesture: result,
-                    gestureLog: [...state.gestureLog, result],
-                })),
+                    gestureLog: [...s.gestureLog, result],
+                }));
+            },
+
+            processVisionResult: (gestureName, confidence) => {
+                const now = Date.now();
+                const state = get();
+
+                if (!gestureName) {
+                    if (state.currentDetectedSign !== null) {
+                        set({ currentDetectedSign: null, currentSignStartTime: null });
+                    }
+                    return;
+                }
+
+                if (gestureName !== state.currentDetectedSign) {
+                    set({ currentDetectedSign: gestureName, currentSignStartTime: now });
+                    return;
+                }
+
+                if (state.currentSignStartTime && now - state.currentSignStartTime >= 1500) {
+                    const gestureDetail = GESTURE_RESULTS.find((g) => g.id === gestureName);
+                    if (!gestureDetail) { return; }
+
+                    if (gestureName === 'Closed_Fist') {
+                        get().triggerEmergency();
+                    }
+
+                    set({
+                        lastPatientSign: {
+                            gestureId: gestureDetail.id,
+                            phrase: gestureDetail.meaning,
+                            confidence,
+                            severity: gestureDetail.severity,
+                        },
+                        currentDetectedSign: null,
+                        currentSignStartTime: null,
+                    });
+                }
+            },
+
+            clearPatientSign: () => set({ lastPatientSign: null }),
 
             reset: () => set({ ...INITIAL_STATE }),
         }),

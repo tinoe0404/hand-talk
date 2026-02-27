@@ -14,6 +14,9 @@ export function VisionEngine() {
     const workerRef = useRef<Worker | null>(null);
     const requestRef = useRef<number>();
 
+    const debounceRef = useRef<{ id: string; startTime: number } | null>(null);
+    const lastFiredRef = useRef<{ id: string; time: number } | null>(null);
+
     const {
         sessionId,
         setVisionStatus,
@@ -32,32 +35,55 @@ export function VisionEngine() {
         );
 
         workerRef.current.onmessage = (event) => {
-            const { hasHands, gesture, error } = event.data;
+            const { hasHands, gesture, confidence, error } = event.data;
 
             if (error) {
                 setVisionStatus("error");
                 return;
             }
 
-            setHandDetected(hasHands);
-            setVisionStatus("ready");
+            // Prevent spamming state if unchanged
+            if (hasHands !== useSessionStore.getState().isHandDetected) {
+                setHandDetected(hasHands);
+            }
+            if (useSessionStore.getState().visionStatus !== "ready") {
+                setVisionStatus("ready");
+            }
 
-            if (gesture) {
-                // Map slug GESTURE_CLASSIFIER output to GESTURE_RESULTS
-                // Mediapipe worker returns: 'THUMBS_UP' | 'OPEN_PALM' | 'PEACE_SIGN' | 'POINTING_DOWN'
-                const gestureId = gesture.toLowerCase().replace('_', '-') as GestureId;
-                const result = GESTURE_RESULTS.find(g => g.id === gestureId);
+            if (gesture && confidence > 0.85) {
+                const gestureId = gesture as GestureId;
+                const now = Date.now();
 
-                if (result) {
-                    recordGesture({
-                        gestureId,
-                        emoji: result.emoji,
-                        color: result.color,
-                        dotColor: result.dotColor,
-                        confidence: 0.95,
-                        timestamp: Date.now()
-                    });
+                if (debounceRef.current?.id === gestureId) {
+                    // Gesture has been held consistently
+                    if (now - debounceRef.current.startTime > 1500) {
+                        // Don't repeatedly fire the same gesture endlessly; enforce a 5-second cooldown 
+                        if (
+                            lastFiredRef.current?.id !== gestureId ||
+                            now - lastFiredRef.current.time > 5000
+                        ) {
+                            const result = GESTURE_RESULTS.find((g) => g.id === gestureId);
+
+                            if (result) {
+                                recordGesture({
+                                    gestureId,
+                                    emoji: result.emoji || "✋",
+                                    color: result.color,
+                                    dotColor: result.dotColor,
+                                    confidence: confidence,
+                                    timestamp: now,
+                                });
+                                lastFiredRef.current = { id: gestureId, time: now };
+                            }
+                        }
+                    }
+                } else {
+                    // Start tracking a new gesture
+                    debounceRef.current = { id: gestureId, startTime: now };
                 }
+            } else {
+                // Break the debounce tracking if hand drops or gesture is lost
+                debounceRef.current = null;
             }
         };
 

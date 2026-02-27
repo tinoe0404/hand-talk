@@ -21,8 +21,8 @@ export function useEmergencyBridge() {
             return;
         }
 
-        // Check for distress gestures (STOP or PAIN)
-        const isDistress = lastGesture.gestureId === 'open-palm' || lastGesture.gestureId === 'peace-sign';
+        // Check for distress gestures (Critical)
+        const isDistress = lastGesture.gestureId === 'Closed_Fist';
 
         if (isDistress) {
             // Start or continue the distress timer

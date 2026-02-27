@@ -205,10 +205,13 @@
         "UNABLE_HOLD": "Unable to Hold Breath"
     },
     "Gestures": {
-        "thumbs-up": "Patient: I am okay",
-        "open-palm": "Patient: Please wait",
-        "peace-sign": "Patient: I am in pain",
-        "pointing-down": "Patient: Needs repositioning"
+        "Closed_Fist": "Patient: I cannot breathe / Please STOP",
+        "Thumb_Down": "Patient: I am in pain / Not comfortable",
+        "Open_Palm": "Patient: I need help / Come here",
+        "Pointing_Up": "Patient: I need to move",
+        "Victory": "Patient: How much longer? / Are we finished?",
+        "Thumb_Up": "Patient: I am okay / Ready to continue",
+        "ILoveYou": "Patient: Thank you"
     },
     "Stats": {
         "sessionsToday": "Sessions Today",

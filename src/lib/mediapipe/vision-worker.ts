@@ -1,39 +1,38 @@
-import { HandLandmarkerService } from "./hand-landmarker";
-import { GestureClassifier, ClinicalGesture } from "./gesture-classifier";
+import { GestureRecognizerService } from "./hand-landmarker";
 
 /**
  * CLINICAL VISION WORKER
  * - Operates in a separate thread to ensure 60FPS patient instruction playback.
- * - Processes raw landmarks into Clinical Gestures.
+ * - Extracts native MediaPipe gestures and emits if confidence > 85%.
  */
 
 self.onmessage = async (event: MessageEvent) => {
     const { image, timestamp } = event.data;
 
     try {
-        const handLandmarker = await HandLandmarkerService.getInstance();
-        const results = handLandmarker.detectForVideo(image, timestamp);
+        const recognizer = await GestureRecognizerService.getInstance();
+        const results = recognizer.recognizeForVideo(image, timestamp);
 
-        const detectedGestures: (ClinicalGesture | null)[] = results.landmarks.map(landmarks => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return GestureClassifier.classify(landmarks as any);
-        });
+        let primaryGesture: string | null = null;
+        let maxConfidence: number = 0;
 
-        // We prioritize the most "urgent" gesture (PEACE_SIGN = PAIN)
-        let primaryGesture: ClinicalGesture | null = null;
-        if (detectedGestures.includes('PEACE_SIGN')) {
-            primaryGesture = 'PEACE_SIGN';
-        } else if (detectedGestures.includes('OPEN_PALM')) {
-            primaryGesture = 'OPEN_PALM';
-        } else {
-            primaryGesture = detectedGestures[0] || null;
+        if (results.gestures && results.gestures.length > 0) {
+            // MediaPipe returns an array of categories for each detected hand.
+            const handGestures = results.gestures[0] || [];
+            for (const gesture of handGestures) {
+                if (gesture.categoryName !== 'None' && gesture.score > 0.85 && gesture.score > maxConfidence) {
+                    primaryGesture = gesture.categoryName;
+                    maxConfidence = gesture.score;
+                }
+            }
         }
 
         // Post detailed results back to main thread
         self.postMessage({
-            landmarks: results.landmarks,
-            hasHands: results.landmarks.length > 0,
+            landmarks: results.landmarks || [],
+            hasHands: !!(results.landmarks && results.landmarks.length > 0),
             gesture: primaryGesture,
+            confidence: maxConfidence,
             timestamp
         });
 
