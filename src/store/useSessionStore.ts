@@ -45,8 +45,6 @@ interface SessionState {
     // ── Gesture detection ─────────────────────────────────────
     isHandDetected: boolean;
     visionStatus: 'idle' | 'loading' | 'ready' | 'error';
-    lastGesture: GestureResult | null;
-    gestureLog: GestureResult[];
 
     // ── Debounced Gesture State ───────────────────────────────
     currentDetectedSign: string | null;
@@ -79,7 +77,6 @@ interface SessionState {
 
     setHandDetected: (detected: boolean) => void;
     setVisionStatus: (status: 'idle' | 'loading' | 'ready' | 'error') => void;
-    recordGesture: (result: GestureResult) => void;
 
     processVisionResult: (gestureName: string | null, confidence: number) => void;
     clearPatientSign: () => void;
@@ -101,8 +98,6 @@ const INITIAL_STATE = {
     emergencyStage: 0,
     isHandDetected: false,
     visionStatus: 'idle' as const,
-    lastGesture: null,
-    gestureLog: [],
     currentDetectedSign: null,
     currentSignStartTime: null,
     lastPatientSign: null,
@@ -124,8 +119,6 @@ export const useSessionStore = create<SessionState>()(
                     currentInstructionStartTime: null,
                     isEmergency: false,
                     emergencyStage: 0,
-                    lastGesture: null,
-                    gestureLog: [],
                 });
             },
 
@@ -217,20 +210,6 @@ export const useSessionStore = create<SessionState>()(
             setHandDetected: (detected) => set({ isHandDetected: detected }),
             setVisionStatus: (status) => set({ visionStatus: status }),
 
-            recordGesture: (result) => {
-                const state = get();
-
-                // If it's a Closed_Fist (Please STOP), automatically trigger emergency
-                if (result.gestureId === 'Closed_Fist' && !state.isEmergency) {
-                    state.triggerEmergency();
-                }
-
-                set((s) => ({
-                    lastGesture: result,
-                    gestureLog: [...s.gestureLog, result],
-                }));
-            },
-
             processVisionResult: (gestureName, confidence) => {
                 const now = Date.now();
                 const state = get();
@@ -248,6 +227,7 @@ export const useSessionStore = create<SessionState>()(
                 }
 
                 if (state.currentSignStartTime && now - state.currentSignStartTime >= 1500) {
+                    console.log(`[STORE] Clinical Debounce Met: ${gestureName}`);
                     const gestureDetail = GESTURE_RESULTS.find((g) => g.id === gestureName);
                     if (!gestureDetail) { return; }
 

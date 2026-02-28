@@ -20,7 +20,8 @@ self.onmessage = async (event: MessageEvent) => {
             // MediaPipe returns an array of categories for each detected hand.
             const handGestures = results.gestures[0] || [];
             for (const gesture of handGestures) {
-                if (gesture.categoryName !== 'None' && gesture.score > 0.85 && gesture.score > maxConfidence) {
+                // Lowered threshold to 0.7 for better local testing responsiveness
+                if (gesture.categoryName !== 'None' && gesture.score > 0.70 && gesture.score > maxConfidence) {
                     primaryGesture = gesture.categoryName;
                     maxConfidence = gesture.score;
                 }
@@ -42,6 +43,6 @@ self.onmessage = async (event: MessageEvent) => {
         }
     } catch (error) {
         console.error("Clinical Vision Worker Error:", error);
-        self.postMessage({ error: "DETECTION_FAILED" });
+        self.postMessage({ error: error instanceof Error ? error.message : "DETECTION_FAILED" });
     }
 };

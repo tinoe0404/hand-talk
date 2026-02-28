@@ -22,18 +22,33 @@ export function VisionEngine() {
 
     useEffect(() => {
         if (!sessionId) {
+            console.log("Clinical Vision: No active session, engine paused.");
             return;
         }
 
-        // 1. Initialize Worker
-        workerRef.current = new Worker(
-            new URL("@/lib/mediapipe/vision-worker.ts", import.meta.url)
-        );
+        console.log("Clinical Vision: Initializing engine for session:", sessionId);
+
+        // 1. Initialize Worker (Using relative path for better local resolution)
+        try {
+            workerRef.current = new Worker(
+                new URL("../../lib/mediapipe/vision-worker.ts", import.meta.url)
+            );
+            console.log("Clinical Vision: Worker thread spawned.");
+        } catch (workerError) {
+            console.error("Clinical Vision: Failed to spawn worker:", workerError);
+            setVisionStatus("error");
+            return;
+        }
 
         workerRef.current.onmessage = (event) => {
-            const { hasHands, gesture, confidence, error } = event.data;
+            const { hasHands, gesture, confidence, error, debug } = event.data;
+
+            if (debug) {
+                console.log("Vision Worker Debug:", debug);
+            }
 
             if (error) {
+                console.error("Clinical Vision: Worker reported error:", error);
                 setVisionStatus("error");
                 return;
             }
@@ -43,7 +58,13 @@ export function VisionEngine() {
                 setHandDetected(hasHands);
             }
             if (useSessionStore.getState().visionStatus !== "ready") {
+                console.log("Clinical Vision: Received first frame, system READY.");
                 setVisionStatus("ready");
+            }
+
+            // Log gesture if detected
+            if (gesture) {
+                console.log(`Clinical Vision: Candidate [${gesture}] (confidence: ${(confidence * 100).toFixed(1)}%)`);
             }
 
             // Centralized Store Logic handles the 1.5s clinical debounce
@@ -52,6 +73,7 @@ export function VisionEngine() {
 
         // 2. Initialize Camera
         const startCamera = async () => {
+            console.log("Clinical Vision: Requesting camera access...");
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: {
@@ -62,12 +84,21 @@ export function VisionEngine() {
                     },
                     audio: false,
                 });
+
                 if (videoRef.current) {
                     videoRef.current.srcObject = stream;
                     setVisionStatus("loading");
+                    console.log("Clinical Vision: Camera stream active.");
+
+                    // Force play in case autoPlay is blocked
+                    try {
+                        await videoRef.current.play();
+                    } catch (playErr) {
+                        console.warn("Clinical Vision: Auto-play blocked, waiting for interaction:", playErr);
+                    }
                 }
             } catch (err) {
-                console.error("Clinical Vision: Camera access denied:", err);
+                console.error("Clinical Vision: Camera access denied or hardware error:", err);
                 setVisionStatus("error");
             }
         };
@@ -82,7 +113,9 @@ export function VisionEngine() {
                         image,
                         timestamp: performance.now()
                     }, [image]);
-                }).catch(() => { });
+                }).catch((err) => {
+                    console.error("Clinical Vision: Frame capture error:", err);
+                });
             }
             requestRef.current = requestAnimationFrame(processFrame);
         };
@@ -92,6 +125,7 @@ export function VisionEngine() {
         const videoElement = videoRef.current;
 
         return () => {
+            console.log("Clinical Vision: Shutting down engine.");
             if (requestRef.current) {
                 cancelAnimationFrame(requestRef.current);
             }
