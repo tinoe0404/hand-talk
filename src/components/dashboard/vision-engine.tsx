@@ -76,6 +76,7 @@ export function VisionEngine() {
         const startCamera = async () => {
             console.log("Clinical Vision: Requesting camera access...");
             try {
+                // Ensure audio is explicitly false to avoid Safari panics
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         facingMode: "user",
@@ -91,15 +92,19 @@ export function VisionEngine() {
                     setVisionStatus("loading");
                     console.log("Clinical Vision: Camera stream active.");
 
-                    // Force play in case autoPlay is blocked
-                    try {
-                        await videoRef.current.play();
-                    } catch (playErr) {
-                        console.warn("Clinical Vision: Auto-play blocked, waiting for interaction:", playErr);
-                    }
+                    // Force play in case autoPlay is blocked by iOS
+                    videoRef.current.play().catch(playErr => {
+                        console.warn("Clinical Vision: Auto-play blocked by iOS, requires tap:", playErr);
+                        // Safari hack: if it fails, try playing again immediately
+                        setTimeout(() => {
+                            videoRef.current?.play().catch(e => console.error("Retry failed:", e));
+                        }, 500);
+                    });
                 }
             } catch (err) {
                 console.error("Clinical Vision: Camera access denied or hardware error:", err);
+                // Important: On iOS, this happens if the page isn't served over HTTPS,
+                // or if the user denied permission.
                 setVisionStatus("error");
             }
         };
@@ -108,6 +113,7 @@ export function VisionEngine() {
 
         // 3. Frame Loop
         const processFrame = () => {
+            // Mobile Safari safely needs readyState >= 2 (HAVE_CURRENT_DATA)
             if (videoRef.current && workerRef.current && videoRef.current.readyState >= 2) {
                 createImageBitmap(videoRef.current).then(image => {
                     workerRef.current?.postMessage({
@@ -121,7 +127,10 @@ export function VisionEngine() {
             requestRef.current = requestAnimationFrame(processFrame);
         };
 
-        requestRef.current = requestAnimationFrame(processFrame);
+        // Delay starting the frame loop slightly to allow camera to warm up
+        setTimeout(() => {
+            requestRef.current = requestAnimationFrame(processFrame);
+        }, 1000);
 
         const videoElement = videoRef.current;
 
@@ -146,8 +155,8 @@ export function VisionEngine() {
             <video
                 ref={videoRef}
                 autoPlay
-                muted
                 playsInline
+                muted
                 width={640}
                 height={480}
             />
