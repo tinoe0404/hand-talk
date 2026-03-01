@@ -108,7 +108,7 @@ export function VisionEngine() {
 
         // 3. Frame Loop
         const processFrame = () => {
-            if (videoRef.current && workerRef.current && videoRef.current.readyState === 4) {
+            if (videoRef.current && workerRef.current && videoRef.current.readyState >= 2) {
                 createImageBitmap(videoRef.current).then(image => {
                     workerRef.current?.postMessage({
                         image,
@@ -142,7 +142,7 @@ export function VisionEngine() {
     }, [sessionId, setVisionStatus, setHandDetected, processVisionResult]);
 
     return (
-        <div className="hidden pointer-events-none" aria-hidden="true">
+        <div className="fixed top-0 left-0 w-1 h-1 opacity-0 pointer-events-none -z-50" aria-hidden="true">
             <video
                 ref={videoRef}
                 autoPlay
