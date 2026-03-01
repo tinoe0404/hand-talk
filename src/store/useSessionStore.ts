@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { logInstructionChange, logEmergencyEvent, endClinicalSession } from '@/lib/actions/log-actions';

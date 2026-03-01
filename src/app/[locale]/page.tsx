@@ -1,4 +1,5 @@
 import { Link } from "@/navigation";
+import Image from "next/image";
 import {
   Stethoscope,
   Shield,
@@ -65,15 +66,15 @@ export default function Home() {
         <div className="relative aspect-video rounded-3xl md:rounded-[2.5rem] bg-zinc-200 shadow-2xl overflow-hidden border-4 md:border-8 border-white group">
           <div className="absolute inset-0 bg-gradient-to-br from-medical-green-500/10 to-transparent" />
           <div className="absolute inset-0 flex items-center justify-center font-bold text-zinc-400">
-            <img
+            <Image
               src="/landing-mockup.png"
               alt="Hand Talk Dashboard Preview"
-              className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-all duration-1000"
+              fill
+              className="object-cover opacity-90 group-hover:scale-105 transition-all duration-1000"
             />
           </div>
         </div>
       </section>
-
       {/* ── FEATURES GRID ────────────────────────────────────────── */}
       <section className="w-full max-w-7xl px-6 pb-20 md:pb-32 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
 
