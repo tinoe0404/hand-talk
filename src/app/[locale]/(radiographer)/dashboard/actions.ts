@@ -75,6 +75,25 @@ export async function registerPatientAction(_prevState: unknown, formData: FormD
     }
 }
 
+export async function deletePatientAction(patientId: string) {
+    const session = await getSession();
+    if (!session) {
+        return { error: "Unauthorized" };
+    }
+
+    try {
+        await prisma.patient.delete({
+            where: { id: patientId }
+        });
+
+        revalidatePath("/dashboard");
+        return { success: true };
+    } catch (error) {
+        console.error("Failed to delete patient:", error);
+        return { error: "Failed to delete patient. Ensure there are no active sessions." };
+    }
+}
+
 export async function getDashboardStats() {
     const session = await getSession();
     if (!session) {

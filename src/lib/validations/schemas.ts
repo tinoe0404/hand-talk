@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const patientSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
-    mrn: z.string().regex(/^P-\d{4,8}$/, "Invalid MRN format (e.g., P-1001)"),
+    mrn: z.string().regex(/^P-[\w-]+$/, "Invalid MRN format (e.g., P-1001 or P-260301-8924)"),
     gender: z.enum(["Male", "Female", "Other"]).optional(),
     dateOfBirth: z.string().optional(),
 });
