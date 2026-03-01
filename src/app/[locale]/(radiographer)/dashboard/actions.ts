@@ -82,15 +82,29 @@ export async function deletePatientAction(patientId: string) {
     }
 
     try {
-        await prisma.patient.delete({
-            where: { id: patientId }
-        });
+        await prisma.$transaction([
+            prisma.instructionLog.deleteMany({
+                where: { session: { patientId } }
+            }),
+            prisma.gestureLog.deleteMany({
+                where: { session: { patientId } }
+            }),
+            prisma.emergencyLog.deleteMany({
+                where: { session: { patientId } }
+            }),
+            prisma.session.deleteMany({
+                where: { patientId }
+            }),
+            prisma.patient.delete({
+                where: { id: patientId }
+            })
+        ]);
 
         revalidatePath("/dashboard");
         return { success: true };
     } catch (error) {
         console.error("Failed to delete patient:", error);
-        return { error: "Failed to delete patient. Ensure there are no active sessions." };
+        return { error: "Failed to delete patient. Please try again." };
     }
 }
 
