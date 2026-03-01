@@ -3,11 +3,11 @@
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/navigation";
 import { cn } from "@/lib/utils";
-import { Users, History, Settings, LogOut } from "lucide-react";
+import { Users, History, Settings, LogOut, Loader2 } from "lucide-react";
 import { logoutAction } from "@/lib/auth-actions";
 import LanguageSwitcher from "@/components/language-switcher";
 import { useSessionStore } from "@/store/useSessionStore";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 const tabs = [
     { href: "/dashboard", icon: Users, labelKey: "title" as const, matchExact: true },
@@ -20,6 +20,7 @@ export function BottomNav() {
     const { sessionId } = useSessionStore();
     const [showSettings, setShowSettings] = useState(false);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const [isLoggingOut, startLogoutTransition] = useTransition();
 
     // Hide nav when a session is active (fullscreen takeover)
     if (sessionId) {
@@ -79,14 +80,25 @@ export function BottomNav() {
                                     >
                                         Cancel
                                     </button>
-                                    <form action={logoutAction} className="flex-1">
-                                        <button
-                                            type="submit"
-                                            className="w-full h-11 rounded-xl bg-red-600 text-white font-black text-sm hover:bg-red-700 transition-all active:scale-95"
-                                        >
-                                            Log Out
-                                        </button>
-                                    </form>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            startLogoutTransition(async () => {
+                                                await logoutAction();
+                                            });
+                                        }}
+                                        disabled={isLoggingOut}
+                                        className="flex-1 h-11 rounded-xl bg-red-600 text-white font-black text-sm hover:bg-red-700 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    >
+                                        {isLoggingOut ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                Logging Out...
+                                            </>
+                                        ) : (
+                                            "Log Out"
+                                        )}
+                                    </button>
                                 </div>
                             </div>
                         )}

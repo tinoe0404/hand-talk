@@ -3,7 +3,7 @@
 import { Link } from "@/navigation";
 import { Search, User, ChevronRight, Trash2, Loader2, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useOptimistic } from "react";
 import { Modal } from "@/components/ui/modal";
 import { deletePatientAction } from "@/app/[locale]/(radiographer)/dashboard/actions";
 
@@ -20,7 +20,12 @@ export function PatientList({ initialPatients }: { initialPatients: Patient[] })
     const [isPending, startTransition] = useTransition();
     const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
 
-    const filteredPatients = initialPatients.filter(p =>
+    const [optimisticPatients, deleteOptimisticPatient] = useOptimistic(
+        initialPatients,
+        (state: Patient[], idToRemove: string) => state.filter((p) => p.id !== idToRemove)
+    );
+
+    const filteredPatients = optimisticPatients.filter(p =>
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.mrn.toLowerCase().includes(search.toLowerCase())
     );
@@ -30,12 +35,18 @@ export function PatientList({ initialPatients }: { initialPatients: Patient[] })
             return;
         }
 
+        const idToDelete = patientToDelete.id;
+
         startTransition(async () => {
-            const result = await deletePatientAction(patientToDelete.id);
+            // Optimistically update UI
+            deleteOptimisticPatient(idToDelete);
+            setPatientToDelete(null);
+
+            // Background server execution
+            const result = await deletePatientAction(idToDelete);
             if (result?.error) {
                 alert(result.error);
             }
-            setPatientToDelete(null);
         });
     };
 
