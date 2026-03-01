@@ -129,8 +129,8 @@ export function BottomNav() {
                                 )}
                                 aria-current={active ? "page" : undefined}
                             >
-                                <Icon className={cn("w-6 h-6", active && "stroke-[2.5]")} />
-                                <span className="text-[10px] font-bold uppercase tracking-wider">
+                                <Icon className={cn("w-5 h-5 shrink-0", active && "stroke-[2.5]")} />
+                                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-tighter sm:tracking-wider text-center px-1 w-full truncate leading-tight">
                                     {t(tab.labelKey)}
                                 </span>
                                 {active && (
@@ -150,8 +150,8 @@ export function BottomNav() {
                                 : "text-zinc-400 hover:text-zinc-600"
                         )}
                     >
-                        <Settings className="w-6 h-6" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">
+                        <Settings className="w-5 h-5 shrink-0" />
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-tighter sm:tracking-wider text-center px-1 w-full truncate leading-tight">
                             Settings
                         </span>
                     </button>
