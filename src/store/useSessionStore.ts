@@ -50,6 +50,7 @@ interface SessionState {
     // ── Debounced Gesture State ───────────────────────────────
     currentDetectedSign: string | null;
     currentSignStartTime: number | null;
+    lastDetectionTime: number | null;
     lastPatientSign: { gestureId: string; phrase: string; confidence: number; severity: string } | null;
 
     // ── Actions ───────────────────────────────────────────────
@@ -101,6 +102,7 @@ const INITIAL_STATE = {
     visionStatus: 'idle' as const,
     currentDetectedSign: null,
     currentSignStartTime: null,
+    lastDetectionTime: null,
     lastPatientSign: null,
 };
 
@@ -215,18 +217,33 @@ export const useSessionStore = create<SessionState>()(
                 const now = Date.now();
                 const state = get();
 
+                // ── Grace period: allow brief detection gaps (up to 300ms) ──
+                // Real-world camera feeds produce intermittent null frames even
+                // when the patient is holding a steady gesture. Without a grace
+                // window, the 1.5s debounce can never complete.
+                const GRACE_PERIOD_MS = 300;
+
                 if (!gestureName) {
-                    if (state.currentDetectedSign !== null) {
-                        set({ currentDetectedSign: null, currentSignStartTime: null });
+                    // Only reset if no successful detection for longer than grace period
+                    if (
+                        state.currentDetectedSign !== null &&
+                        state.lastDetectionTime !== null &&
+                        now - state.lastDetectionTime > GRACE_PERIOD_MS
+                    ) {
+                        set({ currentDetectedSign: null, currentSignStartTime: null, lastDetectionTime: null });
                     }
                     return;
                 }
 
                 if (gestureName !== state.currentDetectedSign) {
-                    set({ currentDetectedSign: gestureName, currentSignStartTime: now });
+                    set({ currentDetectedSign: gestureName, currentSignStartTime: now, lastDetectionTime: now });
                     return;
                 }
 
+                // Same gesture still held — update lastDetectionTime to keep grace window alive
+                set({ lastDetectionTime: now });
+
+                // Check if debounce threshold is met (1.5s since first detection)
                 if (state.currentSignStartTime && now - state.currentSignStartTime >= 1500) {
                     console.log(`[STORE] Clinical Debounce Met: ${gestureName}`);
                     const gestureDetail = GESTURE_RESULTS.find((g) => g.id === gestureName);
@@ -245,6 +262,7 @@ export const useSessionStore = create<SessionState>()(
                         },
                         currentDetectedSign: null,
                         currentSignStartTime: null,
+                        lastDetectionTime: null,
                     });
                 }
             },

@@ -20,8 +20,8 @@ import { GestureRecognizerService } from "@/lib/mediapipe/hand-landmarker";
 /** Target ~10 frames per second for gesture detection — balances accuracy vs performance */
 const DETECTION_INTERVAL_MS = 100;
 
-/** Minimum confidence to accept a gesture (70%) */
-const MIN_CONFIDENCE = 0.70;
+/** Minimum confidence to accept a gesture (55% — debounce provides additional filtering) */
+const MIN_CONFIDENCE = 0.55;
 
 export function VisionEngine() {
     const videoRef = useRef<HTMLVideoElement>(null);
