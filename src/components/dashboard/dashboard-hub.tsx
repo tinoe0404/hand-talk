@@ -1,5 +1,4 @@
 import { PatientList } from "./patient-list";
-import { getPatients } from "@/app/[locale]/(radiographer)/dashboard/actions";
 
 
 interface Patient {
@@ -11,8 +10,7 @@ interface Patient {
     updatedAt: Date;
 }
 
-export async function DashboardHub() {
-    const patients = await getPatients() as Patient[];
+export function DashboardHub({ initialPatients }: { initialPatients: Patient[] }) {
 
     return (
         <div className="flex flex-col gap-4 p-4 animate-in fade-in duration-300">
@@ -24,7 +22,7 @@ export async function DashboardHub() {
             </div>
 
             {/* Patient list */}
-            <PatientList initialPatients={patients} />
+            <PatientList initialPatients={initialPatients} />
         </div>
     );
 }
