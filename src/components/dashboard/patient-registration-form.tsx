@@ -30,7 +30,15 @@ function SubmitButton() {
     );
 }
 
-export function PatientRegistrationModal() {
+interface Patient {
+    id: string;
+    name: string;
+    mrn: string;
+    gender: string | null;
+    createdAt: Date;
+}
+
+export function PatientRegistrationModal({ onOptimisticAdd }: { onOptimisticAdd?: (patient: Patient) => void }) {
     const [open, setOpen] = useState(false);
     const [state, formAction] = useFormState(registerPatientAction, null);
 
@@ -73,7 +81,23 @@ export function PatientRegistrationModal() {
                 title="New Patient"
                 description="Create a medical record."
             >
-                <form action={formAction} className="space-y-5">
+                <form
+                    action={(formData) => {
+                        if (onOptimisticAdd) {
+                            onOptimisticAdd({
+                                id: `temp-${Date.now()}`,
+                                name: formData.get("name") as string,
+                                mrn: formData.get("mrn") as string,
+                                gender: formData.get("gender") as string,
+                                createdAt: new Date()
+                            });
+                            setOpen(false);
+                            setMrn("");
+                        }
+                        formAction(formData);
+                    }}
+                    className="space-y-5"
+                >
                     <div className="space-y-4">
                         <div className="space-y-1.5">
                             <label htmlFor="reg-name" className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">Full Name</label>

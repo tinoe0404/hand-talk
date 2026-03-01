@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useTransition, useOptimistic } from "react";
 import { Modal } from "@/components/ui/modal";
 import { deletePatientAction } from "@/app/[locale]/(radiographer)/dashboard/actions";
+import { PatientRegistrationModal } from "./patient-registration-form";
 
 interface Patient {
     id: string;
@@ -20,9 +21,18 @@ export function PatientList({ initialPatients }: { initialPatients: Patient[] })
     const [isPending, startTransition] = useTransition();
     const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
 
-    const [optimisticPatients, deleteOptimisticPatient] = useOptimistic(
+    const [optimisticPatients, modifyOptimisticPatients] = useOptimistic(
         initialPatients,
-        (state: Patient[], idToRemove: string) => state.filter((p) => p.id !== idToRemove)
+        (state: Patient[], action: { type: 'add' | 'delete', payload: string | Patient }) => {
+            switch (action.type) {
+                case 'add':
+                    return [action.payload as Patient, ...state];
+                case 'delete':
+                    return state.filter((p) => p.id !== action.payload as string);
+                default:
+                    return state;
+            }
+        }
     );
 
     const filteredPatients = optimisticPatients.filter(p =>
@@ -39,7 +49,7 @@ export function PatientList({ initialPatients }: { initialPatients: Patient[] })
 
         startTransition(async () => {
             // Optimistically update UI
-            deleteOptimisticPatient(idToDelete);
+            modifyOptimisticPatients({ type: 'delete', payload: idToDelete });
             setPatientToDelete(null);
 
             // Background server execution
@@ -51,7 +61,16 @@ export function PatientList({ initialPatients }: { initialPatients: Patient[] })
     };
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-4">
+            {/* Top Bar with Registration */}
+            <div className="flex items-center justify-end">
+                <PatientRegistrationModal
+                    onOptimisticAdd={(patient) => startTransition(() => {
+                        modifyOptimisticPatients({ type: 'add', payload: patient });
+                    })}
+                />
+            </div>
+
             {/* Search bar */}
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
