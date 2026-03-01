@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useFormState, useFormStatus } from "react-dom";
-import { registerPatientAction } from "@/app/[locale]/(radiographer)/dashboard/actions";
+import { registerPatientAction, generateUniqueMrnAction } from "@/app/[locale]/(radiographer)/dashboard/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, RefreshCw } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 /** Submit button with loading state via useFormStatus */
 function SubmitButton() {
@@ -33,11 +34,27 @@ export function PatientRegistrationModal() {
     const [open, setOpen] = useState(false);
     const [state, formAction] = useFormState(registerPatientAction, null);
 
+    const [mrn, setMrn] = useState("");
+    const [isGeneratingMrn, setIsGeneratingMrn] = useState(false);
+
     useEffect(() => {
         if (state?.success) {
             setOpen(false);
+            setMrn(""); // Reset MRN on successful submit
         }
     }, [state]);
+
+    const handleGenerateMrn = async () => {
+        setIsGeneratingMrn(true);
+        try {
+            const uniqueMrn = await generateUniqueMrnAction();
+            setMrn(uniqueMrn);
+        } catch (error) {
+            console.error("Failed to generate MRN", error);
+        } finally {
+            setIsGeneratingMrn(false);
+        }
+    };
 
     return (
         <>
@@ -63,8 +80,30 @@ export function PatientRegistrationModal() {
                             <Input id="reg-name" name="name" placeholder="e.g. John Doe" required className="h-12 border-2 font-bold rounded-xl" />
                         </div>
                         <div className="space-y-1.5">
-                            <label htmlFor="reg-mrn" className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">MRN</label>
-                            <Input id="reg-mrn" name="mrn" placeholder="e.g. P-12345" required className="h-12 border-2 font-mono font-bold rounded-xl" />
+                            <label htmlFor="reg-mrn" className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">
+                                MRN
+                            </label>
+                            <div className="relative">
+                                <Input
+                                    id="reg-mrn"
+                                    name="mrn"
+                                    value={mrn}
+                                    onChange={(e) => setMrn(e.target.value)}
+                                    placeholder="e.g. P-12345"
+                                    required
+                                    className="h-12 border-2 font-mono font-bold rounded-xl pr-12"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleGenerateMrn}
+                                    disabled={isGeneratingMrn}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-zinc-400 hover:text-medical-green-600 active:scale-95 transition-all disabled:opacity-50"
+                                    title="Auto-generate completely unique MRN"
+                                >
+                                    <RefreshCw className={cn("w-5 h-5", isGeneratingMrn && "animate-spin")} />
+                                    <span className="sr-only">Generate unique MRN</span>
+                                </button>
+                            </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
@@ -83,7 +122,12 @@ export function PatientRegistrationModal() {
                             </div>
                             <div className="space-y-1.5">
                                 <label htmlFor="reg-dob" className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">DOB</label>
-                                <Input id="reg-dob" name="dob" type="date" className="h-12 border-2 font-bold rounded-xl" />
+                                <Input
+                                    id="reg-dob"
+                                    name="dob"
+                                    type="date"
+                                    className="h-12 border-2 font-bold rounded-xl w-full block appearance-none bg-white"
+                                />
                             </div>
                         </div>
                     </div>

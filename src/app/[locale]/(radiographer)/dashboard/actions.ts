@@ -6,6 +6,34 @@ import { getSession } from "@/lib/auth-utils";
 import { patientSchema } from "@/lib/validations/schemas";
 import { redirect } from "@/navigation";
 
+export async function generateUniqueMrnAction() {
+    const session = await getSession();
+    if (!session) {
+        throw new Error("Unauthorized");
+    }
+
+    let isUnique = false;
+    let generatedMrn = "";
+
+    // Pattern: P-YYMMDD-XXXX (e.g. P-260301-8492)
+    const datePart = new Date().toISOString().slice(2, 10).replace(/-/g, "");
+
+    while (!isUnique) {
+        const randomPart = Math.floor(1000 + Math.random() * 9000).toString();
+        generatedMrn = `P-${datePart}-${randomPart}`;
+
+        const existing = await prisma.patient.findUnique({
+            where: { mrn: generatedMrn }
+        });
+
+        if (!existing) {
+            isUnique = true;
+        }
+    }
+
+    return generatedMrn;
+}
+
 export async function registerPatientAction(_prevState: unknown, formData: FormData) {
     const session = await getSession();
     if (!session) {
