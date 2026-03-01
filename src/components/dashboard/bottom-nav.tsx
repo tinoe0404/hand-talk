@@ -19,6 +19,7 @@ export function BottomNav() {
     const pathname = usePathname();
     const { sessionId } = useSessionStore();
     const [showSettings, setShowSettings] = useState(false);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     // Hide nav when a session is active (fullscreen takeover)
     if (sessionId) {
@@ -41,7 +42,12 @@ export function BottomNav() {
                         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[90] animate-in fade-in duration-200"
                         onClick={() => setShowSettings(false)}
                     />
-                    <div className="fixed bottom-0 left-0 right-0 z-[95] bg-white rounded-t-3xl shadow-2xl p-6 pb-10 animate-in slide-in-from-bottom duration-300 space-y-5">
+                    <div
+                        className="fixed bottom-0 left-0 right-0 z-[95] bg-white rounded-t-3xl shadow-2xl p-6 pb-10 animate-in slide-in-from-bottom duration-300 space-y-5"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Settings"
+                    >
                         <div className="w-10 h-1 bg-zinc-200 rounded-full mx-auto mb-2" />
                         <h3 className="text-lg font-black text-zinc-900">Settings</h3>
 
@@ -50,22 +56,49 @@ export function BottomNav() {
                             <LanguageSwitcher />
                         </div>
 
-                        <form action={logoutAction}>
+                        {/* Logout with confirmation */}
+                        {!showLogoutConfirm ? (
                             <button
-                                type="submit"
+                                type="button"
+                                onClick={() => setShowLogoutConfirm(true)}
                                 className="w-full flex items-center justify-center gap-2 h-12 rounded-xl bg-red-50 text-red-600 border border-red-200 font-bold text-sm hover:bg-red-600 hover:text-white transition-all active:scale-95"
                             >
                                 <LogOut className="w-4 h-4" />
                                 {t("logout")}
                             </button>
-                        </form>
+                        ) : (
+                            <div className="space-y-3 p-4 bg-red-50 border-2 border-red-200 rounded-xl animate-in fade-in duration-200">
+                                <p className="text-sm font-bold text-red-800 text-center">
+                                    Are you sure you want to log out?
+                                </p>
+                                <div className="flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowLogoutConfirm(false)}
+                                        className="flex-1 h-11 rounded-xl border-2 border-zinc-200 text-zinc-700 font-bold text-sm hover:bg-zinc-50 transition-all active:scale-95"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <form action={logoutAction} className="flex-1">
+                                        <button
+                                            type="submit"
+                                            className="w-full h-11 rounded-xl bg-red-600 text-white font-black text-sm hover:bg-red-700 transition-all active:scale-95"
+                                        >
+                                            Log Out
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </>
             )}
 
             {/* Bottom tab bar */}
-            <nav className="fixed bottom-0 left-0 right-0 z-[80] bg-white border-t border-zinc-200 shadow-[0_-2px_12px_rgba(0,0,0,0.06)]"
+            <nav
+                className="fixed bottom-0 left-0 right-0 z-[80] bg-white border-t border-zinc-200 shadow-[0_-2px_12px_rgba(0,0,0,0.06)]"
                 style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+                aria-label="Dashboard navigation"
             >
                 <div className="flex items-stretch justify-around h-16 max-w-lg mx-auto">
                     {tabs.map((tab) => {
@@ -81,6 +114,7 @@ export function BottomNav() {
                                         ? "text-medical-green-600"
                                         : "text-zinc-400 hover:text-zinc-600"
                                 )}
+                                aria-current={active ? "page" : undefined}
                             >
                                 <Icon className={cn("w-6 h-6", active && "stroke-[2.5]")} />
                                 <span className="text-[10px] font-bold uppercase tracking-wider">

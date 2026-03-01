@@ -19,7 +19,7 @@ export default function Home() {
     <main className="min-h-screen bg-[#f8fafc] flex flex-col items-center selection:bg-medical-green-100 selection:text-medical-green-900 overflow-x-hidden">
 
       {/* ── TOP NAVIGATION ──────────────────────────────────────── */}
-      <nav className="w-full h-14 md:h-20 border-b border-zinc-100 bg-white/50 backdrop-blur-md flex items-center justify-between px-3 md:px-12 sticky top-0 z-50">
+      <nav className="w-full h-14 md:h-20 border-b border-zinc-100 bg-white/50 backdrop-blur-md flex items-center justify-between px-3 md:px-12 sticky top-0 z-50" aria-label="Main navigation">
         <div className="flex items-center gap-1.5 md:gap-2">
           <div className="bg-medical-green-600 p-1 md:p-1.5 rounded-lg shadow-lg shadow-medical-green-100">
             <Stethoscope className="w-3.5 h-3.5 md:w-5 md:h-5 text-white" />
@@ -29,7 +29,7 @@ export default function Home() {
 
         <div className="flex items-center gap-2 md:gap-4">
           <Link href="/dashboard">
-            <button className="h-8 md:h-11 px-3 md:px-6 rounded-lg md:rounded-xl bg-zinc-900 text-white text-[10px] md:text-sm font-bold hover:bg-zinc-800 transition-colors">
+            <button className="h-11 px-4 md:px-6 rounded-xl bg-zinc-900 text-white text-xs md:text-sm font-bold hover:bg-zinc-800 transition-colors">
               Clinical Portal
             </button>
           </Link>
@@ -40,8 +40,8 @@ export default function Home() {
       <section className="w-full max-w-7xl px-4 md:px-6 pt-10 md:pt-20 pb-10 md:pb-16 flex flex-col items-center text-center space-y-5 md:space-y-8">
 
         <h1 className="text-3xl sm:text-4xl md:text-7xl font-black tracking-tight text-zinc-900 leading-[1.1] md:leading-[1.1]">
-          Clinical Communication <br />
-          <span className="text-medical-green-600 bg-clip-text">Sign Language Bridge</span>
+          Clinical Communication{" "}
+          <span className="block md:inline text-medical-green-600 bg-clip-text">Sign Language Bridge</span>
         </h1>
 
         <p className="max-w-md md:max-w-2xl text-base md:text-2xl text-zinc-500 font-medium leading-relaxed md:leading-relaxed">
@@ -55,7 +55,7 @@ export default function Home() {
               <ChevronRight className="w-4 h-4 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />
             </button>
           </Link>
-          <p className="mt-3 md:mt-4 text-[9px] md:text-sm font-bold text-zinc-400 uppercase tracking-widest">
+          <p className="mt-3 md:mt-4 text-[11px] md:text-sm font-bold text-zinc-500 uppercase tracking-widest">
             Clinical Authorization Required
           </p>
         </div>
@@ -68,8 +68,10 @@ export default function Home() {
           <div className="absolute inset-0 flex items-center justify-center font-bold text-zinc-400">
             <Image
               src="/landing-mockup.png"
-              alt="Hand Talk Dashboard Preview"
+              alt="Hand Talk Dashboard Preview showing the split-screen clinical interface with patient instructions and radiographer controls"
               fill
+              sizes="(max-width: 768px) 100vw, 80vw"
+              priority
               className="object-cover opacity-90 group-hover:scale-105 transition-all duration-1000"
             />
           </div>
@@ -112,7 +114,7 @@ export default function Home() {
 
       {/* ── FOOTER ────────────────────────────────────────── */}
       <footer className="w-full py-12 border-t border-zinc-200 flex flex-col items-center gap-6">
-        <div className="flex items-center gap-8 text-zinc-400 font-black text-xs uppercase tracking-[0.2em]">
+        <div className="flex flex-wrap items-center justify-center gap-3 md:gap-8 text-zinc-500 font-black text-xs uppercase tracking-[0.2em]">
           <span className="flex items-center gap-2">
             <Shield className="w-3.5 h-3.5" /> WCAG 2.1 AAA
           </span>
@@ -123,7 +125,7 @@ export default function Home() {
             <Hand className="w-3.5 h-3.5" /> GESTURE+ ENABLED
           </span>
         </div>
-        <p className="text-zinc-300 text-xs">© 2026 Hand Talk Clinical Systems. All rights reserved.</p>
+        <p className="text-zinc-400 text-xs">© 2026 Hand Talk Clinical Systems. All rights reserved.</p>
       </footer>
 
     </main>

@@ -6,10 +6,9 @@ import { getInstruction, videoPath } from "@/lib/constants/instructions";
 import { useTranslations } from "next-intl";
 import { VideoPlayer } from "./video-player";
 import { X, Volume2 } from "lucide-react";
-import * as LucideIcons from "lucide-react";
+import { resolveIcon } from "@/lib/icon-map";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const IconMap = LucideIcons as unknown as Record<string, React.ElementType>;
+
 
 /**
  * InstructionModal — Full-screen popup triggered when the radiographer
@@ -54,12 +53,17 @@ export function InstructionModal() {
         return null;
     }
 
-    const Icon = IconMap[inst.iconName] ?? LucideIcons.CircleHelp;
+    const Icon = resolveIcon(inst.iconName);
     const title = t(`${currentInstructionId}.title`);
     const desc = t(`${currentInstructionId}.desc`);
 
     return (
-        <div className="fixed inset-0 z-[200] flex flex-col bg-black/95 backdrop-blur-md animate-in fade-in duration-200">
+        <div
+            className="fixed inset-0 z-[200] flex flex-col bg-black/95 backdrop-blur-md animate-in fade-in duration-200"
+            role="dialog"
+            aria-modal="true"
+            aria-label={title}
+        >
             {/* Header bar */}
             <div className="flex items-center justify-between px-4 py-3 bg-black/50 shrink-0 border-b border-white/10">
                 <div className="flex items-center gap-3">

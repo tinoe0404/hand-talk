@@ -1,12 +1,33 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import { registerPatientAction } from "@/app/[locale]/(radiographer)/dashboard/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
+
+/** Submit button with loading state via useFormStatus */
+function SubmitButton() {
+    const { pending } = useFormStatus();
+    return (
+        <Button
+            type="submit"
+            disabled={pending}
+            className="w-full h-14 text-base font-black shadow-clinical-lg active:scale-95 transition-all rounded-xl"
+        >
+            {pending ? (
+                <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Registering...
+                </>
+            ) : (
+                "Register Patient"
+            )}
+        </Button>
+    );
+}
 
 export function PatientRegistrationModal() {
     const [open, setOpen] = useState(false);
@@ -38,18 +59,20 @@ export function PatientRegistrationModal() {
                 <form action={formAction} className="space-y-5">
                     <div className="space-y-4">
                         <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Full Name</label>
-                            <Input name="name" placeholder="e.g. John Doe" required className="h-12 border-2 font-bold rounded-xl" />
+                            <label htmlFor="reg-name" className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">Full Name</label>
+                            <Input id="reg-name" name="name" placeholder="e.g. John Doe" required className="h-12 border-2 font-bold rounded-xl" />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">MRN</label>
-                            <Input name="mrn" placeholder="e.g. P-12345" required className="h-12 border-2 font-mono font-bold rounded-xl" />
+                            <label htmlFor="reg-mrn" className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">MRN</label>
+                            <Input id="reg-mrn" name="mrn" placeholder="e.g. P-12345" required className="h-12 border-2 font-mono font-bold rounded-xl" />
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Gender</label>
+                                <label htmlFor="reg-gender" className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">Gender</label>
                                 <select
+                                    id="reg-gender"
                                     name="gender"
+                                    required
                                     className="w-full h-12 rounded-xl border-2 border-zinc-200 bg-white px-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-medical-green-500"
                                 >
                                     <option value="">Select...</option>
@@ -59,23 +82,21 @@ export function PatientRegistrationModal() {
                                 </select>
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">DOB</label>
-                                <Input name="dob" type="date" className="h-12 border-2 font-bold rounded-xl" />
+                                <label htmlFor="reg-dob" className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">DOB</label>
+                                <Input id="reg-dob" name="dob" type="date" className="h-12 border-2 font-bold rounded-xl" />
                             </div>
                         </div>
                     </div>
 
                     {state?.error && (
-                        <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-xl" role="alert">
                             <p className="text-xs font-bold text-red-600">
                                 {state.error}
                             </p>
                         </div>
                     )}
 
-                    <Button type="submit" className="w-full h-14 text-base font-black shadow-clinical-lg active:scale-95 transition-all rounded-xl">
-                        Register Patient
-                    </Button>
+                    <SubmitButton />
                 </form>
             </Modal>
         </>

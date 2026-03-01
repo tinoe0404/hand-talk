@@ -7,16 +7,14 @@ import {
     videoPath,
 } from "@/lib/constants/instructions";
 import { useTranslations } from "next-intl";
-import * as LucideIcons from "lucide-react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Hand } from "lucide-react";
+import { resolveIcon } from "@/lib/icon-map";
 import { GestureGuide } from "./gesture-guide";
 import { VideoPlayer } from "./video-player";
 
 // Resolve a Lucide icon by name string
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const IconMap = LucideIcons as unknown as Record<string, React.ElementType>;
 function DynIcon({ name, className }: { name: string; className?: string }) {
-    const Icon = IconMap[name] ?? LucideIcons.CircleHelp;
+    const Icon = resolveIcon(name);
     return <Icon className={className} />;
 }
 
@@ -139,7 +137,7 @@ export function PatientView() {
         // Instruction mode but nothing selected yet — patient-facing prompt
         return (
             <div className="flex flex-col items-center justify-center h-full bg-medical-green-50 text-medical-green-700 select-none px-6">
-                <LucideIcons.Hand className="w-16 h-16 mb-4 opacity-30" />
+                <Hand className="w-16 h-16 mb-4 opacity-30" />
                 <p className="text-2xl font-bold text-center">
                     Please Wait for Instructions
                 </p>

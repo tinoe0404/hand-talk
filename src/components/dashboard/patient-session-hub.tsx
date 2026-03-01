@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, RotateCcw, Activity, ChevronLeft, ChevronDown, Loader2 } from "lucide-react";
+import { Select } from "@/components/ui/select";
+import { Play, RotateCcw, Activity, ChevronLeft, Loader2 } from "lucide-react";
 import { useSessionStore } from "@/store/useSessionStore";
 import { Link, useRouter } from "@/navigation";
 import { createSessionAction } from "@/app/[locale]/(radiographer)/dashboard/actions";
@@ -146,21 +147,19 @@ export function PatientSessionHub({ patientName, mrn, sessions }: PatientSession
 
                     {/* Treatment type */}
                     <div className="space-y-1.5">
-                        <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                        <label htmlFor="session-treatment" className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">
                             Treatment Type
                         </label>
-                        <div className="relative">
-                            <select
-                                value={treatment}
-                                onChange={(e) => setTreatment(e.target.value)}
-                                className="w-full h-12 rounded-xl border-2 border-zinc-200 bg-white px-4 pr-10 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-medical-green-500 appearance-none"
-                            >
-                                {TREATMENTS.map(t => (
-                                    <option key={t.value} value={t.value}>{t.label}</option>
-                                ))}
-                            </select>
-                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                        </div>
+                        <Select
+                            id="session-treatment"
+                            value={treatment}
+                            onChange={(e) => setTreatment(e.target.value)}
+                            className="h-12 rounded-xl border-2 border-zinc-200 text-sm"
+                        >
+                            {TREATMENTS.map(t => (
+                                <option key={t.value} value={t.value}>{t.label}</option>
+                            ))}
+                        </Select>
                     </div>
 
                     {/* Day flags */}
@@ -216,7 +215,7 @@ export function PatientSessionHub({ patientName, mrn, sessions }: PatientSession
             {/* Session History */}
             {completedSessions.length > 0 && (
                 <div className="space-y-2">
-                    <h3 className="text-xs font-black text-zinc-400 uppercase tracking-widest px-1">
+                    <h3 className="text-xs font-black text-zinc-500 uppercase tracking-widest px-1">
                         History · {completedSessions.length} session{completedSessions.length !== 1 ? "s" : ""}
                     </h3>
                     <div className="flex flex-col gap-2">

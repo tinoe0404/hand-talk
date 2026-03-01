@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSessionStore } from "@/store/useSessionStore";
 import { useTranslations } from "next-intl";
 import {
@@ -8,17 +8,16 @@ import {
     InstructionCategory,
     videoPath,
 } from "@/lib/constants/instructions";
-import * as LucideIcons from "lucide-react";
+import { Move, MessageSquare, Wind, Shield, Volume2 } from "lucide-react";
+import { resolveIcon } from "@/lib/icon-map";
 import { cn } from "@/lib/utils";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const IconMap = LucideIcons as unknown as Record<string, React.ElementType>;
 
 const TAB_ICONS: Record<InstructionCategory, React.ElementType> = {
-    POSITIONING: LucideIcons.Move,
-    SESSION: LucideIcons.MessageSquare,
-    BREATHING: LucideIcons.Wind,
-    SAFETY: LucideIcons.Shield,
+    POSITIONING: Move,
+    SESSION: MessageSquare,
+    BREATHING: Wind,
+    SAFETY: Shield,
 };
 
 export function InstructionTabs() {
@@ -36,20 +35,36 @@ export function InstructionTabs() {
 
     const instructions = GROUPED_INSTRUCTIONS[activeTab];
 
-    // Preload videos for the active tab
-    React.useEffect(() => {
+    const preloadLinksRef = useRef<HTMLLinkElement[]>([]);
+
+    // Preload videos for the active tab — clean up previous links
+    useEffect(() => {
+        // Remove previous preload links
+        preloadLinksRef.current.forEach((link) => {
+            if (document.head.contains(link)) {
+                document.head.removeChild(link);
+            }
+        });
+        preloadLinksRef.current = [];
+
+        // Create new preload links
         instructions.forEach((inst) => {
             const link = document.createElement("link");
             link.rel = "preload";
             link.as = "video";
             link.href = videoPath(inst.id);
             document.head.appendChild(link);
-            setTimeout(() => {
+            preloadLinksRef.current.push(link);
+        });
+
+        return () => {
+            preloadLinksRef.current.forEach((link) => {
                 if (document.head.contains(link)) {
                     document.head.removeChild(link);
                 }
-            }, 60000);
-        });
+            });
+            preloadLinksRef.current = [];
+        };
     }, [instructions]);
 
     const handleTap = (id: string) => {
@@ -89,7 +104,7 @@ export function InstructionTabs() {
                 {instructions.map((inst) => {
                     const isActive = currentInstructionId === inst.id;
                     const label = tInst(`${inst.id}.title`);
-                    const Icon = IconMap[inst.iconName] ?? LucideIcons.CircleHelp;
+                    const Icon = resolveIcon(inst.iconName);
 
                     return (
                         <button
@@ -108,7 +123,7 @@ export function InstructionTabs() {
                             />
                             <span className="leading-snug">{label}</span>
                             {isActive && (
-                                <LucideIcons.Volume2 className="w-4 h-4 ml-auto shrink-0 animate-pulse" />
+                                <Volume2 className="w-4 h-4 ml-auto shrink-0 animate-pulse" />
                             )}
                         </button>
                     );

@@ -13,6 +13,7 @@ import { GestureResultBanner } from "@/components/dashboard/gesture-result-banne
 import { VisionBar } from "@/components/dashboard/vision-bar";
 import { SessionInfo } from "@/components/dashboard/session-info";
 import { DashboardHub } from "@/components/dashboard/dashboard-hub";
+import { Modal } from "@/components/ui/modal";
 
 /* ────────────────────────────────────────────────────────────
    MAIN DASHBOARD PAGE
@@ -31,6 +32,8 @@ export default function DashboardPage() {
     } = useSessionStore();
 
     const [isOnline, setIsOnline] = useState(true);
+    const [showEndConfirm, setShowEndConfirm] = useState(false);
+    const [showEmergencyConfirm, setShowEmergencyConfirm] = useState(false);
 
     useEffect(() => {
         setIsOnline(navigator.onLine);
@@ -50,6 +53,16 @@ export default function DashboardPage() {
         return <DashboardHub />;
     }
 
+    const handleEndSession = () => {
+        setShowEndConfirm(false);
+        endSession();
+    };
+
+    const handleEmergencyConfirm = () => {
+        setShowEmergencyConfirm(false);
+        triggerEmergency();
+    };
+
     return (
         /*
           Full viewport split:
@@ -64,6 +77,63 @@ export default function DashboardPage() {
             <div className="fixed left-0 right-0 z-[60] pointer-events-none" style={{ top: '50dvh' }}>
                 <GestureResultBanner />
             </div>
+
+            {/* End Session Confirmation Modal */}
+            <Modal
+                isOpen={showEndConfirm}
+                onClose={() => setShowEndConfirm(false)}
+                title="End Treatment Session?"
+                description="This action cannot be undone."
+            >
+                <div className="space-y-4">
+                    <p className="text-sm text-zinc-600 font-medium">
+                        Are you sure you want to end this treatment session? The session audit trail will be saved, but the active session cannot be resumed.
+                    </p>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => setShowEndConfirm(false)}
+                            className="flex-1 h-12 rounded-xl border-2 border-zinc-200 text-zinc-700 font-bold text-sm hover:bg-zinc-50 transition-all active:scale-95"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleEndSession}
+                            className="flex-1 h-12 rounded-xl bg-red-600 text-white font-black text-sm hover:bg-red-700 transition-all active:scale-95"
+                        >
+                            End Session
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Emergency Trigger Confirmation Modal */}
+            <Modal
+                isOpen={showEmergencyConfirm}
+                onClose={() => setShowEmergencyConfirm(false)}
+                title="Trigger Emergency?"
+                description="This will halt treatment immediately."
+            >
+                <div className="space-y-4">
+                    <p className="text-sm text-zinc-600 font-medium">
+                        This will display &quot;TREATMENT HALTED&quot; to the patient and requires triage resolution before resuming. Continue?
+                    </p>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => setShowEmergencyConfirm(false)}
+                            className="flex-1 h-12 rounded-xl border-2 border-zinc-200 text-zinc-700 font-bold text-sm hover:bg-zinc-50 transition-all active:scale-95"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleEmergencyConfirm}
+                            className="flex-1 h-12 rounded-xl bg-red-600 text-white font-black text-sm hover:bg-red-700 transition-all active:scale-95 animate-pulse"
+                        >
+                            <AlertTriangle className="w-5 h-5 mr-2 inline" />
+                            Confirm Emergency
+                        </button>
+                    </div>
+                </div>
+            </Modal>
 
             <div className="dashboard-root">
                 {/* ── TOP: Patient-facing display ───────────────────────── */}
@@ -117,10 +187,10 @@ export default function DashboardPage() {
                             )
                         )}
 
-                        {/* End session */}
+                        {/* End session — now with confirmation */}
                         {!isEmergency && (
                             <button
-                                onClick={endSession}
+                                onClick={() => setShowEndConfirm(true)}
                                 className="mt-2 h-11 px-4 rounded-xl border-2 border-zinc-200 text-zinc-600 font-bold text-sm hover:border-red-200 hover:text-red-600 hover:bg-red-50 transition-all active:scale-95 min-h-[44px]"
                             >
                                 {t("endSession")}
@@ -132,7 +202,7 @@ export default function DashboardPage() {
                     {!isEmergency && (
                         <div className="emergency-sticky">
                             <button
-                                onClick={triggerEmergency}
+                                onClick={() => setShowEmergencyConfirm(true)}
                                 className="w-full h-14 rounded-xl bg-red-600 text-white font-black text-base uppercase tracking-widest shadow-lg hover:bg-red-700 active:scale-95 transition-all flex items-center justify-center gap-3 min-h-[56px]"
                                 aria-label="Trigger emergency"
                             >
@@ -143,40 +213,7 @@ export default function DashboardPage() {
                     )}
                 </section>
 
-                <style jsx>{`
-                .dashboard-root {
-                  display: flex;
-                  flex-direction: column;
-                  height: 100dvh;
-                  width: 100%;
-                  overflow: hidden;
-                  position: fixed;
-                  inset: 0;
-                  z-index: 50;
-                  background: white;
-                }
-                .patient-view {
-                  flex: 0 0 50dvh;
-                  overflow: hidden;
-                  position: relative;
-                }
-                .radio-controls {
-                  flex: 1;
-                  overflow-y: auto;
-                  overflow-x: hidden;
-                  position: relative;
-                  background: #f8fafc;
-                }
-                .emergency-sticky {
-                  position: sticky;
-                  bottom: 0;
-                  left: 0;
-                  right: 0;
-                  padding: 12px;
-                  background: linear-gradient(to top, #f8fafc 70%, transparent);
-                  z-index: 10;
-                }
-            `}</style>
+
             </div>
         </>
     );

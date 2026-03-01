@@ -104,6 +104,52 @@
   }
 }
 
+/* Dashboard session layout — fixed viewport split */
+.dashboard-root {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: white;
+}
+.patient-view {
+  flex: 0 0 50dvh;
+  overflow: hidden;
+  position: relative;
+}
+.radio-controls {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  background: #f8fafc;
+}
+.emergency-sticky {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  background: linear-gradient(to top, #f8fafc 70%, transparent);
+  z-index: 10;
+}
+
+/* Skeleton shimmer for loading states */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  @apply rounded-xl bg-zinc-200;
+  background: linear-gradient(90deg, #e4e4e7 25%, #f4f4f5 50%, #e4e4e7 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
 /* Accessibility: reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

@@ -37,19 +37,31 @@ export function BodyMapper({ onSelect, selectedRegion }: BodyMapperProps) {
                 <p className="absolute top-1 left-0 right-0 text-center text-[8px] font-bold text-zinc-400 uppercase tracking-widest pointer-events-none">
                     {t('title')}
                 </p>
-                <svg viewBox="0 0 100 110" className="w-full h-full drop-shadow-md">
+                <svg viewBox="0 0 100 110" className="w-full h-full drop-shadow-md" role="img" aria-label={t('title')}>
                     {regions.map((region) => (
-                        <path
-                            key={region.id}
-                            d={region.path}
-                            onClick={() => onSelect(region.id)}
-                            className={cn(
-                                "cursor-pointer transition-all duration-300 stroke-[1.5]",
-                                selectedRegion === region.id
-                                    ? "fill-red-500 stroke-red-700 pulse-glow"
-                                    : "fill-zinc-200 stroke-zinc-400 hover:fill-zinc-300"
-                            )}
-                        />
+                        <g key={region.id}>
+                            <title>{region.label}</title>
+                            <path
+                                d={region.path}
+                                onClick={() => onSelect(region.id)}
+                                role="button"
+                                aria-label={region.label}
+                                aria-pressed={selectedRegion === region.id}
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        onSelect(region.id);
+                                    }
+                                }}
+                                className={cn(
+                                    "cursor-pointer transition-all duration-300 stroke-[1.5] outline-none focus:stroke-medical-green-500 focus:stroke-[3]",
+                                    selectedRegion === region.id
+                                        ? "fill-red-500 stroke-red-700 pulse-glow"
+                                        : "fill-zinc-200 stroke-zinc-400 hover:fill-zinc-300"
+                                )}
+                            />
+                        </g>
                     ))}
                 </svg>
             </div>

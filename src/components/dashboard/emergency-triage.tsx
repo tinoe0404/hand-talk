@@ -92,7 +92,7 @@ export function EmergencyTriage() {
                         disabled={selectedReason === "PAIN" ? !location : selectedReason === "BREATHING" ? !subReason : false}
                         className={cn(
                             "h-14 md:h-20 px-6 md:px-16 text-base md:text-2xl font-black rounded-clinical shadow-clinical-lg transition-all w-full sm:w-auto",
-                            ((selectedReason === "PAIN" && !location) || (selectedReason === "BREATHING" && !subReason)) ? "opacity-30" : "animate-pulse"
+                            ((selectedReason === "PAIN" && !location) || (selectedReason === "BREATHING" && !subReason)) ? "opacity-30" : "animate-pulse-emergency"
                         )}
                     >
                         <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 shrink-0" />
