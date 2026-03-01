@@ -59,6 +59,12 @@ export default function DashboardPage() {
         */
         <>
             <InstructionModal />
+
+            {/* Gesture alert banner — fixed overlay at top of radiographer controls area */}
+            <div className="fixed left-0 right-0 z-[60] pointer-events-none" style={{ top: '50dvh' }}>
+                <GestureResultBanner />
+            </div>
+
             <div className="dashboard-root">
                 {/* ── TOP: Patient-facing display ───────────────────────── */}
                 <section className="patient-view" aria-label="Patient display">
@@ -76,9 +82,6 @@ export default function DashboardPage() {
 
                         {/* Session info bar */}
                         <SessionInfo />
-
-                        {/* Gesture result display */}
-                        <GestureResultBanner />
 
                         {/* Vision status */}
                         <VisionBar isOnline={isOnline} />

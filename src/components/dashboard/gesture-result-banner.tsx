@@ -15,7 +15,7 @@ export function GestureResultBanner() {
         if (lastPatientSign.severity === 'informational') {
             const timer = setTimeout(() => {
                 clearPatientSign();
-            }, 5000);
+            }, 6000);
             return () => clearTimeout(timer);
         }
         return undefined;
