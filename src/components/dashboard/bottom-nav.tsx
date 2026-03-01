@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/navigation";
 import { cn } from "@/lib/utils";
-import { Users, History, Settings, LogOut, Loader2 } from "lucide-react";
+import { Users, History, Settings, LogOut, Loader2, PieChart } from "lucide-react";
 import { logoutAction } from "@/lib/auth-actions";
 import LanguageSwitcher from "@/components/language-switcher";
 import { useSessionStore } from "@/store/useSessionStore";
@@ -12,6 +12,7 @@ import { useState, useTransition } from "react";
 const tabs = [
     { href: "/dashboard", icon: Users, labelKey: "title" as const, matchExact: true },
     { href: "/dashboard/history", icon: History, labelKey: "history" as const, matchExact: false },
+    { href: "/dashboard/analytics", icon: PieChart, labelKey: "analytics" as const, matchExact: false },
 ] as const;
 
 export function BottomNav() {
