@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
-import { Play, RotateCcw, Activity, ChevronLeft, Loader2 } from "lucide-react";
+import { Play, Activity, ChevronLeft, Loader2 } from "lucide-react";
 import { useSessionStore } from "@/store/useSessionStore";
 import { Link, useRouter } from "@/navigation";
 import { createSessionAction } from "@/app/[locale]/(radiographer)/dashboard/actions";
@@ -34,36 +34,10 @@ const TREATMENTS = [
 export function PatientSessionHub({ patientName, mrn, sessions }: PatientSessionHubProps) {
     const router = useRouter();
     const sessionStore = useSessionStore();
-    const [isResuming, setIsResuming] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [treatment, setTreatment] = useState("GENERAL_RT");
-    const [isFirstDay, setIsFirstDay] = useState(false);
-    const [isLastDay, setIsLastDay] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    const activeSession = sessions.find(s => s.status === "ACTIVE" || s.status === "INTERRUPTED");
-    const completedSessions = sessions.filter(s => s.status === "COMPLETED");
-
-    const isCurrentStoreSessionMatches = activeSession && sessionStore.sessionId === activeSession.id;
-
-    const handleResume = () => {
-        setIsResuming(true);
-        if (activeSession) {
-            if (!isCurrentStoreSessionMatches) {
-                sessionStore.startSession({
-                    sessionId: activeSession.id,
-                    patientRef: mrn,
-                    radiographerId: "RESUMED",
-                    isFirstDay: false,
-                    isLastDay: false,
-                });
-                if (activeSession.lastInstructionId) {
-                    sessionStore.setInstruction(activeSession.lastInstructionId);
-                }
-            }
-            router.push("/dashboard");
-        }
-    };
+    const completedSessions = sessions.filter(s => s.status === "COMPLETED" || s.status === "ACTIVE" || s.status === "INTERRUPTED"); // Treat any past session as history
 
     const handleStartSession = async () => {
         setIsCreating(true);
@@ -74,12 +48,6 @@ export function PatientSessionHub({ patientName, mrn, sessions }: PatientSession
         formData.set("mrn", mrn);
         formData.set("treatment", treatment);
         formData.set("notes", "");
-        if (isFirstDay) {
-            formData.set("isFirstDay", "on");
-        }
-        if (isLastDay) {
-            formData.set("isLastDay", "on");
-        }
 
         const result = await createSessionAction(null, formData);
 
@@ -94,8 +62,8 @@ export function PatientSessionHub({ patientName, mrn, sessions }: PatientSession
                 sessionId: result.sessionId,
                 patientRef: mrn,
                 radiographerId: "unknown",
-                isFirstDay: result.isFirstDay || false,
-                isLastDay: result.isLastDay || false,
+                isFirstDay: false,
+                isLastDay: false,
             });
             router.push("/dashboard");
         }
@@ -121,96 +89,53 @@ export function PatientSessionHub({ patientName, mrn, sessions }: PatientSession
                 </div>
             </div>
 
-            {/* Active Session — Resume Card */}
-            {activeSession ? (
-                <div className="bg-medical-green-50 p-5 rounded-2xl border-2 border-medical-green-200 space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-medical-green-500 rounded-full animate-pulse" />
-                        <h3 className="font-bold text-medical-green-900 text-sm">Active Session</h3>
-                    </div>
-                    <p className="text-sm text-medical-green-700 font-medium">
-                        {activeSession.treatmentType} · Started {format(new Date(activeSession.createdAt), "MMM d, HH:mm")}
+            {/* Start New Session — Inline Form */}
+            <div className="bg-white p-5 rounded-2xl border-2 border-zinc-100 space-y-4">
+                <h3 className="font-bold text-zinc-900 text-sm">Start Session</h3>
+
+                {/* Treatment type */}
+                <div className="space-y-1.5">
+                    <label htmlFor="session-treatment" className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">
+                        Treatment Type
+                    </label>
+                    <Select
+                        id="session-treatment"
+                        value={treatment}
+                        onChange={(e) => setTreatment(e.target.value)}
+                        className="h-12 rounded-xl border-2 border-zinc-200 text-sm"
+                    >
+                        {TREATMENTS.map(t => (
+                            <option key={t.value} value={t.value}>{t.label}</option>
+                        ))}
+                    </Select>
+                </div>
+
+
+
+                {error && (
+                    <p className="text-xs font-bold text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+                        {error}
                     </p>
-                    <Button
-                        onClick={handleResume}
-                        disabled={isResuming}
-                        className="w-full h-14 bg-medical-green-600 hover:bg-medical-green-700 text-white font-black text-base rounded-xl shadow-lg active:scale-[0.98] transition-all"
-                    >
-                        <RotateCcw className="w-5 h-5 mr-2" />
-                        {isResuming ? "Resuming..." : "Resume Session"}
-                    </Button>
-                </div>
-            ) : (
-                /* Start New Session — Inline Form */
-                <div className="bg-white p-5 rounded-2xl border-2 border-zinc-100 space-y-4">
-                    <h3 className="font-bold text-zinc-900 text-sm">Start Session</h3>
+                )}
 
-                    {/* Treatment type */}
-                    <div className="space-y-1.5">
-                        <label htmlFor="session-treatment" className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">
-                            Treatment Type
-                        </label>
-                        <Select
-                            id="session-treatment"
-                            value={treatment}
-                            onChange={(e) => setTreatment(e.target.value)}
-                            className="h-12 rounded-xl border-2 border-zinc-200 text-sm"
-                        >
-                            {TREATMENTS.map(t => (
-                                <option key={t.value} value={t.value}>{t.label}</option>
-                            ))}
-                        </Select>
-                    </div>
-
-                    {/* Day flags */}
-                    <div className="flex gap-3">
-                        <button
-                            type="button"
-                            onClick={() => setIsFirstDay(!isFirstDay)}
-                            className={`flex-1 h-11 rounded-xl border-2 text-xs font-bold uppercase tracking-wider transition-all active:scale-95 ${isFirstDay
-                                ? "bg-medical-green-600 text-white border-medical-green-600"
-                                : "bg-zinc-50 text-zinc-500 border-zinc-200"
-                                }`}
-                        >
-                            First Day
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setIsLastDay(!isLastDay)}
-                            className={`flex-1 h-11 rounded-xl border-2 text-xs font-bold uppercase tracking-wider transition-all active:scale-95 ${isLastDay
-                                ? "bg-medical-green-600 text-white border-medical-green-600"
-                                : "bg-zinc-50 text-zinc-500 border-zinc-200"
-                                }`}
-                        >
-                            Last Day
-                        </button>
-                    </div>
-
-                    {error && (
-                        <p className="text-xs font-bold text-red-600 bg-red-50 px-3 py-2 rounded-lg">
-                            {error}
-                        </p>
+                <Button
+                    onClick={handleStartSession}
+                    disabled={isCreating}
+                    className="w-full h-14 bg-medical-green-600 hover:bg-medical-green-700 text-white font-black text-base rounded-xl shadow-lg active:scale-[0.98] transition-all"
+                >
+                    {isCreating ? (
+                        <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            Starting...
+                        </>
+                    ) : (
+                        <>
+                            <Play className="w-5 h-5 mr-2" />
+                            Start Session
+                        </>
                     )}
-
-                    <Button
-                        onClick={handleStartSession}
-                        disabled={isCreating}
-                        className="w-full h-14 bg-medical-green-600 hover:bg-medical-green-700 text-white font-black text-base rounded-xl shadow-lg active:scale-[0.98] transition-all"
-                    >
-                        {isCreating ? (
-                            <>
-                                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                Starting...
-                            </>
-                        ) : (
-                            <>
-                                <Play className="w-5 h-5 mr-2" />
-                                Start Session
-                            </>
-                        )}
-                    </Button>
-                </div>
-            )}
+                </Button>
+            </div>
 
             {/* Session History */}
             {completedSessions.length > 0 && (
@@ -239,7 +164,7 @@ export function PatientSessionHub({ patientName, mrn, sessions }: PatientSession
                 </div>
             )}
 
-            {completedSessions.length === 0 && !activeSession && (
+            {completedSessions.length === 0 && (
                 <div className="py-8 text-center">
                     <Activity className="w-8 h-8 text-zinc-200 mx-auto mb-2" />
                     <p className="text-sm text-zinc-400 font-medium">

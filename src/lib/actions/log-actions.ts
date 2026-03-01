@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 /**
  * CLINICAL AUDIT ACTIONS
@@ -82,6 +83,7 @@ export async function endClinicalSession(sessionId: string, status: "COMPLETED" 
                 lastInstructionAt: null
             }
         });
+        revalidatePath('/', 'layout');
     } catch (error) {
         console.error("FAILED TO END CLINICAL SESSION:", error);
     }
