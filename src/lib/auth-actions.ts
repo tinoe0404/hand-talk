@@ -1,7 +1,7 @@
 "use server";
 
 import { deleteSession } from "@/lib/auth-utils";
-import { redirect } from "next/navigation";
+import { redirect } from "@/navigation";
 
 /**
  * logoutAction
@@ -11,5 +11,5 @@ import { redirect } from "next/navigation";
  */
 export async function logoutAction() {
     await deleteSession();
-    redirect("/login");
+    redirect({ href: "/login", locale: "en" });
 }

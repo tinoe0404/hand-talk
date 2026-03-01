@@ -57,5 +57,5 @@ export async function getSession() {
 }
 
 export async function deleteSession() {
-    cookies().set(COOKIE_NAME, "", { expires: new Date(0) });
+    cookies().delete(COOKIE_NAME);
 }
