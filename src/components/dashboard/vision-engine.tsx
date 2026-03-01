@@ -167,6 +167,8 @@ export function VisionEngine() {
         };
 
         // Delay starting to allow camera warm-up
+        const videoEl = videoRef.current; // Capturing ref inside effect body
+
         const startTimeout = setTimeout(() => {
             requestRef.current = requestAnimationFrame(frameLoop);
         }, 1000);
@@ -183,7 +185,6 @@ export function VisionEngine() {
                 streamRef.getTracks().forEach((track) => track.stop());
             }
 
-            const videoEl = videoRef.current;
             if (videoEl?.srcObject) {
                 const stream = videoEl.srcObject as MediaStream;
                 stream.getTracks().forEach((track) => track.stop());

@@ -26,7 +26,9 @@ export function PatientList({ initialPatients }: { initialPatients: Patient[] })
     );
 
     const handleDelete = () => {
-        if (!patientToDelete) return;
+        if (!patientToDelete) {
+            return;
+        }
 
         startTransition(async () => {
             const result = await deletePatientAction(patientToDelete.id);
