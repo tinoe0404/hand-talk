@@ -61,7 +61,7 @@ interface SessionState {
         isFirstDay: boolean;
         isLastDay: boolean;
     }) => void;
-    endSession: () => void;
+    endSession: () => Promise<void>;
 
     setInstruction: (id: string) => void;
     stopInstruction: () => void;
@@ -125,16 +125,16 @@ export const useSessionStore = create<SessionState>()(
                 });
             },
 
-            endSession: () => {
+            endSession: async () => {
                 const { sessionId, currentInstructionId, currentInstructionStartTime } = get();
                 // Log final instruction duration if one was active
                 if (sessionId && currentInstructionId && currentInstructionStartTime) {
                     const durationMs = Date.now() - currentInstructionStartTime;
-                    logInstructionChange(sessionId, currentInstructionId, durationMs);
+                    await logInstructionChange(sessionId, currentInstructionId, durationMs);
                 }
 
                 if (sessionId) {
-                    endClinicalSession(sessionId, 'COMPLETED');
+                    await endClinicalSession(sessionId, 'COMPLETED');
                 }
                 set({ ...INITIAL_STATE });
             },

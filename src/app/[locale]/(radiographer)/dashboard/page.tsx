@@ -6,8 +6,8 @@ import { InstructionTabs } from "@/components/dashboard/instruction-selector";
 import { EmergencyTriage } from "@/components/dashboard/emergency-triage";
 import { VisionEngine } from "@/components/dashboard/vision-engine";
 import { InstructionModal } from "@/components/dashboard/instruction-modal";
-import { AlertTriangle, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { AlertTriangle, ChevronRight, Loader2 } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { GestureResultBanner } from "@/components/dashboard/gesture-result-banner";
 import { VisionBar } from "@/components/dashboard/vision-bar";
@@ -47,6 +47,8 @@ export default function DashboardPage() {
         };
     }, []);
 
+    const [isEndingSession, startEndTransition] = useTransition();
+
     const isActive = !!sessionId;
 
     if (!isActive) {
@@ -54,8 +56,10 @@ export default function DashboardPage() {
     }
 
     const handleEndSession = () => {
-        setShowEndConfirm(false);
-        endSession();
+        startEndTransition(async () => {
+            await endSession();
+            setShowEndConfirm(false);
+        });
     };
 
     const handleEmergencyConfirm = () => {
@@ -98,9 +102,17 @@ export default function DashboardPage() {
                         </button>
                         <button
                             onClick={handleEndSession}
-                            className="flex-1 h-12 rounded-xl bg-red-600 text-white font-black text-sm hover:bg-red-700 transition-all active:scale-95"
+                            disabled={isEndingSession}
+                            className="flex-1 h-12 rounded-xl bg-red-600 text-white font-black text-sm hover:bg-red-700 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
-                            End Session
+                            {isEndingSession ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Ending...
+                                </>
+                            ) : (
+                                "End Session"
+                            )}
                         </button>
                     </div>
                 </div>
