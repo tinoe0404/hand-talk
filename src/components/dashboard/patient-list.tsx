@@ -3,7 +3,7 @@
 import { Link } from "@/navigation";
 import { Search, User, ChevronRight, Trash2, Loader2, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState, useTransition, useOptimistic } from "react";
+import React, { useState, useTransition, useOptimistic } from "react";
 import { Modal } from "@/components/ui/modal";
 import { deletePatientAction } from "@/app/[locale]/(radiographer)/dashboard/actions";
 import { PatientRegistrationModal } from "./patient-registration-form";
@@ -35,10 +35,11 @@ export function PatientList({ initialPatients }: { initialPatients: Patient[] })
         }
     );
 
-    const filteredPatients = optimisticPatients.filter(p =>
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.mrn.toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredPatients = React.useMemo(() =>
+        optimisticPatients.filter(p =>
+            p.name.toLowerCase().includes(search.toLowerCase()) ||
+            p.mrn.toLowerCase().includes(search.toLowerCase())
+        ), [optimisticPatients, search]);
 
     const handleDelete = () => {
         if (!patientToDelete) {

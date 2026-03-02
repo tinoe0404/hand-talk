@@ -51,6 +51,10 @@ model Session {
   instructionLogs InstructionLog[]
   gestureLogs     GestureLog[]
   emergencyLogs   EmergencyLog[]
+
+  @@index([patientId])
+  @@index([radiographerId])
+  @@index([status])
 }
 
 model InstructionLog {
@@ -61,6 +65,8 @@ model InstructionLog {
   
   session       Session  @relation(fields: [sessionId], references: [id])
   sessionId     String
+
+  @@index([sessionId])
 }
 
 model GestureLog {
@@ -71,6 +77,8 @@ model GestureLog {
   
   session     Session  @relation(fields: [sessionId], references: [id])
   sessionId   String
+
+  @@index([sessionId])
 }
 
 model EmergencyLog {
@@ -84,4 +92,6 @@ model EmergencyLog {
   
   session         Session  @relation(fields: [sessionId], references: [id])
   sessionId       String
+
+  @@index([sessionId])
 }
