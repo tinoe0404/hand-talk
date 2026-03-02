@@ -32,7 +32,6 @@ export async function loginAction(_prevState: unknown, formData: FormData) {
         return { error: "errorSystem" };
     }
 
-    // Redirect is handled by middleware but we specify dashboard here.
-    // next-intl redirect would be better but simple relative should work with middleware.
-    redirect("/dashboard");
+    // Use locale-prefixed path; middleware ensures correct routing
+    redirect("/en/dashboard");
 }

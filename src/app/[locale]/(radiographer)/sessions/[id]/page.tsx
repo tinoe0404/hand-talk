@@ -3,19 +3,15 @@ import { notFound } from "next/navigation";
 import { SessionAuditViewer } from "@/components/dashboard/session-audit-viewer";
 import { BackButton } from "@/components/dashboard/back-button";
 
-interface SessionDetailsPageProps {
-    params: {
-        id: string;
-        locale: string;
-    };
-}
-
 /**
  * CLINICAL SESSION AUDIT PAGE
  * - Server-side data fetching for medical records.
  * - Renders the internal audit timeline for a specific clinical event.
  */
-export default async function SessionDetailsPage({ params }: SessionDetailsPageProps) {
+export default async function SessionDetailsPage(props: {
+    params: Promise<{ id: string; locale: string }>
+}) {
+    const params = await props.params;
     const session = await prisma.session.findUnique({
         where: { id: params.id },
         include: {
