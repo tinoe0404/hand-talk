@@ -1,17 +1,23 @@
 {
-    "name": "Hand Talk | Medical Dashboard",
+    "name": "Hand Talk - Clinical Bridge",
     "short_name": "Hand Talk",
-    "description": "Radiography communication bridge for deaf patients.",
-    "start_url": "/en/login",
+    "description": "Medical-grade deaf patient communication bridge for radiotherapy.",
+    "start_url": "/",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#004d40",
+    "background_color": "#FFFFFF",
+    "theme_color": "#2E7D32",
     "icons": [
         {
             "src": "/icons/icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "any"
+        },
+        {
+            "src": "/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
         }
     ]
 }
