@@ -1,8 +1,14 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth-utils";
 
 export async function getPatientWithSessions(patientId: string) {
+    const session = await getSession();
+    if (!session) {
+        return null;
+    }
+
     try {
         const patient = await prisma.patient.findUnique({
             where: { id: patientId },
@@ -23,6 +29,11 @@ export async function getPatientWithSessions(patientId: string) {
 }
 
 export async function resumeSession(sessionId: string) {
+    const authSession = await getSession();
+    if (!authSession) {
+        return { success: false, error: "Unauthorized" };
+    }
+
     try {
         const session = await prisma.session.findUnique({
             where: { id: sessionId },
@@ -45,3 +56,4 @@ export async function resumeSession(sessionId: string) {
         return { success: false, error: "Failed to resume session" };
     }
 }
+

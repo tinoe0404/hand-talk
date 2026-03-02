@@ -4,9 +4,18 @@ import type { NextRequest } from 'next/server';
 import { jwtVerify } from "jose";
 import { routing } from './routing';
 
-const SECRET = new TextEncoder().encode(
-    process.env.AUTH_SECRET || "clinical-safety-secret-default-key-12345"
-);
+const getSecret = () => {
+    const secret = process.env.AUTH_SECRET;
+    // Only throw if in production and NOT in the build phase
+    if (!secret && process.env.NODE_ENV === "production" && process.env.NEXT_PHASE !== "phase-production-build") {
+        throw new Error("AUTH_SECRET environment variable is required in production");
+    }
+    return new TextEncoder().encode(
+        secret || "clinical-safety-secret-default-key-12345"
+    );
+};
+
+const SECRET = getSecret();
 
 const COOKIE_NAME = "hand_talk_session";
 

@@ -23,9 +23,16 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Hand Talk | Medical Dashboard",
+  title: "Hand Talk",
   description: "Radiography communication bridge for deaf patients.",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.ico",
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/apple-touch-icon-precomposed.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
