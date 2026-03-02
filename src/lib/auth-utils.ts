@@ -2,18 +2,20 @@ import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const getSecret = () => {
-    const secret = process.env.AUTH_SECRET;
-    // Only throw if in production and NOT in the build phase
-    if (!secret && process.env.NODE_ENV === "production" && process.env.NEXT_PHASE !== "phase-production-build") {
-        throw new Error("AUTH_SECRET environment variable is required in production");
-    }
-    return new TextEncoder().encode(
-        secret || "clinical-safety-secret-default-key-12345"
-    );
-};
+let _secret: Uint8Array | null = null;
 
-const SECRET = getSecret();
+function getSecret(): Uint8Array {
+    if (!_secret) {
+        const secret = process.env.AUTH_SECRET;
+        if (!secret && process.env.NODE_ENV === "production") {
+            throw new Error("AUTH_SECRET environment variable is required in production");
+        }
+        _secret = new TextEncoder().encode(
+            secret || "clinical-safety-secret-default-key-12345"
+        );
+    }
+    return _secret;
+}
 
 const COOKIE_NAME = "hand_talk_session";
 
@@ -38,7 +40,7 @@ export async function createSession(radiographerId: string) {
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
         .setExpirationTime("8h")
-        .sign(SECRET);
+        .sign(getSecret());
 
     cookies().set(COOKIE_NAME, session, {
         expires,
@@ -56,7 +58,7 @@ export async function getSession() {
     }
 
     try {
-        const { payload } = await jwtVerify(session, SECRET, {
+        const { payload } = await jwtVerify(session, getSecret(), {
             algorithms: ["HS256"],
         });
         return payload as { radiographerId: string };

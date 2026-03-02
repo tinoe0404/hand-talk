@@ -4,18 +4,20 @@ import type { NextRequest } from 'next/server';
 import { jwtVerify } from "jose";
 import { routing } from './routing';
 
-const getSecret = () => {
-    const secret = process.env.AUTH_SECRET;
-    // Only throw if in production and NOT in the build phase
-    if (!secret && process.env.NODE_ENV === "production" && process.env.NEXT_PHASE !== "phase-production-build") {
-        throw new Error("AUTH_SECRET environment variable is required in production");
-    }
-    return new TextEncoder().encode(
-        secret || "clinical-safety-secret-default-key-12345"
-    );
-};
+let _secret: Uint8Array | null = null;
 
-const SECRET = getSecret();
+function getSecret(): Uint8Array {
+    if (!_secret) {
+        const secret = process.env.AUTH_SECRET;
+        if (!secret && process.env.NODE_ENV === "production") {
+            throw new Error("AUTH_SECRET environment variable is required in production");
+        }
+        _secret = new TextEncoder().encode(
+            secret || "clinical-safety-secret-default-key-12345"
+        );
+    }
+    return _secret;
+}
 
 const COOKIE_NAME = "hand_talk_session";
 
@@ -41,7 +43,7 @@ export async function middleware(request: NextRequest) {
         }
 
         try {
-            await jwtVerify(session, SECRET);
+            await jwtVerify(session, getSecret());
             return response;
         } catch {
             const locale = pathname.split('/')[1] || routing.defaultLocale;
@@ -59,7 +61,7 @@ export async function middleware(request: NextRequest) {
         const session = request.cookies.get(COOKIE_NAME)?.value;
         if (session) {
             try {
-                await jwtVerify(session, SECRET);
+                await jwtVerify(session, getSecret());
                 const locale = pathname.split('/')[1] || routing.defaultLocale;
                 return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
             } catch {
