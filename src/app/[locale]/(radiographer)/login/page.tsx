@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldAlert, Loader2, Keyboard } from "lucide-react";
-import LanguageSwitcher from "@/components/language-switcher";
 
 function LoginButton() {
     const { pending } = useFormStatus();
@@ -38,9 +37,7 @@ export default function LoginPage() {
     return (
         <main className="min-h-screen flex flex-col items-center justify-center bg-clinical-offwhite p-4 md:p-6 relative">
             <div className="w-full max-w-md flex flex-col gap-4">
-                <div className="flex justify-end">
-                    <LanguageSwitcher />
-                </div>
+
                 <Card className="shadow-clinical-lg border-2 border-medical-green-100 overflow-hidden">
                     <CardHeader className="text-center pb-4 space-y-2">
                         <div className="flex justify-center mb-2">

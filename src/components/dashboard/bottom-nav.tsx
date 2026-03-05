@@ -5,7 +5,6 @@ import { Link, usePathname } from "@/navigation";
 import { cn } from "@/lib/utils";
 import { Users, History, Settings, LogOut, Loader2, PieChart } from "lucide-react";
 import { logoutAction } from "@/lib/auth-actions";
-import LanguageSwitcher from "@/components/language-switcher";
 import { useSessionStore } from "@/store/useSessionStore";
 import { useState, useTransition } from "react";
 
@@ -53,10 +52,7 @@ export function BottomNav() {
                         <div className="w-10 h-1 bg-zinc-200 rounded-full mx-auto mb-2" />
                         <h3 className="text-lg font-black text-zinc-900">Settings</h3>
 
-                        <div className="flex items-center justify-between py-3 border-b border-zinc-100">
-                            <span className="text-sm font-bold text-zinc-600">Language</span>
-                            <LanguageSwitcher />
-                        </div>
+
 
                         {/* Logout with confirmation */}
                         {!showLogoutConfirm ? (

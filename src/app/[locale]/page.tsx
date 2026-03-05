@@ -96,7 +96,7 @@ export default function Home() {
           </div>
           <h3 className="text-xl md:text-2xl font-black text-zinc-900 mb-2 md:mb-3 uppercase tracking-tight">Native Sign Language</h3>
           <p className="text-sm md:text-base text-zinc-500 font-medium leading-relaxed">
-            Professional orientation and treatment videos in English and isiZulu, designed for clear patient understanding.
+            Professional orientation and treatment videos in native sign language, designed for clear patient understanding.
           </p>
         </div>
 
