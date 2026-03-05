@@ -30,40 +30,33 @@ export async function middleware(request: NextRequest) {
     const response = i18nMiddleware(request);
 
     // 2. Clinical Auth Logic
-    const isProtectedPath = routing.locales.some((locale: string) =>
-        pathname.startsWith(`/${locale}/dashboard`)
-    );
+    const isProtectedPath = pathname.startsWith('/dashboard') || pathname.startsWith('/en/dashboard');
 
     if (isProtectedPath) {
         const session = request.cookies.get(COOKIE_NAME)?.value;
 
         if (!session) {
-            const locale = pathname.split('/')[1] || routing.defaultLocale;
-            return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+            return NextResponse.redirect(new URL(`/login`, request.url));
         }
 
         try {
             await jwtVerify(session, getSecret());
             return response;
         } catch {
-            const locale = pathname.split('/')[1] || routing.defaultLocale;
-            const res = NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+            const res = NextResponse.redirect(new URL(`/login`, request.url));
             res.cookies.delete(COOKIE_NAME);
             return res;
         }
     }
 
-    const isLoginPath = routing.locales.some((locale: string) =>
-        pathname.startsWith(`/${locale}/login`)
-    );
+    const isLoginPath = pathname.startsWith('/login') || pathname.startsWith('/en/login');
 
     if (isLoginPath) {
         const session = request.cookies.get(COOKIE_NAME)?.value;
         if (session) {
             try {
                 await jwtVerify(session, getSecret());
-                const locale = pathname.split('/')[1] || routing.defaultLocale;
-                return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+                return NextResponse.redirect(new URL(`/dashboard`, request.url));
             } catch {
                 // Continue to login
             }
