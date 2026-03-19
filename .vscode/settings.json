@@ -1,0 +1,10 @@
+{
+  "files.exclude": {
+    "**/*.log": true,
+    "**/build*.txt": true,
+    "**/lint*.txt": true,
+    "**/*_output*.txt": true,
+    "**/jscpd*.txt": true,
+    "**/typecheck*.txt": true
+  }
+}

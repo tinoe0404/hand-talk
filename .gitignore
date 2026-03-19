@@ -36,3 +36,10 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# generated build and lint logs
+build*.txt
+build*.log
+lint*.txt
+jscpd*.txt
+typecheck*.txt

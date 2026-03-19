@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
-import { Play, Activity, ChevronLeft, Loader2 } from "lucide-react";
+import { Play, Activity, ChevronLeft, Loader2, Video } from "lucide-react";
 import { useSessionStore } from "@/store/useSessionStore";
 import { Link, useRouter } from "@/navigation";
 import { createSessionAction } from "@/app/[locale]/(radiographer)/dashboard/actions";
 import { format } from "date-fns";
+import { Modal } from "@/components/ui/modal";
 
 interface Session {
     id: string;
@@ -37,6 +38,7 @@ export function PatientSessionHub({ patientName, mrn, sessions }: PatientSession
     const [isCreating, setIsCreating] = useState(false);
     const [treatment, setTreatment] = useState("GENERAL_RT");
     const [error, setError] = useState<string | null>(null);
+    const [showInstructions, setShowInstructions] = useState(false);
     const completedSessions = sessions.filter(s => s.status === "COMPLETED" || s.status === "ACTIVE" || s.status === "INTERRUPTED"); // Treat any past session as history
 
     const handleStartSession = async () => {
@@ -71,6 +73,23 @@ export function PatientSessionHub({ patientName, mrn, sessions }: PatientSession
 
     return (
         <div className="flex flex-col gap-4 p-4 animate-in fade-in duration-300">
+            {/* Welcome Instructions Modal */}
+            <Modal
+                isOpen={showInstructions}
+                onClose={() => setShowInstructions(false)}
+                title="Patient Instructions"
+                description="Show this video to the patient so they know what to do if they need help during the session."
+            >
+                <div className="rounded-xl overflow-hidden bg-black aspect-video flex items-center justify-center">
+                    <video 
+                        src="/videos/good-day-welcome.mp4" 
+                        controls 
+                        autoPlay 
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+            </Modal>
+
             {/* Header */}
             <div className="flex items-center gap-3">
                 <Link
@@ -121,7 +140,7 @@ export function PatientSessionHub({ patientName, mrn, sessions }: PatientSession
                 <Button
                     onClick={handleStartSession}
                     disabled={isCreating}
-                    className="w-full h-14 bg-medical-green-600 hover:bg-medical-green-700 text-white font-black text-base rounded-xl shadow-lg active:scale-[0.98] transition-all"
+                    className="w-full h-14 bg-medical-green-600 hover:bg-medical-green-700 text-white font-black text-base rounded-xl shadow-lg active:scale-[0.98] transition-all mb-2"
                 >
                     {isCreating ? (
                         <>
@@ -134,6 +153,15 @@ export function PatientSessionHub({ patientName, mrn, sessions }: PatientSession
                             Start Session
                         </>
                     )}
+                </Button>
+
+                <Button
+                    onClick={() => setShowInstructions(true)}
+                    variant="outline"
+                    className="w-full h-14 border-2 border-zinc-200 text-zinc-700 hover:bg-zinc-50 font-black text-base rounded-xl active:scale-[0.98] transition-all"
+                >
+                    <Video className="w-5 h-5 mr-2 text-zinc-500" />
+                    Play Welcome Instructions
                 </Button>
             </div>
 
