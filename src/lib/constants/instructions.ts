@@ -117,6 +117,14 @@ export const GESTURE_RESULTS = [
     color: 'bg-green-100 text-green-800 border-green-300',
     dotColor: 'bg-green-500',
   },
+  {
+    id: 'Waving_Hand',
+    meaning: 'Hello / Greetings',
+    severity: 'informational',
+    emoji: '👋',
+    color: 'bg-green-100 text-green-800 border-green-300',
+    dotColor: 'bg-green-500',
+  },
 ] as const;
 
 export type GestureId = typeof GESTURE_RESULTS[number]['id'];

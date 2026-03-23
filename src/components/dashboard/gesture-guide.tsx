@@ -7,7 +7,7 @@ import { GESTURE_RESULTS } from "@/lib/constants/instructions";
  * The radiographer tilts the phone toward the patient to show these gesture cards.
  *
  * Single source of truth: GESTURE_RESULTS from instructions.ts
- * All 7 clinically recognized hand signs are displayed, grouped by severity:
+ * All 8 clinically recognized hand signs are displayed, grouped by severity:
  *   - CRITICAL (red)   → patient's life may be at risk
  *   - PRIORITY (amber)  → patient needs attention
  *   - INFORMATIONAL (green/blue) → patient is communicating status
@@ -64,7 +64,7 @@ export function GestureGuide() {
                 </span>
             </div>
 
-            {/* Gesture Cards — responsive grid for all 7 signs */}
+            {/* Gesture Cards — responsive grid for all 8 signs */}
             <div className="grid grid-cols-2 gap-2.5 p-3 flex-1 auto-rows-min content-start">
                 {GESTURE_RESULTS.map((gesture) => {
                     const style = SEVERITY_STYLES[gesture.severity] ?? SEVERITY_STYLES.informational!;
