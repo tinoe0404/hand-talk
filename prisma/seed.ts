@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-    const pin = "1234";
+    const pin = process.env.DEFAULT_PIN || "1234";
     const hashedPin = await bcrypt.hash(pin, 10);
 
     const radiographer = await prisma.radiographer.upsert({
@@ -18,7 +18,7 @@ async function main() {
     });
 
     console.log({ radiographer });
-    console.log('Seeded Radiographer PIN: 1234');
+    console.log(`Seeded Radiographer PIN: ${pin}`);
 }
 
 main()

@@ -5,7 +5,7 @@ import { hashPin } from '@/lib/auth-utils';
 /**
  * CLINICAL SEED API
  * ONLY FOR DEVELOPMENT USE.
- * Seeds the default radiographer with PIN 1234.
+ * Seeds the default radiographer with a PIN (from DEFAULT_PIN env or defaults to 1234).
  */
 export async function GET() {
     if (process.env.NODE_ENV === 'production') {
@@ -13,7 +13,7 @@ export async function GET() {
     }
 
     try {
-        const pin = "1234";
+        const pin = process.env.DEFAULT_PIN || "1234";
         const hashedPin = await hashPin(pin);
 
         const radiographer = await prisma.radiographer.upsert({
@@ -32,7 +32,7 @@ export async function GET() {
             success: true,
             message: 'Clinical Radiographer Seeded',
             radiographerId: radiographer.id,
-            pin: '1234'
+            pin: pin
         });
     } catch (error) {
         console.error('Seed Error:', error);

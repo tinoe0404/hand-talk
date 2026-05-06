@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-    const pin = "1234";
+    const pin = process.env.DEFAULT_PIN || "1234";
     const hashedPin = await bcrypt.hash(pin, 10);
 
     // 1. Seed Radiographer
@@ -39,7 +39,7 @@ async function main() {
     }
 
     console.log('Seeding complete.');
-    console.log('Clinical Radiographer: PIN 1234');
+    console.log(`Clinical Radiographer: PIN ${pin}`);
     console.log('Seeded 3 test patients.');
 }
 
